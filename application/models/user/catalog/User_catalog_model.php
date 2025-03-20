@@ -2034,16 +2034,17 @@ where p.product_id = '$product_id' AND pov.quantity > '0' ORDER BY `final_price`
 
     }
     public function get_product_option($product_id, $product_option_value_id) {
-        $sql = "SELECT 
+$sql1 = "SELECT 
     pov.product_option_value_id,
     pov.product_id,
     p.brand_id,
-    b.name,
     p.product_name,
     pov.combination,
+    pov.image,
+    pov.quantity,
     pov.price AS original_price,
 
-    
+    -- Variation Discount
     CASE 
         WHEN pov.dis_val > 0 AND CURDATE() BETWEEN pov.dis_sdate AND pov.dis_edate 
         THEN 
@@ -2055,7 +2056,7 @@ where p.product_id = '$product_id' AND pov.quantity > '0' ORDER BY `final_price`
         ELSE pov.price
     END AS after_variation_discount,
 
-    
+    -- Brand Discount
     CASE 
         WHEN pov.is_brand = 1 AND CURDATE() BETWEEN pov.bdis_sdate AND pov.bdis_edate 
         THEN 
@@ -2067,7 +2068,7 @@ where p.product_id = '$product_id' AND pov.quantity > '0' ORDER BY `final_price`
         ELSE pov.price
     END AS after_brand_discount,
 
-    
+    -- Discount Source
     CASE 
         WHEN pov.is_brand = 1 AND CURDATE() BETWEEN pov.bdis_sdate AND pov.bdis_edate 
         THEN 'Brand'
@@ -2076,37 +2077,32 @@ where p.product_id = '$product_id' AND pov.quantity > '0' ORDER BY `final_price`
         ELSE 'None'
     END AS discount_source,
 
-    
-    LEAST(
-        CASE 
-            WHEN pov.dis_val > 0 AND CURDATE() BETWEEN pov.dis_sdate AND pov.dis_edate 
-            THEN 
-                CASE 
-                    WHEN pov.dis_mode = 'fixed' THEN (pov.price - pov.dis_val)
-                    WHEN pov.dis_mode = 'per' THEN (pov.price - (pov.price * pov.dis_val / 100))
-                    ELSE pov.price
-                END
-            ELSE pov.price
-        END,
-
-        CASE 
-            WHEN pov.is_brand = 1 AND CURDATE() BETWEEN pov.bdis_sdate AND pov.bdis_edate 
-            THEN 
-                CASE 
-                    WHEN pov.bdis_mode = 'fixed' THEN (pov.price - pov.bdis_val)
-                    WHEN pov.bdis_mode = 'per' THEN (pov.price - (pov.price * pov.bdis_val / 100))
-                    ELSE pov.price
-                END
-            ELSE pov.price
-        END
-    ) AS final_price
+    -- Final Price Logic (Brand discount preferred, otherwise variation discount)
+    CASE 
+        WHEN pov.is_brand = 1 AND CURDATE() BETWEEN pov.bdis_sdate AND pov.bdis_edate 
+        THEN 
+            CASE 
+                WHEN pov.bdis_mode = 'fixed' THEN (pov.price - pov.bdis_val)
+                WHEN pov.bdis_mode = 'per' THEN (pov.price - (pov.price * pov.bdis_val / 100))
+                ELSE pov.price
+            END
+        WHEN pov.dis_val > 0 AND CURDATE() BETWEEN pov.dis_sdate AND pov.dis_edate 
+        THEN 
+            CASE 
+                WHEN pov.dis_mode = 'fixed' THEN (pov.price - pov.dis_val)
+                WHEN pov.dis_mode = 'per' THEN (pov.price - (pov.price * pov.dis_val / 100))
+                ELSE pov.price
+            END
+        ELSE pov.price
+    END AS final_price
 
 FROM ci_product_option_value pov
 LEFT JOIN ci_products p ON pov.product_id = p.product_id
-LEFT JOIN ci_brands b ON p.brand_id = b.brand_id WHERE p.product_id = '$product_id' AND pov.product_option_value_id = '$product_option_value_id'  
-ORDER BY `final_price` ASC;";
+WHERE p.product_id = '$product_id' AND pov.product_option_value_id = '$product_option_value_id'
+ORDER BY `final_price` ASC;
+";
 
-        $query_set = $sql;
+        $query_set = $sql1;
 
         if($config_catalog_purchase)
 
@@ -2119,7 +2115,7 @@ ORDER BY `final_price` ASC;";
         {
 
         }
-        $query = $this->db->query($sql);
+        $query = $this->db->query($sql1);
         
         return $query->row_array(); // Return single row as an array
     }
@@ -2174,18 +2170,17 @@ ORDER BY `final_price` ASC;";
         $products_table = $this->db->dbprefix('products');
 
         $config_catalog_purchase = $this->db->where('key','config_catalog_purchase')->get('ci_settings')->row();
-        $sql = "SELECT 
+		$sql1 = "SELECT 
     pov.product_option_value_id,
     pov.product_id,
     p.brand_id,
     p.product_name,
     pov.combination,
     pov.image,
-    pov.combination,
     pov.quantity,
     pov.price AS original_price,
 
-    -- Variation Discount Applied Price
+    -- Variation Discount
     CASE 
         WHEN pov.dis_val > 0 AND CURDATE() BETWEEN pov.dis_sdate AND pov.dis_edate 
         THEN 
@@ -2197,7 +2192,7 @@ ORDER BY `final_price` ASC;";
         ELSE pov.price
     END AS after_variation_discount,
 
-    -- Brand Discount Applied Price (Only if is_brand = 1)
+    -- Brand Discount
     CASE 
         WHEN pov.is_brand = 1 AND CURDATE() BETWEEN pov.bdis_sdate AND pov.bdis_edate 
         THEN 
@@ -2209,7 +2204,7 @@ ORDER BY `final_price` ASC;";
         ELSE pov.price
     END AS after_brand_discount,
 
-    -- Discount Source (Brand or Variation)
+    -- Discount Source
     CASE 
         WHEN pov.is_brand = 1 AND CURDATE() BETWEEN pov.bdis_sdate AND pov.bdis_edate 
         THEN 'Brand'
@@ -2218,36 +2213,33 @@ ORDER BY `final_price` ASC;";
         ELSE 'None'
     END AS discount_source,
 
-    -- Final Price After Both Discounts (Priority: Brand First, then Variation)
-    LEAST(
-        CASE 
-            WHEN pov.dis_val > 0 AND CURDATE() BETWEEN pov.dis_sdate AND pov.dis_edate 
-            THEN 
-                CASE 
-                    WHEN pov.dis_mode = 'fixed' THEN (pov.price - pov.dis_val)
-                    WHEN pov.dis_mode = 'per' THEN (pov.price - (pov.price * pov.dis_val / 100))
-                    ELSE pov.price
-                END
-            ELSE pov.price
-        END,
+    -- Final Price Logic (Brand discount preferred, otherwise variation discount)
+    CASE 
+        WHEN pov.is_brand = 1 AND CURDATE() BETWEEN pov.bdis_sdate AND pov.bdis_edate 
+        THEN 
+            CASE 
+                WHEN pov.bdis_mode = 'fixed' THEN (pov.price - pov.bdis_val)
+                WHEN pov.bdis_mode = 'per' THEN (pov.price - (pov.price * pov.bdis_val / 100))
+                ELSE pov.price
+            END
+        WHEN pov.dis_val > 0 AND CURDATE() BETWEEN pov.dis_sdate AND pov.dis_edate 
+        THEN 
+            CASE 
+                WHEN pov.dis_mode = 'fixed' THEN (pov.price - pov.dis_val)
+                WHEN pov.dis_mode = 'per' THEN (pov.price - (pov.price * pov.dis_val / 100))
+                ELSE pov.price
+            END
+        ELSE pov.price
+    END AS final_price
 
-        CASE 
-            WHEN pov.is_brand = 1 AND CURDATE() BETWEEN pov.bdis_sdate AND pov.bdis_edate 
-            THEN 
-                CASE 
-                    WHEN pov.bdis_mode = 'fixed' THEN (pov.price - pov.bdis_val)
-                    WHEN pov.bdis_mode = 'per' THEN (pov.price - (pov.price * pov.bdis_val / 100))
-                    ELSE pov.price
-                END
-            ELSE pov.price
-        END
-    ) AS final_price
+FROM ci_product_option_value pov
+LEFT JOIN ci_products p ON pov.product_id = p.product_id
+WHERE p.product_id = '".$product_id."' AND pov.quantity > 0 
+ORDER BY `final_price` ASC;
+";
+        
 
-FROM $product_variant_table pov
-LEFT JOIN $products_table p ON pov.product_id = p.product_id
-where p.product_id = '$product_id' AND pov.quantity > '0' ORDER BY `final_price` ASC";
-
-        $query_set = $sql;
+        $query_set = $sql1;
 
         if($config_catalog_purchase)
 
@@ -2264,6 +2256,7 @@ where p.product_id = '$product_id' AND pov.quantity > '0' ORDER BY `final_price`
         $query = $this->db->query($query_set);
 
         $product =  $query->result();
+		//dd($product);
 
 
 
@@ -2321,13 +2314,13 @@ where p.product_id = '$product_id' AND pov.quantity > '0' ORDER BY `final_price`
                 }
                 $price = $prod->final_price;
 
-                $group_array[$prod->variant_opt_id] = $temp;
+                $group_array[$prod->product_option_value_id] = $temp;
 
-                $prices_array[$prod->variant_opt_id] = $price;
+                $prices_array[$prod->product_option_value_id] = $price;
 
-                $qty_array[$prod->variant_opt_id] = $prod->quantity;
+                $qty_array[$prod->product_option_value_id] = $prod->quantity;
 
-                $img_array[$prod->variant_opt_id] = $prod->variant_image;
+                $img_array[$prod->product_option_value_id] = $prod->image;
                 if(!empty($temp)){
 
 

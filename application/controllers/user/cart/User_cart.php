@@ -180,7 +180,7 @@ class User_cart extends User_Public_Controller {
 		if(!isset($cart->error))
 		{
 			$r = array();
-			// echo'<pre>';print_r($cart);die;
+			 //echo'<pre>';print_r($cart);die;
 			if (isset($cart)) {
 				foreach($cart as $k=>$v)
 				{

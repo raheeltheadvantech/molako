@@ -49,6 +49,7 @@
                                             <a href="<?php echo href_product($product)?>"><?php echo $product->product_name; ?></a>
 
                                             <div class="cart-meta-variant"><?php echo $product->product_options; ?></div>
+											
 
                                             <div class="price fw-6 cart-total">
                                                 <?php

@@ -259,8 +259,8 @@ class Cart_lib {
 
 
             if(!empty($product_option_value_id)) {
-                $row = $this->CI->User_catalog_model->get_product_option($product_id, $product_option_value_id);
-                $cut_price = $row->sale_price;
+                $row = (object)$this->CI->User_catalog_model->get_product_option($product_id, $product_option_value_id);
+                $cut_price = $row->original_price;
 
 				 
                 $product_option_price = $row->final_price;

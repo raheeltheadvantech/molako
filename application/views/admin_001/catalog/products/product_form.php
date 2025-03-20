@@ -5,7 +5,7 @@
         background-color: transparent !important;
         font-size: 1em;
         outline: 0;
-        border: 1px soFlid #ccc;
+        border: 1px solid #ccc;
         box-shadow: none;
         cursor: no-drop;
     }
@@ -693,6 +693,8 @@ $(document).ready(function(){
 
 
             $('#saveoptionbtn').on('click', function() {
+                        let formDataArray = $("#product_form").serialize();
+                        let jsonString = JSON.stringify(formDataArray);
                 setCookie("old_data",'',30)
 
                 var $inputs = $("#addoptions").find("input, button, select, textarea");
@@ -734,7 +736,7 @@ $(document).ready(function(){
                     dataType: 'text',
                     type: 'post',
                     contentType: 'application/x-www-form-urlencoded',
-                    data: $inputs.serialize()+'&product_name='+$('input[name="product_name"]').val()+'&product_id='+$('input[name="product_id"]').val(),
+                    data: 'all_data='+jsonString,
 
                     success: function(data) {
 
@@ -748,7 +750,7 @@ $(document).ready(function(){
                 });
 
                 //update sku
-                update_sku();
+                // update_sku();
             });
 
             $(function () {
@@ -941,7 +943,7 @@ $(document).ready(function(){
         <script>
             $('#tab_option').click(function(){
                 // alert($('#variantEditTable').html());
-                // load_var();
+                load_var();
             });
             function load_var() {
                 setCookie("old_data",'',30)
@@ -1132,7 +1134,7 @@ $(document).ready(function(){
             var existingFiles = [
             <?php if(!empty($product_images)) {
                 foreach ($product_images as $key=>$image) {?>
-            {name: '<?php echo $product_images[$key]->image; ?>', size: 1, path: '<?php echo live_img_url().'images/products/thumbnails/';?>', youtube_url: ''},
+            {name: '<?php echo $product_images[$key]->image; ?>', size: 1, path: '<?php echo site_url('images/products/thumbnails/');?>', youtube_url: ''},
                 <?php } } ?>
             ];
 
@@ -1199,7 +1201,6 @@ $(document).ready(function(){
     {
         var html = '<tr>'+$('#copy_row').html()+'</tr>';
         $('#variantEditTable tbody').append(html); 
-        $(".c").datepicker({ dateFormat: 'yy-mm-dd' });
         return 0;
         // $(html).insertBefore(".copy_row");
 

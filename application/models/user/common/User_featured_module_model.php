@@ -477,18 +477,7 @@ $result = $query->result();
             $val->images = $all_images;//get_product_images($val->product_id);
             // $val->special_price = get_product_special_price($val->product_id);
 
-            if (isset($val->option_name, $val->option_value) && ($val->option_name != '') && ($val->option_value != '')) {
-                $val->is_variation = 1;
-                $p =  get_product_varient_price($val->product_id);
-				if(isset($p->price))
-				{
-					$val->varient_price = $p->price;
-					$val->varient_id = $p->product_option_value_id;
-				}
-            } else {
-                $val->is_variation = 0;
-                $val->varient_price = 0;
-            }
+            
         }
         return $result;
     } 

@@ -249,62 +249,76 @@ if (!function_exists('get_base_product_query')) {
         $select = !empty($select) ? $select . ", " : "";
 
         $db->select("
-            p.*,
-            $select
+            p.*, 
+            ".$select.",
+    CASE 
+        WHEN NOT EXISTS (
+            SELECT 1 
+            FROM ci_product_option_value pov 
+            WHERE pov.product_id = p.product_id
+        ) 
+        THEN p.sale_price
+        ELSE (
+            SELECT MIN(pov.price) 
+            FROM ci_product_option_value pov 
+            WHERE pov.product_id = p.product_id
+        )
+    END AS sale_price, 
+    
+    CASE 
+        WHEN NOT EXISTS (
+            SELECT 1 
+            FROM ci_product_option_value pov 
+            WHERE pov.product_id = p.product_id
+        ) 
+        THEN COALESCE(
             CASE 
-                WHEN NOT EXISTS (SELECT 1 FROM " . $db->dbprefix('product_option_value') . " pov WHERE pov.product_id = p.product_id) 
-                THEN p.sale_price
-                ELSE (
-                    SELECT MIN(pov.price) 
-                    FROM " . $db->dbprefix('product_option_value') . " pov 
-                    WHERE pov.product_id = p.product_id
-                )
-            END AS sale_price,
-
-            CASE 
-                WHEN NOT EXISTS (SELECT 1 FROM " . $db->dbprefix('product_option_value') . " pov WHERE pov.product_id = p.product_id) 
-                THEN COALESCE(
+                WHEN pov.is_brand = 1 
+                AND pov.bdis_val > 0 
+                AND CURDATE() BETWEEN pov.bdis_sdate AND pov.bdis_edate 
+                THEN 
                     CASE 
-                        WHEN b.is_enabled = 1 
-                        AND b.dis_val > 0 
-                        AND CURDATE() BETWEEN b.dis_sdate AND b.dis_edate 
-                        THEN 
-                            CASE 
-                                WHEN b.dis_mode = 'fixed' THEN (p.sale_price - b.dis_val)
-                                WHEN b.dis_mode = 'per' THEN (p.sale_price - (p.sale_price * b.dis_val / 100))
-                                ELSE p.sale_price
-                            END
+                        WHEN pov.bdis_mode = 'fixed' 
+                        THEN (p.sale_price - pov.bdis_val)
+                        WHEN pov.bdis_mode = 'per' 
+                        THEN (p.sale_price - (p.sale_price * pov.bdis_val / 100))
                         ELSE p.sale_price
-                    END,
-                    (SELECT sp.price 
-                     FROM " . $db->dbprefix('product_special_price') . " sp 
-                     WHERE sp.product_id = p.product_id 
-                     AND CURDATE() BETWEEN sp.start_date AND sp.end_date 
-                     LIMIT 1),
-                    p.sale_price
-                )
-                ELSE 
-                    (SELECT MIN(
+                    END
+                ELSE p.sale_price
+            END, 
+            (SELECT sp.price 
+             FROM ci_product_special_price sp 
+             WHERE sp.product_id = p.product_id 
+             AND CURDATE() BETWEEN sp.start_date AND sp.end_date 
+             LIMIT 1), 
+            p.sale_price
+        )
+        ELSE 
+            (SELECT MIN(
+                CASE 
+                    WHEN b.is_enabled = '1' AND pov.is_brand = 1 AND pov.bdis_val > 0 
+                    AND CURDATE() BETWEEN pov.bdis_sdate AND pov.bdis_edate 
+                    THEN 
                         CASE 
-                            WHEN pov.dis_val > 0 AND CURDATE() BETWEEN pov.dis_sdate AND pov.dis_edate 
-                            THEN 
-                                CASE 
-                                    WHEN pov.dis_mode = 'fixed' THEN (pov.price - pov.dis_val)
-                                    WHEN pov.dis_mode = 'per' THEN (pov.price - (pov.price * pov.dis_val / 100))
-                                    ELSE pov.price
-                                END
+                            WHEN pov.bdis_mode = 'fixed' 
+                            THEN (pov.price - pov.bdis_val)
+                            WHEN pov.bdis_mode = 'per' 
+                            THEN (pov.price - (pov.price * pov.bdis_val / 100))
                             ELSE pov.price
                         END
-                    ) 
-                    FROM " . $db->dbprefix('product_option_value') . " pov
-                    WHERE pov.product_id = p.product_id)
-            END AS final_price,
-
-            GROUP_CONCAT(DISTINCT pi.image ORDER BY pi.id ASC SEPARATOR ', ') AS images
+                    ELSE pov.price
+                END
+            ) 
+            FROM ci_product_option_value pov
+            WHERE pov.product_id = p.product_id)
+    END AS final_price, 
+    
+    GROUP_CONCAT(DISTINCT pi.image ORDER BY pi.id ASC SEPARATOR ', ') AS images
         ");
 
         $db->from($db->dbprefix('products') . ' as p');
         $db->join($db->dbprefix('brands') . ' as b', 'p.brand_id = b.brand_id', 'left');
+        $db->join($db->dbprefix('product_option_value') . ' as pov', 'pov.product_id = p.product_id', 'left');
         $db->join($db->dbprefix('product_images') . ' as pi', 'pi.product_id = p.product_id', 'left');
 
         return $db;

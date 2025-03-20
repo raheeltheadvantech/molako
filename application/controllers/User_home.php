@@ -41,7 +41,7 @@ class User_home extends User_Public_Controller {
     { 
         $data['special_products'] = $this->User_featured_module_model->get_new_special_products(4); // Fetch special products
         // dd($data['special_products']);
-        dd($this->db->last_query());
+        //dd($this->db->last_query());
         // dd($data['special_products']);
         echo $this->load->view('special_products1', $data, true);
         exit();
