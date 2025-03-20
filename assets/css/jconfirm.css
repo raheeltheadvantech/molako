@@ -1,0 +1,228 @@
+.jconfirm-box {
+    background-color: #fff !important;
+    border: 0px !important;
+    border-radius: 5px;
+    -webkit-box-shadow: 0 5px 55px rgba(0,0,0,0.2);
+    box-shadow: 0 5px 55px rgba(0,0,0,0.2);
+    color: #383838 !important;
+    margin: 0 auto;
+    max-width: 280px;
+    padding: 40px 5px;
+    position: fixed;
+    text-align: center;
+    top: 22%;
+    left: 0;
+    right: 0;
+    z-index: 999;
+}
+ 
+.jconfirm-bg{
+	background: rgba(0,0,0,.5);
+}
+.jconfirm-content{
+	-webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+.jconfirm.jconfirm-success .jconfirm-box .jconfirm-title-c {
+    background: url(../img/tick-animation.gif) no-repeat;
+    background-size: 60px;
+    padding: 0 0 0 94px;
+    background-position: 50% 0;
+    padding-left: 0;
+}
+/*.jconfirm.jconfirm-danger .jconfirm-box .jconfirm-title-c{
+	background: url(../img/danger-animation.gif) no-repeat;
+    background-size: 60px;
+    padding: 0 0 0 94px;
+    background-position: 50% 0;
+    padding-left: 0;
+}*/
+.jconfirm.jconfirm-delete .jconfirm-box .jconfirm-title-c{
+	background: url(../img/delete-animation.gif) no-repeat;
+    background-size: 60px;
+    padding: 0 0 0 94px;
+    background-position: 50% 0;
+    padding-left: 0;
+}
+.jconfirm.jconfirm-warning .jconfirm-box .jconfirm-title-c{
+	background: url(../img/warning-animation.gif) no-repeat;
+    background-size: 60px;
+    padding: 0 0 0 94px;
+    background-position: 50% 0;
+    padding-left: 0;
+}
+.jconfirm.jconfirm-info .jconfirm-box .jconfirm-title-c{
+	background: url(../img/info-animation.gif) no-repeat;
+    background-size: 60px;
+    padding: 0 0 0 94px;
+    background-position: 50% 0;
+    padding-left: 0;
+}
+.jconfirm.jconfirm-error .jconfirm-box .jconfirm-title-c,
+.jconfirm.jconfirm-danger .jconfirm-box .jconfirm-title-c {
+    background: url(../img/error-animation.gif) no-repeat;
+    background-size: 60px;
+    border-bottom: 1px solid #e5e5e5;
+    background-position: 17px 0;
+	padding:0 0 50px 94px;
+}
+
+
+
+
+
+
+
+
+.jconfirm .jconfirm-box div.jconfirm-title-c{
+	margin:0 -20px;
+	padding:0 22px;
+}
+.jconfirm .jconfirm-box {
+	padding: 18px 20px 20px;
+    border-top: 3px solid red !important;
+}
+.jconfirm .jconfirm-box div.jconfirm-title-c .jconfirm-icon-c {
+    display: block;
+    text-align: left;
+    font-size: 18px;
+    font-weight: 500;
+	padding-top:8px;
+    color: #d71414;
+}
+.jconfirm .jconfirm-box div.jconfirm-title-c .jconfirm-title {
+    /*font-size: 14px;
+    color: #383838;
+    display: block;
+	padding-top:5px;
+	text-align:left;*/
+	display: block;
+    text-align: left;
+    font-size: 18px;
+    font-weight: 500;
+    padding-top: 8px;
+    color: #d71414;
+}
+.jconfirm .jconfirm-box div.jconfirm-content-pane {
+    height: auto !important;
+    max-height: unset !important;
+}
+.jconfirm .jconfirm-box div.jconfirm-content-pane ol {
+    padding-top: 14px;
+    margin-bottom: 8px;
+    padding-left: 15px;
+}
+.jconfirm.jconfirm-single-alert .jconfirm-box div.jconfirm-content-pane ol {
+	padding:0;
+	margin:0;
+}
+.jconfirm .jconfirm-box div.jconfirm-content-pane ol li{
+    width: 100%;
+    font-size: 12px;
+    color: #383838;
+	text-align:left;
+	margin-bottom:5px;
+}
+.jconfirm.jconfirm-single-alert .jconfirm-box div.jconfirm-content-pane ol li{
+	text-align:center;
+}
+.jconfirm .jconfirm-box div.jconfirm-content-pane ol li:last-child{
+	margin-bottom:0;
+}
+.jconfirm .jconfirm-box .jconfirm-buttons{
+	text-align:left;
+	padding-bottom:10px;
+}
+.jconfirm .jconfirm-box .jconfirm-buttons .btn-default{
+    color: #FFF !important;
+    border: 1px solid #aaa !important;
+    background: #aaa !important;
+    padding: 6px 25px;
+    margin: 0;
+    border-radius: 2px;
+}
+.jconfirm .jconfirm-box .jconfirm-buttons button.btn-default+.btn-default {
+    margin-left: 5px;
+}
+.jconfirm .jconfirm-box .jconfirm-buttons .btn-default:hover, .btn-default:focus{
+	background:#909090 !important;
+	border:1px solid #909090 !important;
+	color:#FFF;
+}
+.jconfirm.single-alert{
+}
+
+.jconfirm.jconfirm-single-alert .jconfirm-box .jconfirm-title-c {
+    border-bottom: none;
+    background-position: 50% 0;
+	padding-left:0;
+}
+
+.jconfirm.jconfirm-single-alert .jconfirm-box div.jconfirm-title-c .jconfirm-icon-c {
+    padding-top: 68px;
+    text-align: center;
+}
+.jconfirm.jconfirm-single-alert .jconfirm-box div.jconfirm-title-c .jconfirm-title{
+	text-align:center;
+	padding-top:11px;
+}
+.jconfirm.jconfirm-single-alert .jconfirm-box .jconfirm-buttons{
+	text-align:center;
+}
+
+
+.jconfirm.jconfirm-single-alert .jconfirm-box div.jconfirm-title-c .jconfirm-title  {
+    padding-top: 68px;
+    text-align: center;
+    display: block;
+    font-size: 18px;
+    font-weight: 500;
+}
+.jconfirm.jconfirm-single-alert .jconfirm-box div.jconfirm-content-pane .jconfirm-content > div{
+    text-align: center;
+    padding-top: 8px;
+    font-size: 14px;
+    color: #383838;
+    display: block;
+}
+.jconfirm.jconfirm-single-alert .jconfirm-box .jconfirm-buttons {
+    text-align: center;
+}
+
+.jconfirm.jconfirm-single-alert.jconfirm-error .jconfirm-box .jconfirm-title-c, 
+.jconfirm.jconfirm-single-alert.jconfirm-danger .jconfirm-box .jconfirm-title-c {
+	padding:0 0 22px 94px;
+	padding:0;
+}
+
+
+
+.jconfirm.jconfirm-single-alert.jconfirm-info{
+}
+.jconfirm.jconfirm-single-alert.jconfirm-info .jconfirm-box {
+    border-top: 3px solid #0f75de !important;
+}
+.jconfirm.jconfirm-single-alert.jconfirm-info .jconfirm-box div.jconfirm-title-c .jconfirm-title{
+	color: #0f75de;
+}
+.jconfirm.jconfirm-single-alert.jconfirm-success{
+}
+.jconfirm.jconfirm-single-alert.jconfirm-success .jconfirm-box {
+    border-top: 3px solid #007c00 !important;
+}
+.jconfirm.jconfirm-single-alert.jconfirm-success .jconfirm-box div.jconfirm-title-c .jconfirm-title{
+	color: #007c00;
+}
+.jconfirm.jconfirm-single-alert.jconfirm-warning{
+}
+.jconfirm.jconfirm-single-alert.jconfirm-warning .jconfirm-box {
+    border-top: 3px solid #e79b00 !important;
+}
+.jconfirm.jconfirm-single-alert.jconfirm-warning .jconfirm-box div.jconfirm-title-c .jconfirm-title{
+	color: #e79b00;
+}
+.jconfirm-title-c.jconfirm-empty-title {
+    padding-bottom: 0 !important;
+}

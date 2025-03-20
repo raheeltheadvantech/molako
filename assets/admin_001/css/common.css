@@ -1,0 +1,298 @@
+.mt-0{ margin-top:0px !important; }
+.mt-5{ margin-top:5px !important; }
+.mt-10{ margin-top:10px !important; }
+.mt-15{ margin-top:15px !important; }
+.mt-20{ margin-top:20px !important; }
+.mt-22{ margin-top:22px !important; }
+.mt-25{ margin-top:25px !important; }
+.mt-30{ margin-top:30px !important; }
+.mt-32{ margin-top:32px !important; }
+.mt-35{ margin-top:35px !important; }
+.mt-40{ margin-top:40px !important; }
+.mt-45{ margin-top:45px !important; }
+.mt-50{ margin-top:50px !important; }
+.mt-55{ margin-top:55px !important; }
+.mt-60{ margin-top:60px !important; }
+.mt-65{ margin-top:65px !important; }
+.mt-70{ margin-top:70px !important; }
+.mt-75{ margin-top:75px !important; }
+.mt-80{ margin-top:80px !important; }
+.mt-85{ margin-top:85px !important; }
+.mt-90{ margin-top:90px !important; }
+.mt-95{ margin-top:95px !important; }
+.mt-100{ margin-top:100px !important; } 
+
+.mb-0{ margin-bottom:0px !important; }
+.mb-5{ margin-bottom:5px !important; }
+.mb-10{ margin-bottom:10px !important; }
+.mb-15{ margin-bottom:15px !important; }
+.mb-20{ margin-bottom:20px !important; }
+.mb-25{ margin-bottom:25px !important; }
+.mb-30{ margin-bottom:30px !important; }
+.mb-35{ margin-bottom:35px !important; }
+.mb-40{ margin-bottom:40px !important; }
+.mb-45{ margin-bottom:45px !important; }
+.mb-50{ margin-bottom:50px !important; }
+.mb-55{ margin-bottom:55px !important; }
+.mb-60{ margin-bottom:60px !important; }
+.mb-65{ margin-bottom:65px !important; }
+.mb-70{ margin-bottom:70px !important; }
+.mb-75{ margin-bottom:75px !important; }
+.mb-80{ margin-bottom:80px !important; }
+.mb-85{ margin-bottom:85px !important; }
+.mb-90{ margin-bottom:90px !important; }
+.mb-95{ margin-bottom:95px !important; }
+.mb-100{ margin-bottom:100px !important; } 
+
+.pt-5{ padding-top:5px !important; }
+.pt-10{ padding-top:10px !important; }
+.pt-15{ padding-top:15px !important; }
+.pt-20{ padding-top:20px !important; }
+.pt-25{ padding-top:25px !important; }
+.pt-30{ padding-top:30px !important; }
+.pt-35{ padding-top:35px !important; }
+.pt-40{ padding-top:40px !important; }
+.pt-45{ padding-top:45px !important; }
+.pt-50{ padding-top:50px !important; }
+.pt-55{ padding-top:55px !important; }
+.pt-60{ padding-top:60px !important; }
+.pt-65{ padding-top:65px !important; }
+.pt-70{ padding-top:70px !important; }
+.pt-75{ padding-top:75px !important; }
+.pt-80{ padding-top:80px !important; }
+.pt-85{ padding-top:85px !important; }
+.pt-90{ padding-top:90px !important; }
+.pt-95{ padding-top:95px !important; }
+.pt-100{ padding-top:100px !important; }
+
+.pb-5{ padding-bottom:5px !important; }
+.pb-10{ padding-bottom:10px !important; }
+.pb-15{ padding-bottom:15px !important; }
+.pb-20{ padding-bottom:20px !important; }
+.pb-25{ padding-bottom:25px !important; }
+.pb-30{ padding-bottom:30px !important; }
+.pb-35{ padding-bottom:35px !important; }
+.pb-40{ padding-bottom:40px !important; }
+.pb-45{ padding-bottom:45px !important; }
+.pb-50{ padding-bottom:50px !important; }
+.pb-55{ padding-bottom:55px !important; }
+.pb-60{ padding-bottom:60px !important; }
+.pb-65{ padding-bottom:65px !important; }
+.pb-70{ padding-bottom:70px !important; }
+.pb-75{ padding-bottom:75px !important; }
+.pb-80{ padding-bottom:80px !important; }
+.pb-85{ padding-bottom:85px !important; }
+.pb-90{ padding-bottom:90px !important; }
+.pb-95{ padding-bottom:95px !important; }
+.pb-100{ padding-bottom:100px !important; }
+
+.w-40{ width: 40px !important;}
+.w-100{ width: 100px !important;}
+
+
+.align-center{
+	text-align: center;
+	display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+.vertical-center{
+	display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+.margin-0{
+	margin:0 !important;
+}
+.border-0{
+	border:none !important;
+}
+.btn-100{
+	width:100%;
+}
+.h-200{
+	height: 200px !important;
+}
+.fw-500{
+	font-weight: 500 !important;
+}
+ul{
+	padding: 0;
+	margin: 0;
+	list-style-type: none;
+}
+a:focus{
+	outline:none !important;
+}
+.btn{
+	border-radius: 2px;
+	-webkit-transition: all 0.3s ease-in-out;
+	-moz-transition: all 0.3s ease-in-out;
+	-o-transition: all 0.3s ease-in-out;
+	transition: all 0.3s ease-in-out;
+}
+.btn.active.focus, .btn.active:focus, .btn.focus, .btn:active.focus, .btn:active:focus, .btn:focus {
+    outline: none;
+}
+.btn:active, .btn.active {
+    box-shadow: none;
+}
+
+.btn-outline-blue {
+    background: none;
+    border: 1px solid #2196f3;
+    color: #2196f3;
+}
+.btn-outline-blue:hover, .btn-outline-blue:focus{
+	background: rgba(41,150,204,.08) !important;
+	border: 1px solid #2196f3;
+	color: #2196f3;
+}
+.btn-outline-blue:focus{
+	box-shadow: 0 0 0 3px rgba(33,150,243,.3);
+}
+.btn-outline-gray {
+    background: none;
+    border: 1px solid #999;
+    color: #333;
+}
+.btn-outline-gray:hover, .btn-outline-gray:focus {
+    background: #f3f3f3 !important;
+    border: 1px solid #666;
+    color: #000;
+}
+.btn-outline-gray:focus{
+	box-shadow: 0 0 0 3px #ddd;
+}
+/*====================================
+	Input errors
+======================================*/
+.error label{
+	display: none;
+}
+.label-error{
+	font-weight: 500;
+	color: #d11919;
+	display: none;
+}
+.error .label-error{
+	display: block;
+}
+.error .form-control{
+	border-color: #f37070 !important;
+}
+.error .form-control:hover{
+	box-shadow: 0 0 0 3px rgba(243, 112, 112, 0.18) !important;
+}
+.error .form-control:focus{
+	box-shadow: 0 0 0 3px rgba(243, 112, 112, 0.28) !important;
+}
+/*====================================
+	Custom checkbox & Radio  
+======================================*/
+.custom-control {
+	font-size: 12px;
+	color: #333;
+	position: relative;
+	display: block;
+	margin-bottom: 10px;
+	padding-left: 25px;
+	cursor: pointer;
+}
+
+.custom-control input {
+	position: absolute;
+	z-index: -1;
+	opacity: 0;
+}
+
+.custom-indicator {
+    position: absolute;
+    top: 1px;
+    left: 0;
+    width: 16px;
+    height: 16px;
+    background: #FFF;
+    border: 1px solid #ddd;
+	border-radius: 2px;
+}
+
+.custom-radio .custom-indicator {
+	border-radius: 50%;
+}
+
+/* Hover and focus states */
+.custom-control:hover input ~ .custom-indicator,
+.custom-control input:focus ~ .custom-indicator {
+	border-color: #999;
+	box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.10);
+}
+
+/* Checked state */
+.custom-control input:checked ~ .custom-indicator {
+    border: 1px solid #2196f3;
+}
+
+/* Hover state whilst checked */
+.custom-control:hover input:not([disabled]):checked ~ .custom-indicator,
+.custom-control input:checked:focus ~ .custom-indicator{
+	outline: 0;
+	box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+/* Disabled state */ 
+.custom-control input:disabled ~ .custom-indicator {
+	pointer-events: none;
+	opacity: .6;
+	background: #e6e6e6;
+}
+
+/* Check mark */
+.custom-indicator:after {
+	position: absolute;
+	display: none;
+	content: '';
+}
+
+/* Show check mark */
+.custom-control input:checked ~ .custom-indicator:after {
+	display: block;
+}
+
+/* Checkbox tick */
+.custom-checkbox .custom-indicator:after {
+    top: 2px;
+    left: 5px;
+    width: 5px;
+    height: 9px;
+    transform: rotate(45deg);
+    border: solid #2196f3;
+    border-width: 0 2px 2px 0;
+}
+
+/* Disabled tick colour */
+.custom-checkbox input:disabled ~ .custom-indicator:after {
+	border-color: #7b7b7b;
+}
+
+/* Radio button inner circle */
+.custom-radio .custom-indicator:after {
+    top: 4px;
+    left: 4px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #2196f3;
+}
+
+/* Disabled circle colour */
+.custom-radio input:disabled ~ .custom-indicator:after {
+	background: #7b7b7b;
+}
+
+
+
+
+
+
+

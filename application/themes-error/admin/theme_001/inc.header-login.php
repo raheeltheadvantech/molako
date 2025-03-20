@@ -1,0 +1,52 @@
+<?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<!-- Meta, title, CSS, favicons, etc. -->
+        <meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title><?php echo $page_title; ?> - <?php echo $this->site_config->item('site_name'); ?></title>
+    
+	<?php // CSS files ?>
+	<?php if (isset($css_files) && is_array($css_files)) : ?>
+	<?php foreach ($css_files as $css) : ?>
+		<?php if ( ! is_null($css)) : ?>
+			<link rel="stylesheet" href="<?php echo $css; ?>?v=<?php echo $this->site_config->item('site_version'); ?>"><?php echo "\n"; ?>
+	<?php endif; ?>
+	<?php endforeach; ?>
+	<?php endif; ?>
+    
+        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
+        
+
+	<!-- Import CSS -->
+	<?php $assets_dir = 'assets/'.site_config_item('admin_assets').'/css/'; ?>
+	<link rel="stylesheet" href="<?php echo site_url($assets_dir.'normalize.css') ?>">
+        <link rel="stylesheet" href="<?php echo site_url($assets_dir.'bootstrap.min.css') ?>">
+        <link rel="stylesheet" href="<?php echo site_url($assets_dir.'style.css') ?>">
+        <link rel="stylesheet" href="<?php echo site_url($assets_dir.'responsive.css') ?>">
+        <link rel="stylesheet" href="<?php echo site_url($assets_dir.'style-rtl.css') ?>">
+		<!-- /Import CSS -->
+        
+		<script type="text/javascript">
+        //<![CDATA[
+        var SITE_URL = '<?php echo site_url()?>';
+		var ASSETS_URL = '<?php echo site_url('assets/'.site_config_item('admin_assets'))?>';
+        //]]>
+        </script>
+        
+	</head>
+
+	<body class="<?php echo $bodyclass ?>">
+    
+    	<!-- Page Container -->
+	<div class="page-container">
+	

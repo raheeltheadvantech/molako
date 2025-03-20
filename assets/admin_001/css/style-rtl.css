@@ -1,0 +1,438 @@
+/*===================================================================
+	Global  
+===================================================================*/
+html[dir="rtl"] body{
+	font-family: 'DroidArabicKufi', sans-serif;
+}
+html[dir="rtl"] input::-ms-input-placeholder {
+    text-align: right;
+}
+html[dir="rtl"] input::-webkit-input-placeholder {
+    text-align: right;
+}
+html[dir="rtl"] input::-moz-placeholder {
+ text-align: right;
+}
+html[dir="rtl"] .pull-right {
+	float:left !important;
+}
+html[dir="rtl"] .pull-left {
+	float:right !important;
+}
+html[dir="rtl"] .text-right {
+    text-align: left;
+}
+html[dir="rtl"] .text-left {
+    text-align: right;
+}
+html[dir="rtl"] .col-xs-1, html[dir="rtl"] .col-xs-2, html[dir="rtl"] .col-xs-3, html[dir="rtl"] .col-xs-4, html[dir="rtl"] .col-xs-5, html[dir="rtl"] .col-xs-6, html[dir="rtl"] .col-xs-7, html[dir="rtl"] .col-xs-8, html[dir="rtl"] .col-xs-9, html[dir="rtl"] .col-xs-10, html[dir="rtl"] .col-xs-11, html[dir="rtl"] .col-xs-12 {
+    float: right;
+}
+html[dir="rtl"] .form-control{
+	text-align:right;
+}
+html[dir="rtl"] .table>thead>tr>th{
+	text-align: right;
+}
+html[dir="rtl"] .radio label, 
+html[dir="rtl"] .checkbox label {
+    padding-left: 0;
+    padding-right: 20px;
+}
+html[dir="rtl"] .radio label input, 
+html[dir="rtl"] .checkbox label input{
+	left: auto;
+	right: 0;
+}
+html[dir="rtl"] th{
+	text-align: right;
+}
+html[dir="rtl"] select.form-control {
+    background: url(../img/caret.svg) no-repeat left.75rem center/8px 10px !important;
+}
+/*==========================
+Custom Checkbox & Radio code  
+============================*/
+html[dir="rtl"] .custom-control {
+    padding-left: 0;
+    padding-right: 25px;
+	text-align: right;
+}
+html[dir="rtl"] .custom-indicator{
+	left: auto;
+	right: 0;
+}
+/*===================================================================
+	Header Code
+===================================================================*/
+html[dir="rtl"] .user-meta, 
+html[dir="rtl"] .user-meta ul.user-ul li.user-li,
+html[dir="rtl"] .action-bar{
+	float: right;
+}
+html[dir="rtl"] .user-meta .dropdown-menu li a{
+	text-align: right;
+}
+html[dir="rtl"] .search-bar {
+    float: right;
+    margin: 0 0 0 20px;
+}
+html[dir="rtl"] .search-bar .form-control {
+	background-position: 97%;
+    padding: 6px 28px 6px 12px;
+}
+html[dir="rtl"] .user-meta .dropdown-menu {
+    right: auto;
+    left: -5px;
+}
+html[dir="rtl"] .user-meta .dropdown-menu:before {
+    right: auto;
+    left: 10px;
+}
+html[dir="rtl"] .user-meta ul.user-ul li.user-li > a i.icon-user-fill{
+	font-size: 20px;
+}
+html[dir="rtl"] .user-meta .dropdown-menu li a i {
+    margin: 0 0 0 8px;
+}
+/*===================================================================
+	Left bar code
+===================================================================*/
+html[dir="rtl"] .page-wrapper .left-column{
+	float: right;
+}
+html[dir="rtl"] .nav-wrapper .bottom-bar a i{
+	float: left;
+	transform: rotate(270deg);
+}
+html[dir="rtl"] ul.custom-nav li a {
+    padding: 8px 18px 8px 0;
+}
+html[dir="rtl"] ul.custom-nav li ul.mm-collapse li, 
+html[dir="rtl"] ul.custom-nav li ul.mm-collapsing li {
+    border-left: none;
+    border-right: 4px solid #fff;
+}
+html[dir="rtl"] ul.custom-nav li ul.mm-collapse li a, 
+html[dir="rtl"] ul.custom-nav li ul.mm-collapsing li a {
+    padding: 9px 50px 8px 0;
+}
+html[dir="rtl"] ul.custom-nav li ul.mm-collapse li.mm-active, 
+html[dir="rtl"] ul.custom-nav li ul.mm-collapsing li.mm-active {
+    border-color: #1968b3;
+}
+html[dir="rtl"] ul.custom-nav li a i {
+    display: inline-block;
+    margin: 0 0 0 14px;
+}
+/*===================================================================
+	Right bar code
+===================================================================*/
+html[dir="rtl"] .page-wrapper .right-column{
+	float: left;
+}
+html[dir="rtl"] .action-bar .btn+.btn {
+    margin: 0 7px 0 0;
+}
+/*===================================================================
+	Tabs & collapse code
+===================================================================*/
+html[dir="rtl"] .custom-tabs .nav-tabs>li,
+html[dir="rtl"] .custom-collapse ul.panel-group li.panel > a > .leftbar{
+	float: right;
+}
+html[dir="rtl"] .custom-collapse ul.panel-group li.panel > a > .rightbar{
+	float: left;
+}
+html[dir="rtl"] .file-upload-wrapper:before{
+	right: auto;
+	left: 0;
+}
+html[dir="rtl"] .file-upload-wrapper:after{
+	left: auto;
+	right: 0;
+}
+html[dir="rtl"] .custom-collapse ul.panel-group li.panel > a.box-header {
+    padding: 0 20px 0 0;
+}
+html[dir="rtl"] .custom-collapse ul.panel-group li.panel > a > .rightbar{
+	border-left: none;
+	border-right: 1px solid #eee;
+}
+/*===================================================================
+	Forms elements code
+===================================================================*/
+html[dir="rtl"] .banner-wrapper i {
+    margin: 0 0 0 5px;
+}
+html[dir="rtl"] .custom-modal .modal-header i,
+html[dir="rtl"] .custom-modal .modal-header .modal-title{
+	float: right;
+}
+html[dir="rtl"] .custom-modal .modal-footer{
+	text-align: left;
+}
+html[dir="rtl"] .custom-modal .modal-footer .btn+.btn {
+    margin: 0 5px 0 0;
+}
+html[dir="rtl"] .custom-modal .modal-body{
+	text-align: right;
+}
+/*==========================
+	Product Listing  Code  
+============================*/
+html[dir="rtl"] .table-meta > .rightbar .entry-filter .form-control,
+html[dir="rtl"] .table-meta > .leftbar .input-group .input-group-addon .dropdown-toggle{
+	text-align: right;
+}
+html[dir="rtl"] .table-meta > .leftbar,
+html[dir="rtl"] .table-filter ul li,
+html[dir="rtl"] .item-wrapper > .leftbar,
+html[dir="rtl"] .table-pagination .pagination ul li,
+html[dir="rtl"] .table-pagination > .pull-right > .rightbar label,
+html[dir="rtl"] .table-pagination > .pull-right > .rightbar .form-control,
+html[dir="rtl"] .filter-menu .btn,
+html[dir="rtl"] .table-wrapper .table>thead>tr>th .item-selection .pull-left .custom-control{
+	float: right;
+}
+html[dir="rtl"] .table-pagination > .pull-right > .rightbar{
+	float: left;
+}
+html[dir="rtl"] .table-meta > .rightbar {
+    float: left;
+    text-align: left;
+}
+html[dir="rtl"] .table-meta > .leftbar .input-group .form-control.input-filter {
+    left: auto;
+    right: -1px;
+	background: url(../img/search-icon.png) no-repeat right 8px center;
+}
+html[dir="rtl"] .table-meta > .rightbar .entry-filter label {
+    padding: 0 0 0 5px;
+}
+html[dir="rtl"] .table-filter ul li a {
+    margin: 0 0 10px 10px;
+}
+html[dir="rtl"] .table-filter ul li a i {
+	display: inline-block;
+    margin: 0 7px 0 0;
+}
+html[dir="rtl"] .add-item {
+    right: auto;
+    left: -10px;
+}
+html[dir="rtl"] .add-item .dropdown-menu{
+	right: auto;
+	left: 0;
+}
+html[dir="rtl"] .item-wrapper > .rightbar {
+    float: left;
+    padding: 0 12px 0 0;
+}
+html[dir="rtl"] .table-pagination > .pull-right > .leftbar {
+    float: right;
+    border-left: 1px solid #ddd;
+    border-right: none;
+}
+html[dir="rtl"] .table-pagination .pagination ul li a, 
+html[dir="rtl"] .table-pagination .pagination ul li span{
+	margin: 0 0 0 3px;
+}
+html[dir="rtl"] .table-pagination .pagination ul li:first-child span {
+    margin: 0 0 0 5px;
+}
+html[dir="rtl"] .table-pagination .pagination ul li a i, 
+html[dir="rtl"] .table-pagination .pagination ul li span i {
+    transform: rotate(180deg);
+}
+html[dir="rtl"] .table-pagination > .pull-right > .rightbar label.last{
+	margin: 0 8px 0 0;
+}
+html[dir="rtl"] .table-pagination > .pull-right > .rightbar label.last i {
+    margin: 0 3px 0 0;
+    transform: rotate(180deg);
+}
+html[dir="rtl"] .filter-menu label {
+    display: block;
+    text-align: right;
+}
+html[dir="rtl"] .table-meta > .leftbar .input-group .input-group-addon,
+html[dir="rtl"] .filter-menu .form-control{
+    background: url(../img/caret.svg) no-repeat left .75rem center/8px 10px, linear-gradient(to top, #f3f3f3, #f6f6f6, #f9f9f9, #fcfcfc, #ffffff) !important;
+}
+html[dir="rtl"] .filter-menu {
+    left: auto;
+    right: 0;
+}
+html[dir="rtl"] .item-selection .pull-left span{
+	float: right;
+	padding: 5px 6px 0 0;
+}
+html[dir="rtl"] .item-selection .btn+.btn {
+    margin: 0 5px 0 0;
+}
+html[dir="rtl"] .table-pagination > .pull-right > .rightbar .form-control::-webkit-input-placeholder { text-align:center; }
+html[dir="rtl"] .table-pagination > .pull-right > .rightbar .form-control:-moz-placeholder { text-align:center; }
+/*==========================
+	Csutom Modal Code  
+============================*/
+html[dir="rtl"] .custom-modal .modal-header .modal-title,
+html[dir="rtl"] .custom-modal .modal-header i{
+	float: left;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*===================================================================
+	Max 1199px
+===================================================================*/
+@media (max-width: 1199px) {
+}
+
+/*===================================================================
+	Max 991px
+===================================================================*/
+@media (max-width: 991px) {
+}
+
+/*===================================================================
+	Max 768px
+===================================================================*/
+@media (max-width: 768px) {
+}
+
+
+/*===================================================================
+	Max 767px
+===================================================================*/
+@media (max-width: 767px) {
+}
+
+
+
+
+
+/*===================================================================
+	Min 1200
+===================================================================*/
+@media (min-width: 1200px) {
+    html[dir="rtl"] .col-lg-1, html[dir="rtl"] .col-lg-2, html[dir="rtl"] .col-lg-3, html[dir="rtl"] .col-lg-4, html[dir="rtl"] .col-lg-5, html[dir="rtl"] .col-lg-6, html[dir="rtl"] .col-lg-7, html[dir="rtl"] .col-lg-8, html[dir="rtl"] .col-lg-9, html[dir="rtl"] .col-lg-10, html[dir="rtl"] .col-lg-11, html[dir="rtl"] .col-lg-12 {
+    	float: right;
+ 	}
+}
+/*===================================================================
+	Min 992
+===================================================================*/
+@media (min-width: 992px) {
+    html[dir="rtl"] .col-md-1, html[dir="rtl"] .col-md-2, html[dir="rtl"] .col-md-3, html[dir="rtl"] .col-md-4, html[dir="rtl"] .col-md-5, html[dir="rtl"] .col-md-6, html[dir="rtl"] .col-md-7, html[dir="rtl"] .col-md-8, html[dir="rtl"] .col-md-9, html[dir="rtl"] .col-md-10, html[dir="rtl"] .col-md-11, html[dir="rtl"] .col-md-12 {
+        float: right;
+    }
+	html[dir="rtl"] .col-md-offset-12 {
+    margin-right: 100%;
+    margin-left: 0;
+  }
+  html[dir="rtl"] .col-md-offset-11 {
+    margin-right: 91.66666667%;
+    margin-left: 0;
+  }
+  html[dir="rtl"] .col-md-offset-10 {
+    margin-right: 83.33333333%;
+    margin-left: 0;
+  }
+  html[dir="rtl"] .col-md-offset-9 {
+    margin-right: 75%;
+    margin-left: 0;
+  }
+  html[dir="rtl"] .col-md-offset-8 {
+    margin-right: 66.66666667%;
+    margin-left: 0;
+  }
+  html[dir="rtl"] .col-md-offset-7 {
+    margin-right: 58.33333333%;
+    margin-left: 0;
+  }
+  html[dir="rtl"] .col-md-offset-6 {
+    margin-right: 50%;
+    margin-left: 0;
+  }
+  html[dir="rtl"] .col-md-offset-5 {
+    margin-right: 41.66666667%;
+    margin-left: 0;
+  }
+  html[dir="rtl"] .col-md-offset-4 {
+    margin-right: 33.33333333%;
+    margin-left: 0;
+  }
+  html[dir="rtl"] .col-md-offset-3 {
+    margin-right: 25%;
+    margin-left: 0;
+  }
+  html[dir="rtl"] .col-md-offset-2 {
+    margin-right: 16.66666667%;
+    margin-left: 0;
+  }
+  html[dir="rtl"] .col-md-offset-1 {
+    margin-right: 8.33333333%;
+    margin-left: 0;
+  }
+  html[dir="rtl"] .col-md-offset-0 {
+    margin-right: 0%;
+    margin-left: 0;
+  }
+}
+/*===================================================================
+	Min 768
+===================================================================*/
+@media (min-width: 768px) {
+    html[dir="rtl"] .col-sm-1, html[dir="rtl"] .col-sm-2, html[dir="rtl"] .col-sm-3, html[dir="rtl"] .col-sm-4, html[dir="rtl"] .col-sm-5, html[dir="rtl"] .col-sm-6, html[dir="rtl"] .col-sm-7, html[dir="rtl"] .col-sm-8, html[dir="rtl"] .col-sm-9, html[dir="rtl"] .col-sm-10, html[dir="rtl"] .col-sm-11, html[dir="rtl"] .col-sm-12 {
+        float: right;
+    }
+}

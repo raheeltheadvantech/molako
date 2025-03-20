@@ -1,0 +1,26 @@
+{
+    "primary": {
+        "width": "1200",
+        "height": "1200"
+    },
+    "large": {
+        "width": "550",
+        "height": "500"
+    },
+    "small": {
+        "width": "222",
+        "height": "222"
+    },
+    "thumb": {
+        "width": "150",
+        "height": "150"
+    },
+    "related": {
+        "width": "222",
+        "height": "222"
+    },
+    "slider": {
+        "width": "1903",
+        "height": "500"
+    }
+}

@@ -1,0 +1,361 @@
+ <?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
+        <!doctype html>
+        <html class="no-js" lang="">
+        <head>
+            <meta charset="utf-8">
+            <meta http-equiv="x-ua-compatible" content="ie=edge">
+            <title><?php echo $page_title; ?></title>
+            <meta name="title" content="<?php echo $meta_title;?>">
+            <meta name="keyword" content="<?php echo $meta_keywords;?>">
+            <meta name="description" content="<?php echo $meta_description;?>">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+            <?php $assets_dir = 'assets/'.site_config_item('user_assets').'/css/'; ?>
+            <?php $assets_dir_js = 'assets/'.site_config_item('user_assets').'/js/'; ?>
+            <?php $assets_img_dir = 'assets/'.site_config_item('user_assets').'/images/'; ?>
+
+            <!-- Favicon -->
+            <link rel="shortcut icon" type="image/x-icon" href="<?php echo site_url($assets_img_dir.'logo/favicon.png') ?>">
+
+            <!-- Google Fonts -->
+            <link href='https://fonts.googleapis.com/css?family=Open+Sans:200,300,400,500,600,700,800,900' rel='stylesheet' type='text/css'>
+            <base href="<?php echo site_url() ?>" />
+            <!-- CSS
+            ============================================ -->
+
+            <!-- Icon Font CSS -->
+            <link rel="stylesheet" href="<?php echo site_url($assets_dir.'font-awesome.min.css') ?>">
+
+            <!-- Plugins CSS -->
+            <link rel="stylesheet" href="<?php echo site_url($assets_dir.'bootstrap.min.css') ?>">
+            <link rel="stylesheet" href="<?php echo site_url($assets_dir.'meanmenu.min.css') ?>">
+            <link rel="stylesheet" href="<?php echo site_url($assets_dir.'nivo-slider.css') ?>">
+            <link rel="stylesheet" href="<?php echo site_url($assets_dir.'jquery-ui-slider.css') ?>">
+            <link rel="stylesheet" href="<?php echo site_url($assets_dir.'jquery.simpleLens.css') ?>">
+            <link rel="stylesheet" href="<?php echo site_url($assets_dir.'jquery.simpleGallery.css') ?>">
+            <link rel="stylesheet" href="<?php echo site_url($assets_dir.'owl.carousel.min.css') ?>">
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css">
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+
+            <!-- Main Style CSS -->
+
+            <link rel="stylesheet" href="<?php echo site_url($assets_dir.'style.css') ?>">
+            <link rel="stylesheet" href="<?php echo site_url($assets_dir.'style-custom.css') ?>">
+            <link rel="stylesheet" href="<?php echo site_url($assets_dir.'responsive.css') ?>">
+
+
+            <!-- Custom Style -->
+            <style type="text/css">
+                .text-right{ text-align: right; }
+                .single-product-img img{
+                    width:  auto;
+                    min-height: auto;
+                }
+                .float{
+                    position:fixed;
+                    width:60px;
+                    height:60px;
+                    bottom:20px;
+                    left:20px;
+                    background-color:#25d366;
+                    color:#FFF!important;
+                    border-radius:50px;
+                    text-align:center;
+                  font-size:30px;
+                    box-shadow: 2px 2px 3px #999;
+                  z-index:100;
+                }
+                .my-float:hover{
+                    color: #fff!important;
+                }
+                .float a:hover{
+                    color: #fff!important;
+                }
+                .my-float{
+                    margin-top:16px;
+}
+                .notification-top-bar {
+                  min-height: 50px;
+                  line-height: 40px;
+                  width: 100%;
+                  background: #d00b0e;
+                  text-align: center;
+                  color: #FFFFFF;
+                  font-family: sans-serif;
+                  font-weight: lighter;
+                  font-size: 14px;
+                }
+                .notification-top-bar p a {
+                  padding: 5px 10px;
+                  border-radius: 3px;
+                  background: #FFF;
+                  color: #d00b10;
+                  font-weight: bold;
+                  text-decoration: none;
+                }
+                .btn-default{ background: lightgray; }
+                .content-pages{
+                    padding-top: 2rem;
+                    padding-bottom: 2rem;
+                }
+                .single-product-img{
+                    height: 230px;
+                }
+                .tab-single-product{
+                    width: 20%;
+                    margin: 0 5px 10px;
+                }
+                .tab-single-product .single-product-col{
+                    width: 100%;
+                }
+                .contact p{
+                    padding: 0 10px;
+                }
+                .product-area,.top-banner-area{
+                    padding: 0 40px;
+                }
+                .sidenav {
+                  width: 50px;
+                  float: right;
+                  position: fixed;
+                  z-index: 999;
+                  top: auto;
+                  right: 0;
+                  background: #eee;
+                  overflow-x: hidden;
+                }
+                .sidenav a {
+                    background-color:#2E6ED5; 
+                    padding: 10px 15px;
+                    text-decoration: none;
+                    font-size: 20px;
+                    color: #fff;
+                    display: block;
+                    border-bottom: 1px solid lightgray;
+                }
+                .sidenav a:hover {
+                    background-color:#FBB203; 
+                }
+                .btn:focus{
+                    box-shadow: none !important;
+                }
+                .topbar{
+                    padding: 5px;
+                    background: linear-gradient(180deg, #fba70e, #f5ee0e);
+                    color: #000;
+                }
+                .main {
+                  margin-left: 140px; /* Same width as the sidebar + left position in px */
+                  font-size: 28px; /* Increased text to enable scrolling */
+                  padding: 0px 10px;
+                }
+                @media screen and (max-width: 850px) {
+                    .tab-single-product{
+                        width: 25%;
+                    }
+                }
+                @media screen and (max-width: 650px) {
+                    .tab-single-product{
+                        width: 33.33%;
+                    }
+                }
+                @media screen and (max-width: 450px) {
+                    .tab-single-product{
+                        width: 50%;
+                    }
+                }
+                @media screen and (max-height: 450px) {
+                  .sidenav a {font-size: 18px;}
+                }
+                .mobile-menu ul li.mbl img{
+                    display: none;
+                }
+                .mobile-menu .sub-menu li.mbl{
+                    width: 100% !important;
+                }
+                .mobile-menu .sub-menu li{
+                    color: #000 !important;
+                }
+            </style>
+
+        </head>
+
+        <body>
+            <div id="content"></div>
+            <div class="pageloadLayer">
+                <div class="loader"></div>
+            </div>
+            <?php if (site_config_item('config_top_bar_content')) 
+            {
+                echo'<div class="topbar d-none">'.site_config_item('config_top_bar_content').'</div>';
+            }?>
+        
+        <!-- Header Area -->
+        <div class="header-area">
+
+            <!-- Header Top -->
+            <div class="header-top">
+                <div class="container">
+                    <!-- Header Top Bar-->
+                    <div class="header-top-bar">
+                        <div class="row">
+                            <div class="col-lg-5 col-md-6">
+                                <!-- Header Top Left-->
+                                <div class="header-top-left">
+                                    <div class="call-header">
+                                        <p>Welcome to TechCity Canada Call us :<span>  <?php echo $this->site_config->item('config_telephone'); ?></span></p>
+                                    </div>
+                                    <!-- <div class="header-login">
+                                        <?php if(!$this->auth_user->is_logged_in()){?>
+                                        <a href="login.html">Log in</a>
+                                        <?php } ?>
+                                    </div> -->
+                                </div><!-- End Header Top Left-->
+                            </div>
+                            <div class="col-lg-7 col-md-6">
+                                <!-- Header Top Right-->
+                                <div class="header-top-right">
+                                    <!-- Header Link Area -->
+                                    <div class="header-link-area">
+                                        <div class="header-link">
+                                            <ul>
+                                                <li>
+                                                    <div hidden class="store-location">
+                                                        <a href="store-location.html"><i style="margin-right: 10px;" class="fa fa-map-marker"></i>Store Location</a>
+                                                    </div>
+                                                </li>
+                                                <!-- <li>
+                                                    <div class="order-track">
+                                                        <a href="#">Track Your Order</a>
+                                                    </div>
+                                                </li> -->
+                                                <?php if($this->auth_user->is_logged_in()){?>
+                                                <li><a class="account" href="#">Account<i class="fa fa-angle-down"></i></a>
+                                                    <ul>
+                                                        <li><a href="<?php echo site_url($this->user_url_prefix . '/dashboard.html') ?>">My Account</a></li>
+                                                        <li><a href="<?php echo site_url($this->user_url_prefix . '/profile.html') ?>">Edit Account</a></li>
+                                                        <li><a href="<?php echo site_url($this->user_url_prefix . '/change-password.html') ?>">Password</a></li>
+                                                        <li><a href="<?php echo site_url($this->user_url_prefix . '/addresses.html') ?>">Addresse's</a></li>
+                                                        <li><a href="<?php echo site_url($this->user_url_prefix . '/wishlist.html') ?>">Wishlist</a></li>
+                                                        <li><a href="<?php echo site_url($this->user_url_prefix . '/order-history.html') ?>">Order History</a></li>
+                                                        <li><a href="<?php echo site_url($this->user_url_prefix . '/logout.html') ?>">Log Out</a></li>
+                                                    </ul>
+                                                </li>
+                                                <?php }else{?>
+                                                <li>
+                                                    <div class="header-login">
+                                                        <a href="login.html">My Account</a>
+                                                    </div>
+                                                </li>
+                                                <?php } ?>
+
+                                            </ul>
+                                        </div>
+                                    </div><!-- End Header Link Area -->
+                                </div><!-- End Header Top Right-->
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End Header Top Bar-->
+                </div>
+            </div><!-- End Header Top -->
+
+            <!-- Header Bottom -->
+            <div class="header-bottom">
+                <div class="container">
+                    <!-- Header Bottom Inner-->
+                    <div class="header-bottom-inner">
+                        <div class="row justify-content-between">
+                            <div class="col-lg-3 col-md-3 col-sm-4 col-6 order-lg-1">
+                                <!-- Header Logo -->
+                                <div class="header-logo">
+                                    <a href="<?php echo site_url(); ?>"><img src="<?php echo site_url($assets_img_dir.'logo/logo.png') ?>" alt="logo"></a>
+                                </div>
+                            </div>
+                            <div class="col-lg-2  col-md-3 col-sm-4 col-5 order-lg-3 mt-2">
+                                <!-- Header Actions Area-->
+                                <?php echo $this->nav_cart; ?>
+                                <!-- End Header Actions Area-->
+                            </div>
+                            <div class="col-lg-7 col-md-6 col-sm-4 order-lg-2 mb-2">
+                                <div class="header-search">
+
+                                    <form action="<?php echo site_url('catalog.html')?>" method="post" class="form-inline form-search">
+                                            
+                                        <div class="search-form">
+                                            <div class="input-group">
+                      
+                                                <input type="text"  id="search" class="form-control typeahead" placeholder="Search entire store here ..." >
+                                                <select class="form-control typeahead" id="category_id">
+                                                  <option value="">All Categories</option>
+                                                  <?php echo all_categories()?>
+                                                </select>
+                                                <div class="input-group-prepend">
+                                                    <button type="submit"><i class="fa fa-search"></i></button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <input type="hidden" id="ajax-search-enable" value="1" />
+                                        <input type="hidden" name="q" id="q" />
+                                        <input type="hidden" name="term" id="term" />
+                                    </form>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End Header Bottom Inner-->
+                </div>
+            </div><!-- End Header Bottom -->
+
+        </div>
+        <!-- End Header Area -->
+
+        <!-- Main Menu Area -->
+        <div class="main-menu-area main-menu-area-2">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-3">
+                        <!-- Category Menu -->
+                        <?php include('inc.category-menu.php') ?>
+                        <!-- End Category Menu -->
+                    </div>
+                    <div class="col-lg-9">
+                        <!-- Manin Menu -->
+                        <div class="main-menu d-none d-lg-block">
+                            <nav>
+                                <ul>
+                                <?php echo create_navigation_html();?>
+                                </ul>
+                            </nav>
+                        </div><!-- End Manin Menu -->
+                        <!-- Start Mobile Menu -->
+                        <?php include('inc.mobile-category-menu.php') ?>
+                        <!-- End Mobile Menu -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="sidenav">
+          <a href="<?php echo site_url($this->user_url_prefix . '/dashboard.html') ?>" class="text-center" title="Dashboard">
+              <i class="fa fa-pie-chart"></i>
+          </a>
+          <a href="<?php echo base_url(). '/checkout/cart.html'?>" class="text-center" title="Cart">
+              <i class="fa fa-shopping-cart"></i>
+          </a>
+          <a href="<?php echo site_url($this->user_url_prefix . '/addresses.html') ?>" class="text-center" title="Address">
+              <i class="fa fa-book"></i>
+          </a>
+          <!-- <a class = "fa fa-search" href="#about"></a> -->
+          <a href="<?php echo site_url($this->user_url_prefix . '/wishlist.html') ?>" class="text-center" title="Wishlist">
+              <i class="fa fa-heart"></i>
+          </a>
+          <a href="#top" title="Go to top" class="text-center">
+              <i class="fa fa-angle-double-up"></i>
+          </a>
+        </div>
+            <a href="https://wa.me/+18555622439/?text=I'm%20interested%20in%20course%20sap%20hana" class="float" target="_blank">
+            <i class="fa fa-whatsapp my-float"></i>
+            </a>
+        <!-- End Main Menu Area -->
