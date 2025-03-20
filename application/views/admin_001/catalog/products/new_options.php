@@ -219,13 +219,17 @@
         {
             var v = [];
             $(this).find('select').each(function(){
-                v.push($(this).val());
+                if ($(this).attr('name')?.indexOf('dis_mode') === -1) {
+                    v.push($(this).val());
+                }
             });
             selectValues.push(v.join('|'));
 
         }
 
         });
+        console.log(sval);
+        console.log(selectValues);
         var r = countOccurrences(sval, selectValues);
         return (r > 1)?true:false;
         //New logic
@@ -234,7 +238,10 @@
         const row = $(this).closest('tr');
         var v = [];
         row.find('select').each(function(){
+                if ($(this).attr('name')?.indexOf('dis_mode') === -1) {
+
                 v.push($(this).val());
+            }
             });
         sval = v.join('_');
         if(!sval)
@@ -247,7 +254,9 @@
             alert('Variation already exist');
             // row.remove();
             row.find('select').each(function(){
-                $(this).val('')
+                if ($(this).attr('name')?.indexOf('dis_mode') === -1) {
+                    $(this).val('');
+                }
             });
         }
 
