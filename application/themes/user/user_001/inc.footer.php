@@ -6,8 +6,8 @@
         if(isset($max_price) && $max_price)
         {
             ?>
-<div class="btn-sidebar-style2">
-            <button data-bs-toggle="offcanvas" data-bs-target="#sidebarmobile" aria-controls="offcanvas"><i class="icon icon-sidebar-2"></i></button>
+            <div class="btn-sidebar-style2">
+            <button data-bs-toggle="offcanvas" data-bs-target="#sidebarmobile" aria-controls="offcanvas"><i class="icon icon-sidebar-2"></i><span class="abcdef">Filter</span></button>
         </div>
         <?php
             }
@@ -65,9 +65,9 @@
 
                                     <ul class="tf-social-icon d-flex gap-10">
 
-                                        <li><a target="_blank" href="https://www.facebook.com/MolakoPeshawar?mibextid=ZbWKwL" class="box-icon w_34 round social-facebook social-line"><img src="<?= live_img_url().$assets_img_dir ?>facebook_icon.png" /></a></li>
+                                        <li><a target="_blank" href="https://www.facebook.com/MolakoPeshawar?mibextid=ZbWKwL" class="box-icon w_34 round social-facebook social-line"><img src="<?= base_url($assets_img_dir) ?>facebook_icon.png" /></a></li>
  
-                                        <li><a target="_blank" href="https://www.instagram.com/molako_peshawar?igsh=c3R2eTY1bDlxcWhs" class="box-icon w_34 round social-instagram social-line"><img src="<?= live_img_url().$assets_img_dir; ?>instagram_icon.png" /></a></li>
+                                        <li><a target="_blank" href="https://www.instagram.com/molako_peshawar?igsh=c3R2eTY1bDlxcWhs" class="box-icon w_34 round social-instagram social-line"><img src="<?= base_url($assets_img_dir); ?>instagram_icon.png" /></a></li>
 
                                     </ul>
 
@@ -195,7 +195,7 @@
 
                                                 </fieldset>
 
-                                                <fieldset class="email">
+                                                <fieldset class="email mt-2">
                         
                                                 <input type="text" title="Sign up for our newsletter" placeholder="Email" name="subscribe_email" id="subscribe_email" required="required" class="form-control">
 
@@ -260,9 +260,11 @@
             </div>
 
         </footer>
-        <a href="https://wa.me/923359228881" target="_blank" id="whatsapp-button">
+<span class="whatsaapp_sppan">
+            <a href="https://wa.me/923359228881" target="_blank" id="whatsapp-button">
     <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" width="50">
 </a>
+</span>
 
         <!-- /Footer -->
 

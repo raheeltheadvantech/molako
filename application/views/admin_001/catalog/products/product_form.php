@@ -94,7 +94,7 @@
                     <li><a href="#tab-options" id="tab_option" data-toggle="tab">Options</a></li>
                     <li><a href="#tab-specifications" data-toggle="tab">Specifications</a></li>
                     <li><a href="#tab-images" data-toggle="tab">Images</a></li>
-                    <li><a href="#tab-prices" data-toggle="tab">Prices</a></li>
+                    <li><a href="#tab-prices" id="prices_tab" data-toggle="tab">Prices</a></li>
                     <li><a href="#tab-shipping" data-toggle="tab">Shipping</a></li>
                     <li><a href="#tab-warrenty" data-toggle="tab">Warrenty</a></li>
                     <li><a href="#tab-seo" data-toggle="tab">SEO</a></li>
@@ -943,7 +943,7 @@ $(document).ready(function(){
         <script>
             $('#tab_option').click(function(){
                 // alert($('#variantEditTable').html());
-                load_var();
+                // load_var();
             });
             function load_var() {
                 setCookie("old_data",'',30)
@@ -1454,5 +1454,12 @@ color_code($(this).attr('data-id'));
                 $('#copy_row').remove();
                 $('form').submit();
             }
+            $('#prices_tab').click(function(){
+                if ($('#variantEditTable tbody tr').length > 1) {
+    $('#special').hide();
+} else {
+    $('#special').show();
+}
+            });
 
         </script>

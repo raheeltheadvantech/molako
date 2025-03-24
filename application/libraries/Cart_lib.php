@@ -223,7 +223,6 @@ class Cart_lib {
     {
         $product_id = $item['product_id'];
         $product_info = $this->CI->User_catalog_model->get_product($product_id);
-
         if(!$product_info)
         {
             return (object)array('error'=>true, 'message'=>'Product not found', 'data'=>false);
@@ -256,7 +255,6 @@ class Cart_lib {
         if (isset($item['product_option_value_id']) && $item['product_option_value_id']) {
             $options = ($item['options'])?$item['options']:array();
             $product_option_value_id = $item['product_option_value_id'];
-
 
             if(!empty($product_option_value_id)) {
                 $row = (object)$this->CI->User_catalog_model->get_product_option($product_id, $product_option_value_id);
@@ -334,7 +332,6 @@ class Cart_lib {
         }
         $product_cur_qty = $curr_qty;
 
-
         //here check config_catalog_purchase
         $config_catalog_purchase = $this->CI->db->where('key','config_catalog_purchase')->get('ci_settings')->row();
         if($config_catalog_purchase)
@@ -375,7 +372,6 @@ class Cart_lib {
 		} 
 
         // ADDING OR UPDATING THE QUANTITY IN CART
-        
         $cart[$product_info->sku] = array(
             'product_id'    => $product_id,
             'variant_id'      => $product_option_value_id,

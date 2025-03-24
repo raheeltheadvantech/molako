@@ -201,7 +201,6 @@ class Admin_brands extends Admin_Controller {
             $this->play_discount($brand_id);
 
 
-
             $url = $this->admin_url .'/'. $this->controller_dir .'/brands.html';
             $url.= !empty($query) ? '?'.$query : '';
             $url.= '#btn-edit-'. $this->brand_id;
@@ -240,7 +239,9 @@ class Admin_brands extends Admin_Controller {
             }
             //delete old prices
             if($ids)
+			{
             $this->db->where_in('product_id',$ids)->delete('discount_prices');
+			}
         if(isset($brand->dis_val) && $brand->dis_val)
         {
             $r = $this->db->insert_batch('discount_prices', $in);
@@ -256,12 +257,11 @@ class Admin_brands extends Admin_Controller {
             {
                 $vids[] = $v['product_option_value_id'];
                 unset($v['product_option_value_id']);
-                $v['is_brand'] = 1;
+                $v['is_brand'] =  $brand->is_enabled;
                 $v['bdis_mode'] = $brand->dis_mode;
                 $v['bdis_val'] = $brand->dis_val;
                 $v['bdis_sdate'] = $brand->dis_sdate;
                 $v['bdis_edate'] = $brand->dis_edate;
-
                 $in[] = $v;
             }
                 //delete old variations

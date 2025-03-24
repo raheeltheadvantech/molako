@@ -7,6 +7,9 @@
     width: 600px;
 
 }
+div#ui-datepicker-div{
+	z-index: 9999 !important;
+}
 </style>
 
 <script type="text/javascript">

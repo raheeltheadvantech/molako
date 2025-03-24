@@ -148,7 +148,6 @@
                                                 type="text" name="variants_sku[]"
                                                 value="<?php echo $val['sku']; ?>" readonly></div>
         </td>
-
         <td>
             <select name="dis_mode[]" class="form-control">
                 <option value=" ">Discount Mode</option>
@@ -346,5 +345,4 @@ function remo_var() {
     row.remove();
     ch_attr();  // Recalculate after removing a row
 }
-$(".date_ex").datepicker({ dateFormat: 'yy-mm-dd' });
 </script>

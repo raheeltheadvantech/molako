@@ -120,6 +120,7 @@ $result = $query->result();
         $this->db->limit($limit);
         
         $result = $this->db->get()->result();
+        echo $this->db->last_query();
         die();
         if(!$result)
         {
@@ -164,8 +165,8 @@ if($limit)
 {
     $this->db->limit($limit);
 }
-
 $query = $this->db->get();
+
 $result = $query->result();
 
 
@@ -381,6 +382,7 @@ $this->db->limit($limit);
 
 $query = $this->db->get();
 $result = $query->result();
+//dd($this->db->last_query());
 
         if(!$result)
         {
@@ -432,20 +434,18 @@ if ($display_out_stock != 1) {
     $this->db->where('p.quantity >', 0);
 }
 
-// Special Price Join (Alias use kar ke)
-$this->db->join("ci_product_special_price sp2", "sp2.product_id = p.product_id AND CURDATE() BETWEEN sp2.start_date AND sp2.end_date", "inner");
-
 // Group by product ID
 $this->db->group_by('p.product_id');
+$this->db->having('final_price < sale_price', null, false);
 if($limit)
 {
     $this->db->limit($limit);
 }
 
-// Debugging Query
-// $query = $this->db->get_compiled_select();
-// echo $query;
-// exit;
+ //Debugging Query
+//$query = $this->db->get_compiled_select();
+//echo $query;
+//exit;
 
 // Execute the query
 
@@ -475,6 +475,7 @@ $result = $query->result();
         }
     }
             $val->images = $all_images;//get_product_images($val->product_id);
+            
             // $val->special_price = get_product_special_price($val->product_id);
 
             

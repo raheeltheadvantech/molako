@@ -49,7 +49,6 @@
                                             <a href="<?php echo href_product($product)?>"><?php echo $product->product_name; ?></a>
 
                                             <div class="cart-meta-variant"><?php echo $product->product_options; ?></div>
-											
 
                                             <div class="price fw-6 cart-total">
                                                 <?php
@@ -118,7 +117,7 @@
                                 <div class="tf-mini-cart-line"></div>
 
                                 <div class="tf-mini-cart-view-checkout">
- 
+
                                     <a href="<?= base_url('checkout/cart.html'); ?>" class="tf-btn btn-outline radius-3 link w-100 justify-content-center">View cart</a>
 
                                 </div>
@@ -310,16 +309,3 @@
                     </div>
 
                 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-<script type="text/javascript">
-    function side_cart()
-    {
-        if(document.getElementById('side_check').checked) {
-    location.href = '<?= base_url('checkout/cart.html'); ?>';
-
-} else {
-    toastr.error('error','Please Agree to Term and condition to continue');
-}
-
-    }
-</script>

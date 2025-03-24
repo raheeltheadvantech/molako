@@ -47,7 +47,7 @@ class User_home extends User_Public_Controller {
         exit();
     }
 
-    public function best_products() 
+    public function best_products()
     { 
         $data['bestseller_products'] = $this->User_featured_module_model->get_bestseller_products(8); // Fetch special products
         // dd($this->db->last_query());

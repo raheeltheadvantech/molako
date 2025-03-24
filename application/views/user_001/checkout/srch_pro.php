@@ -3,6 +3,7 @@
                                 
 
                                 <div class="tf-search-hidden-inner">
+                                    <?php if($products): ?>
 
                                 <?php foreach ($products as $product): ?>
                                     <?php
@@ -24,8 +25,6 @@
                                         $img1 = 'images/products/medium/'.$img1;
                                     }
 
-                                    ?>
-
                                 <div class="tf-loop-item">
 
                                     <div class="image">
@@ -45,23 +44,6 @@
                                         <div class="tf-product-info-price">
 
                                             <div class="price fw-6">
-                                                <?php
-                                                $val = $product;
-                                                if($val->final_price < $val->sale_price)
-                                    {
-                                        ?>
-                                        <p style="font-weight: bold; margin-left: 10px;"><span style="left: -10px; color:red;" class="cut_price"><?php echo format_currency($val->sale_price); ?></span><?php echo format_currency($val->final_price); ?></p>
-                                        <?php
-                                    }
-                                    else
-                                    {
-                                        ?>
-                                        <p style="font-weight: bold; margin-left: 10px;"><?php echo format_currency($val->final_price); ?></p>
-                                        <?php
-                                    }
-
-                                                ?>
-                                            </div>
 
                                         </div>
 
@@ -70,5 +52,6 @@
                                 </div>
 
                                 <?php endforeach; ?>
+                                <?php endif; ?>
 
                             </div>

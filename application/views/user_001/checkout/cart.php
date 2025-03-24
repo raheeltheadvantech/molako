@@ -133,7 +133,7 @@
                         </div>
 
                         <p class="tf-cart-tax">
-                            <a href="<?php echo base_url('pages/shipping.html')?>">shipping</a> calculated at checkout
+                            <a href="<?php echo base_url('pages/shipping.html')?>">Shipping</a> calculated at checkout
                         </p>
 
                         <div class="cart-checkout-btn">

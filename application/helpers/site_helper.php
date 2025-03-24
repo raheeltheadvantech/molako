@@ -250,70 +250,90 @@ if (!function_exists('get_base_product_query')) {
 
         $db->select("
             p.*, 
-            ".$select.",
-    CASE 
-        WHEN NOT EXISTS (
-            SELECT 1 
-            FROM ci_product_option_value pov 
-            WHERE pov.product_id = p.product_id
-        ) 
-        THEN p.sale_price
-        ELSE (
-            SELECT MIN(pov.price) 
-            FROM ci_product_option_value pov 
-            WHERE pov.product_id = p.product_id
-        )
-    END AS sale_price, 
-    
-    CASE 
-        WHEN NOT EXISTS (
-            SELECT 1 
-            FROM ci_product_option_value pov 
-            WHERE pov.product_id = p.product_id
-        ) 
-        THEN COALESCE(
+            ".$select."
+            
+            -- Determine the sale price (base or from variations)
             CASE 
-                WHEN pov.is_brand = 1 
-                AND pov.bdis_val > 0 
-                AND CURDATE() BETWEEN pov.bdis_sdate AND pov.bdis_edate 
+                WHEN NOT EXISTS (
+                    SELECT 1 
+                    FROM " . $db->dbprefix('product_option_value') . " pov 
+                    WHERE pov.product_id = p.product_id
+                ) 
+                THEN p.sale_price
+                ELSE (
+                    SELECT MIN(pov.price) 
+                    FROM " . $db->dbprefix('product_option_value') . " pov 
+                    WHERE pov.product_id = p.product_id
+                )
+            END AS sale_price,
+
+            -- Determine the final price after applying discounts
+            CASE 
+                WHEN NOT EXISTS (
+                    SELECT 1 
+                    FROM " . $db->dbprefix('product_option_value') . " pov 
+                    WHERE pov.product_id = p.product_id
+                ) 
                 THEN 
+                    -- Apply brand discount if available
                     CASE 
-                        WHEN pov.bdis_mode = 'fixed' 
-                        THEN (p.sale_price - pov.bdis_val)
-                        WHEN pov.bdis_mode = 'per' 
-                        THEN (p.sale_price - (p.sale_price * pov.bdis_val / 100))
-                        ELSE p.sale_price
+                        WHEN b.dis_val > 0 
+                        AND CURDATE() BETWEEN b.dis_sdate AND b.dis_edate 
+                        THEN 
+                            CASE 
+                                WHEN b.dis_mode = 'fixed' 
+                                THEN (p.sale_price - b.dis_val)
+                                WHEN b.dis_mode = 'per' 
+                                THEN (p.sale_price - (p.sale_price * b.dis_val / 100))
+                                ELSE p.sale_price
+                            END
+                        -- If no brand discount, check special price table
+                        ELSE COALESCE(
+                            (SELECT sp.price 
+                            FROM " . $db->dbprefix('product_special_price') . " sp 
+                            WHERE sp.product_id = p.product_id 
+                            AND CURDATE() BETWEEN sp.start_date AND sp.end_date 
+                            LIMIT 1),
+                            p.sale_price
+                        )
                     END
-                ELSE p.sale_price
-            END, 
-            (SELECT sp.price 
-             FROM ci_product_special_price sp 
-             WHERE sp.product_id = p.product_id 
-             AND CURDATE() BETWEEN sp.start_date AND sp.end_date 
-             LIMIT 1), 
-            p.sale_price
-        )
-        ELSE 
-            (SELECT MIN(
-                CASE 
-                    WHEN b.is_enabled = '1' AND pov.is_brand = 1 AND pov.bdis_val > 0 
-                    AND CURDATE() BETWEEN pov.bdis_sdate AND pov.bdis_edate 
-                    THEN 
+                ELSE 
+                    -- If variations exist, get the lowest discounted price
+                    (SELECT MIN(
                         CASE 
-                            WHEN pov.bdis_mode = 'fixed' 
-                            THEN (pov.price - pov.bdis_val)
-                            WHEN pov.bdis_mode = 'per' 
-                            THEN (pov.price - (pov.price * pov.bdis_val / 100))
+                            -- Brand-based discount for variations
+                            WHEN b.is_enabled = '1' 
+                            AND pov.is_brand = 1 
+                            AND pov.bdis_val > 0 
+                            AND CURDATE() BETWEEN pov.bdis_sdate AND pov.bdis_edate 
+                            THEN 
+                                CASE 
+                                    WHEN pov.bdis_mode = 'fixed' 
+                                    THEN (pov.price - pov.bdis_val)
+                                    WHEN pov.bdis_mode = 'per' 
+                                    THEN (pov.price - (pov.price * pov.bdis_val / 100))
+                                    ELSE pov.price
+                                END
+                            -- Regular discount for variations
+                            WHEN pov.dis_val > 0 
+                            AND CURDATE() BETWEEN pov.dis_sdate AND pov.dis_edate 
+                            THEN 
+                                CASE 
+                                    WHEN pov.dis_mode = 'fixed' 
+                                    THEN (pov.price - pov.dis_val)
+                                    WHEN pov.dis_mode = 'per' 
+                                    THEN (pov.price - (pov.price * pov.dis_val / 100))
+                                    ELSE pov.price
+                                END
                             ELSE pov.price
                         END
-                    ELSE pov.price
-                END
-            ) 
-            FROM ci_product_option_value pov
-            WHERE pov.product_id = p.product_id)
-    END AS final_price, 
-    
-    GROUP_CONCAT(DISTINCT pi.image ORDER BY pi.id ASC SEPARATOR ', ') AS images
+                    ) 
+                    FROM " . $db->dbprefix('product_option_value') . " pov
+                    WHERE pov.product_id = p.product_id)
+            END AS final_price,
+
+            -- Concatenate product images
+            GROUP_CONCAT(DISTINCT pi.image ORDER BY pi.id ASC SEPARATOR ', ') AS images
         ");
 
         $db->from($db->dbprefix('products') . ' as p');

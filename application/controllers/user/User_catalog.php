@@ -473,6 +473,7 @@ class User_catalog extends User_Public_Controller {
 		
 		if (!empty($filter_ids))
 		{
+			die('OKK');
 			
 
 
@@ -869,7 +870,6 @@ if(isset($_GET['brand_id']))
 
         $product = $this->User_catalog_model->get_product_slug($slug);
 
-
         $product_id = $product->product_id;
 
         // pre($product);
@@ -1014,7 +1014,6 @@ if(isset($_GET['brand_id']))
 		// +----------------[BESTSELLER PRODUCTS START]----------------------+
 
 		$bestseller_product_rows = (object)array();
-
 
         $data['bestseller_products'] = $this->User_featured_module_model->get_bestseller_products(16);
 
