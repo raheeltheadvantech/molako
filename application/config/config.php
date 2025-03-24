@@ -30,7 +30,7 @@ $lastFolder = basename($rootDirectory);
 // Condition check karen
 if (strpos($ip_address, '192.168') === 0) {
     $ip_address = $host;
-    $config['img_url'] = 'http://'.$ip_address.'/molako/';
+    $config['img_url'] = 'https://www.molako.com/';
     $config['base_url'] = 'http://'.$ip_address.'/molako/';
 } elseif($ip_address == "::1"  || $ip_address == "127.0.0.1" ) {
     $config['img_url'] = 'https://www.molako.com/';

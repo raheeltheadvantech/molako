@@ -71,43 +71,6 @@ function remove_image(img)
             ?>
         </div>
     </div>
-    <div class="row">
-        <div class="col-md-4">
-            <label>Discount Mode</label>
-            <?php
-                $options = array(
-                    '' => 'Select Mode',
-                    'fixed' => 'Fixed',
-                    'per' => 'Percentage'
-                    );
-                echo form_dropdown('dis_mode', $options, set_value('dis_mode',$dis_mode), 'class="form-control"');
-            ?>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-4">
-            <?php
-            $data = array('name'=>'dis_val', 'label'=>'Discount Value', 'placeholder'=>'Value', 'class'=>'form-control', 'value'=>set_value('dis_val', $dis_val));
-            echo form_input_1($data);
-            ?>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-4">
-            <?php
-            $data = array('name'=>'dis_sdate', 'label'=>'Start date', 'placeholder'=>'Start date', 'class'=>'form-control date_ex', 'value'=>set_value('dis_sdate', $dis_sdate));
-            echo form_input_1($data);
-            ?>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-4">
-            <?php
-            $data = array('name'=>'dis_edate', 'label'=>'End date', 'placeholder'=>'End date', 'class'=>'form-control date_ex', 'value'=>set_value('dis_edate', $dis_edate));
-            echo form_input_1($data);
-            ?>
-        </div>
-    </div>
     
     <div class="row">
 <!--        <div style="margin-top:20px;">-->
@@ -292,8 +255,7 @@ function replace_newline2($string) {
         $('#embed_img_url').val('');
         $("#media_url").prop('disabled', false);
         $('#embed_img_url').trigger('focus');
-    });
-    $(".date_ex").datepicker({ dateFormat: 'yy-mm-dd' });
+    })
 
 
 </script>

@@ -50,22 +50,7 @@
                                     </div>
                                 </td>
                                 <td class="tf-cart-item_price" cart-data-title="Price">
-                                    <div class="cart-price">
-                                        <?php
-                                                if((double)$product->unite_price < (double)$product->cut_price)
-                                    {
-                                        $product->unite_price = (float) $product->unite_price;
-                                        ?>
-                                        <p style="font-weight: bold; margin-left: 10px;"><span style="left: -10px; color:red;" class="cut_price"><?php echo format_currency($product->cut_price); ?></span><?php echo format_currency($product->unite_price); ?></p>
-                                        <?php
-                                    }
-                                    else
-                                    {
-                                        ?>
-                                        <p style="font-weight: bold; margin-left: 10px;"><?php echo format_currency($val->unite_price); ?></p>
-                                        <?php
-                                    }
-                                    ?></div>
+                                    <div class="cart-price"><?= $product->unite_price; ?></div>
                                 </td>
                                 <td class="tf-cart-item_quantity" cart-data-title="Quantity">
                                     <div class="cart-quantity">
@@ -133,7 +118,7 @@
                         </div>
 
                         <p class="tf-cart-tax">
-                            <a href="<?php echo base_url('pages/shipping.html')?>">shipping</a> calculated at checkout
+                            <a href="<?php echo base_url('pages/shipping.html')?>">Shipping</a> calculated at checkout
                         </p>
 
                         <div class="cart-checkout-btn">
