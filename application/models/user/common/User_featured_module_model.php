@@ -120,6 +120,7 @@ $result = $query->result();
         $this->db->limit($limit);
         
         $result = $this->db->get()->result();
+        echo $this->db->last_query();
         die();
         if(!$result)
         {
@@ -149,8 +150,22 @@ $result = $query->result();
     }
 
 	public function get_bestseller_products($limit = 10){
-    $this->db = get_base_product_query($this->db,'COUNT(op.product_id) AS total,');
+	$this->db->select("
+    p.*, 
+    COUNT(op.product_id) AS total, 
+    GROUP_CONCAT(DISTINCT pi.image ORDER BY pi.id desc SEPARATOR ', ') AS images, 
+    GROUP_CONCAT(DISTINCT p.option_name, ':', p.option_value ORDER BY p.option_name SEPARATOR ', ') AS options,
+    (CASE 
+        WHEN sp.product_id IS NOT NULL AND CURDATE() BETWEEN sp.start_date AND sp.end_date 
+        THEN sp.price 
+        ELSE NULL 
+    END) AS special_price
+
+");
+$this->db->from('products AS p');
 $this->db->join($this->db->dbprefix . 'order_products AS op', 'p.product_id = op.product_id', 'left');
+$this->db->join($this->db->dbprefix . 'product_images AS pi', 'p.product_id = pi.product_id', 'left');
+$this->db->join($this->db->dbprefix . 'product_special_price as sp', 'sp.product_id = p.product_id', 'left'); 
 $this->db->where('p.is_enabled', 1);
 $display_out_stock = site_config_item('config_catalog_outstock');
 if ($display_out_stock != 1)
@@ -164,8 +179,8 @@ if($limit)
 {
     $this->db->limit($limit);
 }
-
 $query = $this->db->get();
+
 $result = $query->result();
 
 
@@ -189,7 +204,14 @@ $result = $query->result();
             $all_images[] = $v;
         }
     }
-            $val->images = $all_images;//
+
+    if (!empty($val->option_images)) {
+        foreach(explode(', ', $val->option_images) as $k=> $v)
+        {
+            $all_images[] = $v;
+        }
+    }
+            $val->images = array_reverse($all_images);//
             // $val->special_price = get_product_special_price($val->product_id);
 
             if (isset($val->option_name, $val->option_value) && ($val->option_name != '') && ($val->option_value != '')) {
@@ -271,7 +293,7 @@ $result = $query->result();
             $all_images[] = $v;
         }
     }
-            $val->images = array_reverse($all_images);//
+            $val->images = $all_images;//
             // $val->special_price = get_product_special_price($val->product_id);
 
             if (isset($val->option_name, $val->option_value) && ($val->option_name != '') && ($val->option_value != '')) {
@@ -365,13 +387,30 @@ $results = $query->result();
 
     public function get_new_arrival_products($limit = 10){
 
-$this->db = get_base_product_query($this->db, ''); // Base Query Call
+        $this->db->select("
+    p.product_id, 
+    p.product_name, 
+    p.product_slug, 
+    p.sale_price, 
+    p.short_description, 
+    p.option_name, 
+    p.option_value, 
+    p.quantity, 
+    GROUP_CONCAT(DISTINCT pi.image ORDER BY pi.id desc SEPARATOR ', ') AS images, 
+    -- Fetch special price if it's valid today
+    (CASE 
+        WHEN sp.product_id IS NOT NULL AND CURDATE() BETWEEN sp.start_date AND sp.end_date 
+        THEN sp.price 
+        ELSE NULL 
+    END) AS special_price
+");
+$this->db->from($this->db->dbprefix . 'products as p');
+$this->db->join($this->db->dbprefix . 'product_images as pi', 'pi.product_id = p.product_id', 'left');
+$this->db->join($this->db->dbprefix . 'product_special_price as sp', 'sp.product_id = p.product_id', 'left'); 
+$this->db->where('p.is_enabled', 1);
 
-$this->db->where('p.is_enabled', 1); // Sirf enabled products lein
-
-// Agar config allow nahi karta out of stock products dikhana
 $display_out_stock = site_config_item('config_catalog_outstock');
-if ($display_out_stock != 1) {
+if ($display_out_stock  != 1) {
     $this->db->where('p.quantity >', 0);
 }
 
@@ -422,40 +461,40 @@ $result = $query->result();
         return $result;
     } 
     public function get_new_special_products($limit = 10){
-$this->db = get_base_product_query($this->db, ''); // Base Query Call
 
-$this->db->where('p.is_enabled', 1); // Sirf enabled products lein
+$this->db->select("
+    p.product_id, 
+    p.product_name, 
+    p.product_slug, 
+    p.sale_price, 
+    p.short_description, 
+    p.option_name, 
+    p.option_value, 
+    p.quantity, 
+    GROUP_CONCAT(DISTINCT pi.image ORDER BY pi.id desc SEPARATOR ', ') AS images, 
+    sp.start_date, 
+    sp.end_date, 
+    sp.price AS special_price
+");
+$this->db->from($this->db->dbprefix . 'products as p');
+$this->db->join($this->db->dbprefix . 'product_special_price as sp', 'p.product_id = sp.product_id', 'inner'); 
+$this->db->join($this->db->dbprefix . 'product_images as pi', 'pi.product_id = p.product_id', 'left');
+$this->db->where("CURDATE() BETWEEN sp.start_date AND sp.end_date");
+$this->db->group_by('p.product_id');
 
-// Agar config allow nahi karta out of stock products dikhana
-$display_out_stock = site_config_item('config_catalog_outstock');
-if ($display_out_stock != 1) {
-    $this->db->where('p.quantity >', 0);
-}
-
-// Special Price Join (Alias use kar ke)
-$this->db->join("ci_product_special_price sp2", "sp2.product_id = p.product_id AND CURDATE() BETWEEN sp2.start_date AND sp2.end_date", "inner");
+$this->db->where('p.is_enabled', 1);
+        $display_out_stock = site_config_item('config_catalog_outstock');
+        if ($display_out_stock  != 1) 
+        {
+            $this->db->where('p.quantity >', 0);
+        }
 
 // Group by product ID
 $this->db->group_by('p.product_id');
-if($limit)
-{
-    $this->db->limit($limit);
-}
-
-// Debugging Query
-// $query = $this->db->get_compiled_select();
-// echo $query;
-// exit;
 
 // Execute the query
-
 $query = $this->db->get();
 $result = $query->result();
-
-
-
-
-
 
 
 // Display the result
@@ -475,9 +514,21 @@ $result = $query->result();
         }
     }
             $val->images = $all_images;//get_product_images($val->product_id);
+            
             // $val->special_price = get_product_special_price($val->product_id);
 
-            
+            if (isset($val->option_name, $val->option_value) && ($val->option_name != '') && ($val->option_value != '')) {
+                $val->is_variation = 1;
+                $p =  get_product_varient_price($val->product_id);
+				if(isset($p->price))
+				{
+					$val->varient_price = $p->price;
+					$val->varient_id = $p->product_option_value_id;
+				}
+            } else {
+                $val->is_variation = 0;
+                $val->varient_price = 0;
+            }
         }
         return $result;
     } 

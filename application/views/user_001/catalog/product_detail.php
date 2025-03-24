@@ -66,7 +66,7 @@
                                             <?php
                                             foreach($result->images as $k=> $v)
                                             {
-                                                $v = live_img_url().'/images/products/medium/'.$v;
+                                                $v = base_url().'/images/products/medium/'.$v;
                                                 ?>
                                                 <div class="swiper-slide stagger-item">
                                                 <div class="item">
@@ -85,7 +85,7 @@
                                             <?php
                                             foreach($result->images as $k=> $v)
                                             {
-                                                $v = live_img_url().'/images/products/medium/'.$v;
+                                                $v = base_url().'/images/products/medium/'.$v;
                                                 ?>
                                                 <div class="swiper-slide">
                                                 <a href="<?= $v ?>" target="_blank" data-pswp-width="770px" data-pswp-height="1075px">
@@ -113,38 +113,43 @@
                                 <h5><?php echo $result->product_name; ?></h5>
                             </div>
                             <div class="tf-product-info-badges">
-                                <?php 
-                                if(!$config_catalog_outstock && $result->quantity < 1)
-                                {
-                                    ?>
-                                    <div class="alert alert-danger" role="alert">This item is out of stock!</div>
-                                <?php
-                                }
-                                elseif($result->quantity > 0) { ?>
+                                <?php if($result->quantity) { ?>
                                     <div class="product-status-content" style="display:<?= ($result->quantity <= 5)?'block':
                                         'none'; ?> " id="qty5"> 
                                         <i class="icon-lightning"></i>
                                         <p class="fw-6" > Only <span class="det_qty"><?php echo $result->quantity; ?></span> items left! Hurry up and grab yours before they're gone!</p>
                                     </div>
-                                <?php } elseif($config_catalog_purchase) {  } ?>
+                                <?php } elseif(!$config_catalog_purchase) { ?>
+                                    <div class="alert alert-danger" role="alert">This item is out of stock!</div>
+                                <?php } ?>
                             </div>
-                            <span id="price_html">
 							<?php  
 							$val = $result;
-							if($val->final_price < $val->sale_price)
-                                    {
-                                        ?>
-                                        <p style="font-weight: bold; margin-left: 10px;"><span style="left: -10px; color:red;" class="cut_price"><?php echo format_currency($val->sale_price); ?></span><?php echo format_currency($val->final_price); ?></p>
-                                        <?php
-                                    }
-                                    else
-                                    {
-                                        ?>
-                                        <p style="font-weight: bold; margin-left: 10px;"><?php echo format_currency($val->final_price); ?></p>
-                                        <?php
-                                    }
-                            ?>
-                            </span>
+							$price = $val->sale_price;
+								if(!empty($val->varient_price) && $val->varient_price >0){?>
+                                    <p><?php $price = $val->varient_price; ?></p>
+                                <?php } else { 
+                                    if(!empty($val->special_price)){
+										$price = $val->special_price;
+										?>
+                                <?php }}?>
+                            <div class="tf-product-info-price">
+                                <div class="tf-product-info-price">
+                                <p style="font-weight: bold; margin-left: 10px;">
+                                    <?php
+                                    if(!empty($val->special_price) && $result->sale_price > $val->special_price){
+
+                                    ?>
+                                    <span style="left: -10px; color:red;" class="cut_price"><?= format_currency($result->sale_price); ?></span>
+
+                                    <?php
+                                }
+
+                                    ?>
+
+                                    <?= format_currency($price); ?></p>
+                            </div>
+                            </div>
 
                             <!-- Variant Picker -->
                             <form method="post" id="product-data1" class="product-form-data1_up" action="<?php echo site_url('checkout/add-to-cart.html')?>">
@@ -322,7 +327,14 @@ if($variations){
                                     <input type="hidden" name="item[quantity]" value="1">
                                     <a onclick="detail_click('product-form-data1_up','detail_add_to_cart1');" href="javascript:void(0)" class="tf-btn btn-fill justify-content-center fw-6 fs-16 flex-grow-1" id="detail_add_to_cart1">
                                         <span>Add to cart -&nbsp;</span><span class="tf-qty-price">
-                                            <?php echo format_currency($result->final_price);?>
+                                            <?php if (!empty($result->varient_price) && $result->varient_price > 0) { ?>
+                                    <?php echo format_currency($result->varient_price); ?>
+                                    <?php //echo format_currency($result->sale_price); ?>
+                                <?php } elseif (!empty($result->special_price)) { ?>
+                                    <?php echo format_currency($result->special_price); ?>
+                                <?php } else { ?>
+                                    <?php echo format_currency($result->sale_price); ?>
+                                <?php } ?>
                                         </span>
                                     </a>
                                 </form>

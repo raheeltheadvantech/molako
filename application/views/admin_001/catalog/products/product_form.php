@@ -693,8 +693,6 @@ $(document).ready(function(){
 
 
             $('#saveoptionbtn').on('click', function() {
-                        let formDataArray = $("#product_form").serialize();
-                        let jsonString = JSON.stringify(formDataArray);
                 setCookie("old_data",'',30)
 
                 var $inputs = $("#addoptions").find("input, button, select, textarea");
@@ -736,7 +734,7 @@ $(document).ready(function(){
                     dataType: 'text',
                     type: 'post',
                     contentType: 'application/x-www-form-urlencoded',
-                    data: 'all_data='+jsonString,
+                    data: $inputs.serialize()+'&product_name='+$('input[name="product_name"]').val()+'&product_id='+$('input[name="product_id"]').val(),
 
                     success: function(data) {
 
@@ -750,7 +748,7 @@ $(document).ready(function(){
                 });
 
                 //update sku
-                // update_sku();
+                update_sku();
             });
 
             $(function () {
@@ -943,7 +941,7 @@ $(document).ready(function(){
         <script>
             $('#tab_option').click(function(){
                 // alert($('#variantEditTable').html());
-                load_var();
+                // load_var();
             });
             function load_var() {
                 setCookie("old_data",'',30)

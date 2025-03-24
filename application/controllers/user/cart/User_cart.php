@@ -180,7 +180,7 @@ class User_cart extends User_Public_Controller {
 		if(!isset($cart->error))
 		{
 			$r = array();
-			 //echo'<pre>';print_r($cart);die;
+			// echo'<pre>';print_r($cart);die;
 			if (isset($cart)) {
 				foreach($cart as $k=>$v)
 				{
@@ -189,14 +189,14 @@ class User_cart extends User_Public_Controller {
 					if(isset($v['product_option_value_img']) && $v['product_option_value_img'])
 					{
 
-						$img = live_img_url().'images/products/medium/'.$v['product_option_value_img'];
+						$img = 'images/products/medium/'.$v['product_option_value_img'];
 						 $image = base_url($img);
 						 // dd($img);
 					}
 					elseif (!empty($dt->images) && count($dt->images) > 0) {
-	                    $image = live_img_url().'images/products/medium/'.$dt->images[0];
+	                    $image = base_url('images/products/medium/'.$dt->images[0]);
 	                } else {
-	                    $image = live_img_url().$this->site_config->item('config_placeholder_small');
+	                    $image = base_url($this->site_config->item('config_placeholder_small'));
 	                }
 					
 					$item_total = $v['price'] * $v['quantity'];
@@ -244,8 +244,7 @@ class User_cart extends User_Public_Controller {
 	                    'product_options' => $product_options,
 	                    'sku' => $v['sku'],
 	                    'quantity' => $v['quantity'],
-	                    'cut_price' => $v['cut_price'],
-	                    'unite_price' => round($v['price'], 2),
+	                    'unite_price' => format_currency(round($v['price'], 2)),
 	                    'unite_price_simple' => round($v['price'], 2),
 	                    'total' => format_currency(round($item_total, 2)),
 	                );
@@ -326,8 +325,87 @@ class User_cart extends User_Public_Controller {
 			echo 'Item not found';
 			exit();
 		}
+		if (isset($result)) {
+				foreach($result as $k=>$v)
+				{
+					
+					$val =$dt = $this->User_catalog_model->get_product($v['product_id']);
+					if (isset($val->option_name, $val->option_value) && ($val->option_name != '') && ($val->option_value != '')) {
+                $val->is_variation = 1;
+			$p =  get_product_varient_price($val->product_id);
+				if(isset($p->price))
+				{
+					$val->varient_price = $p->price;
+					$val->varient_id = $p->product_option_value_id;
+				}
+            } else {
+                $val->is_variation = 0;
+                $val->varient_price = 0;
+            }
+			$dt = $val;
+					// echo'<pre>';print_r($dt);die;
+					if (!empty($dt->images) && count($dt->images) > 0) {
+	                    $image = base_url('images/products/medium/'.$dt->images[0]);
+	                } else {
+	                    $image = base_url($this->site_config->item('config_placeholder_small'));
+	                }
+					if($dt->special_price):
+						$dt->unit_price 			= $dt->special_price;
+					else:
+						$dt->unit_price 			= $dt->sale_price;
+					endif;
+					$dt->total 					= $dt->unit_price;					
+					$dt->short_description 		= '';
+					$dt->long_description 		= '';
+					$dt->content_description 	= '';
+					$dt->assignment_description = '';
+
+					$product_options = '';
+
+	                if(false) {
+
+	                    foreach ($options as $key => $value) {
+
+	                        if ($key != 'product_option_value_id')
+	                            $product_options .= $key . ":" . $value . " ";
+
+	                    }
+	                    
+	                    if(!empty($product_options)){
+	                        $product_name =  $dt->product_name .' ('.$product_options . ')';
+	                    }else{
+	                        $product_name =  $dt->product_name;
+	                    }
+	                    
+	                }else{
+	                    $product_name =  $dt->product_name;
+
+	                }
+					$price = $dt->sale_price;
+							
+								if(!empty($dt->varient_price) && $dt->varient_price >0){
+									$price = $val->varient_price;
+									} 
+									else { 
+                                    if(!empty($val->special_price)){
+										$price = $val->special_price; 
+										}}
+
+					$products[] = (object)array(
+	                    'product_id' => $dt->product_id,
+	                    'product_slug' => $dt->product_slug,
+	                    'product_option_value_id' => $v['product_option_value_id'],
+	                    'images' => $image,
+	                    'product_name' => !empty($product_name) ? $product_name : '',
+	                    'unite_price' => format_currency(round($price, 2)),
+	                    'total' => format_currency(round($price, 2)),
+	                );
+					
+					$r[] = $dt;
+				}
+			}
 			$data = array();
-			$data['products'] = $result;
+			$data['products'] = $products;
 
 		
 		$this->load->view($this->user_view .'/'. $this->view_dir .'/srch_pro',$data);
@@ -363,10 +441,10 @@ class User_cart extends User_Public_Controller {
 					if(isset($v['product_option_value_img']) && $v['product_option_value_img'])
 					{
 
-						$image = live_img_url().'images/products/medium/'.$v['product_option_value_img'];
+						$image = base_url('images/products/medium/'.$v['product_option_value_img']);
 					}
 					else if (!empty($dt->images) && count($dt->images) > 0) {
-	                    $image = live_img_url().'images/products/medium/'.$dt->images[0];
+	                    $image = base_url('images/products/medium/'.$dt->images[0]);
 	                } else {
 	                    $image = base_url($this->site_config->item('config_placeholder_small'));
 	                }
@@ -416,9 +494,8 @@ class User_cart extends User_Public_Controller {
 	                    'product_options' => $product_options,
 	                    'sku' => $v['sku'],
 	                    'quantity' => $v['quantity'],
-	                    'cut_price' => $v['cut_price'] * $v['quantity'],
 	                    'unite_price' => format_currency(round($v['price'], 2)),
-	                    'total' => round($item_total, 2),
+	                    'total' => format_currency(round($item_total, 2)),
 	                );
 					
 					$r[] = $dt;
@@ -596,7 +673,6 @@ class User_cart extends User_Public_Controller {
 		$imgs = get_product_images($product_id);
         $variations = $this->input->post('item');
         $variants_resp = $this->User_catalog_model->get_product_variants_detail($product_id,(isset($variations['options'])?$variations['options']:array()));
-        // dd($variants_resp);
 
         // echo '<pre>';
         // print_r($dt->sale_price);
@@ -608,12 +684,10 @@ class User_cart extends User_Public_Controller {
 				$variants_resp['variant_price'] = (float) $variants_resp['variant_price'];
 
                 $variant_price =  ($variants_resp['variant_price'])?$variants_resp['variant_price']:$dt->sale_price;
-                $price_html =  ($variants_resp['price_html'])?$variants_resp['price_html']:$dt->sale_price;
                 $json['success']  = true;
                 $json['variant_id'] =  $variants_resp['variant_id'];
                 $json['variant_image'] =  $variants_resp['variant_image']?$variants_resp['variant_image']:(isset($imgs[0])?$imgs[0]:'');
                 $json['variant_price'] = format_currency(round($variant_price,2));
-                $json['price_html'] = $price_html;
                 $json['variant_price_to_show'] = format_currency(round($variant_price,2));
                 $config_catalog_purchase = $this->db->where('key','config_catalog_purchase')->get('ci_settings')->row();
         if($config_catalog_purchase)
