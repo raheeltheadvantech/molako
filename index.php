@@ -1,7 +1,7 @@
 <?php
 // echo "<pre>";
 // var_dump($_POST);
-// die();
+// die(); techcity branch
     if(!isset($_SESSION)) 
     { 
         session_start(); 
