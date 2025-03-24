@@ -1,7 +1,7 @@
 <?php
 // echo "<pre>";
 // var_dump($_POST);
-// die();
+// die(); live push test
     if(!isset($_SESSION)) 
     { 
         session_start(); 
