@@ -1,4 +1,6 @@
 <?php //var_dump($result);die(); ?>
+<?php $assets_img_dir = 'assets/'.site_config_item('user_assets').'/images/'; 
+?>
 <style>
 .collapsible {
     background-color: #fff;
@@ -70,7 +72,7 @@
             {
                 unset($get['brand_id']);
                 $query= http_build_query($get);
-                 $cross = '<a style="color:red;float: right;font-weight: bold;font-size: 17px;" href="'.base_url('catalog.html').'?'.$query.'">x</a>';
+                 $cross = '<a style="width:15px;float:right" href="'.base_url('catalog.html').'?'.$query.'"><img src="'.base_url($assets_img_dir).'deep.png" /></a>';
             }
                 ?>
             <li><a href="<?php echo base_url('catalog.html'); ?>?<?php echo $query; ?>"><?php echo $val->name; ?></a> <?php echo $cross; ?></li>
