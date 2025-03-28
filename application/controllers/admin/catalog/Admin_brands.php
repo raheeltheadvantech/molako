@@ -98,6 +98,10 @@ class Admin_brands extends Admin_Controller {
 
         $data['brand_id'] = 0;
         $data['name']			= '';
+        $data['dis_mode']           = '';
+        $data['dis_val']           = '';
+        $data['dis_sdate']           = '';
+        $data['dis_edate']           = '';
         $data['images']			= '';
         $data['sort']		        = 0;
         $data['is_enabled']		= 0;
@@ -179,6 +183,10 @@ class Admin_brands extends Admin_Controller {
 
             $save['brand_id']		= $this->brand_id;
             $save['name']	        = $this->input->post('name');
+            $save['dis_mode']           = $this->input->post('dis_mode');
+            $save['dis_val']           = $this->input->post('dis_val');
+            $save['dis_sdate']           = $this->input->post('dis_sdate');
+            $save['dis_edate']           = $this->input->post('dis_edate');
             $save['sort']           = $this->input->post('sort');
             $save['is_enabled']	    = $this->input->post('is_enabled');
             $save['date_added']	    = date('Y-m-d H:i:s');
@@ -189,7 +197,9 @@ class Admin_brands extends Admin_Controller {
             if(!empty($save['images']))
               $this->image_resize($save['images']);
 
-            $this->Admin_brand_model->save($save);
+            $brand_id = $this->Admin_brand_model->save($save);
+            $this->play_discount($brand_id);
+
 
 
             $url = $this->admin_url .'/'. $this->controller_dir .'/brands.html';
@@ -199,6 +209,74 @@ class Admin_brands extends Admin_Controller {
             $this->admin_session->set_flashdata('message', 'Brand has been saved.');
             redirect($url);
         }
+    }
+    public function play_discount($brand_id)
+    {
+
+        $brand = $this->Admin_brand_model->get_by_id($brand_id);
+        $products = $this->db->where('brand_id',$brand_id)->get('products')->result_array();
+            $ids = array();
+            $in = array();
+            foreach ($products as $k => $v) {
+                $ids[] = $v['product_id'];
+                $nprice = $price = $v['sale_price'];
+                if($brand->dis_mode == 'fixed')
+                {
+                    $nprice = $nprice - $brand->dis_val;
+
+                }
+                elseif($brand->dis_mode == 'per')
+                {
+                    $per = ($price * $brand->dis_val)/100;
+                    $nprice = $nprice - $per;
+                }
+                $in[] = array(
+                    'product_id'=> $v['product_id'],
+                    'price'=> $nprice,
+                    'from_date'=> $brand->dis_sdate,
+                    'to_date'=> $brand->dis_edate,
+
+                );
+            }
+            //delete old prices
+            if($ids)
+            $this->db->where_in('product_id',$ids)->delete('discount_prices');
+        if(isset($brand->dis_val) && $brand->dis_val)
+        {
+            $r = $this->db->insert_batch('discount_prices', $in);
+
+        }
+        //variations
+        if($ids)
+        {
+            $varis = $this->db->where_in('product_id',$ids)->get('product_option_value')->result_array();
+            $vids = array();
+            $in = array();
+            foreach($varis as $k => $v)
+            {
+                $vids[] = $v['product_option_value_id'];
+                unset($v['product_option_value_id']);
+                $v['is_brand'] = 1;
+                $v['bdis_mode'] = $brand->dis_mode;
+                $v['bdis_val'] = $brand->dis_val;
+                $v['bdis_sdate'] = $brand->dis_sdate;
+                $v['bdis_edate'] = $brand->dis_edate;
+
+                $in[] = $v;
+            }
+                //delete old variations
+            if($vids)
+            {
+                $this->db->where_in('product_option_value_id',$vids)->delete('product_option_value');
+            }
+
+            if($in)
+            {
+                $r = $this->db->insert_batch('product_option_value', $in);
+
+            }
+        }
+
     }
 
 
@@ -330,6 +408,7 @@ class Admin_brands extends Admin_Controller {
         $result = $this->Admin_brand_model->is_name_already_exist($str , $brand_id);
         if ($result)
         {
+            dd($this->db->last_query());
             $this->form_validation->set_message('is_brand_name_already_exist', 'brand name is already exist');
             return FALSE;
         }
