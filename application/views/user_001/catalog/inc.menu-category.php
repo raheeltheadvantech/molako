@@ -86,6 +86,16 @@
     <!-- Shop Layout -->
 	<form id="filter_form">
 	<input type="hidden" id="filter_order" name="order" value="<?= (isset($_GET['order'])?$_GET['order']:'') ?>" />
+    <?php
+    if(isset($_GET['is_special']))
+    {
+        ?>
+        <input type="hidden" name="is_special" value="1" />
+
+        <?php
+    }
+
+    ?>
 	<input 
 	type="hidden" id="filter_sort" name="sort" value="<?= (isset($_GET['sort'])?$_GET['sort']:'') ?>" />
 	<?php
@@ -106,7 +116,7 @@
 	?>
     <div class="shop-layout">
 	
-        <?php if (isset($filters)):
+        <?php if (isset($filters) && !isset($_GET['is_special'])):
 ?>
             <?php $i = 0; 
 			$filter_keys = array();
