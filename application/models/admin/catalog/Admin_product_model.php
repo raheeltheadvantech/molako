@@ -2,132 +2,132 @@
 
 class Admin_product_model extends Admin_Model
 {
-    function __construct()
-    {
-        parent::__construct();
-    }
-    
-    private function get_products_count()
-    {
-        $this->db->select('COUNT(*) AS found_total');
-        $this->db->from('product_all_item_pages_data_tmp');
-        $result = $this->db->get()->row();
-        
-        if(!$result)
-        {
-            return false;
-        }
-        
-        return $result->found_total;
-    }
-    
-    function get_products($data=array(), $return_count=false)
-    {
+	function __construct()
+	{
+		parent::__construct();
+	}
+	
+	private function get_products_count()
+	{
+		$this->db->select('COUNT(*) AS found_total');
+		$this->db->from('product_all_item_pages_data_tmp');
+		$result = $this->db->get()->row();
+		
+		if(!$result)
+		{
+			return false;
+		}
+		
+		return $result->found_total;
+	}
+	
+	function get_products($data=array(), $return_count=false)
+	{
 
-        if(empty($data) and !$return_count)
-        {
-            return false;
-        }
-        else
-        {
-            $sql = '*';
-            if($return_count === TRUE)
-            {
-                $sql = 'COUNT(*) AS found_total';
-            }
-            else
-            {
+		if(empty($data) and !$return_count)
+		{
+			return false;
+		}
+		else
+		{
+			$sql = '*';
+			if($return_count === TRUE)
+			{
+				$sql = 'COUNT(*) AS found_total';
+			}
+			else
+			{
 
-            //  $sql .= ', (SELECT c.name FROM '. $this->db->dbprefix  .'categories AS c WHERE c.category_id = p.category_id) AS category_name';
-            //  $sql .= ', (SELECT b.name FROM '. $this->db->dbprefix  .'brands AS b WHERE b.brand_id = p.brand_id) AS brand_name';
-                // $sql .= ', (SELECT COUNT(*) FROM '. $this->db->dbprefix  .'order_products AS op WHERE op.product_id = p.product_id) AS sale_products';
-                
-                $sql .= ', \'\' AS category_name';
-                $sql .= ', \'\' AS brand_name';
-                // $sql .= ', \'\' AS sale_products';
-            }
-            
-            $this->db->select($sql);
-            $this->db->from('products p');
-            $this->db->where(1,1, FALSE);
-            
-            if(!empty($data['rows']))
-            {
-                $this->db->limit($data['rows']);
-            }
-            
-            if(!empty($data['per_page']))
-            {
-                $this->db->offset($data['per_page']);
-            }
-            
-            if(!empty($data['order']))
-            {
-                $this->db->order_by($data['order'], $data['sort']);
-            }
-            
-            if(!empty($data['term']))
-            {
-                $search = json_decode($data['term']);
+			//	$sql .= ', (SELECT c.name FROM '. $this->db->dbprefix  .'categories AS c WHERE c.category_id = p.category_id) AS category_name';
+			//	$sql .= ', (SELECT b.name FROM '. $this->db->dbprefix  .'brands AS b WHERE b.brand_id = p.brand_id) AS brand_name';
+				// $sql .= ', (SELECT COUNT(*) FROM '. $this->db->dbprefix  .'order_products AS op WHERE op.product_id = p.product_id) AS sale_products';
+				
+				$sql .= ', \'\' AS category_name';
+				$sql .= ', \'\' AS brand_name';
+				// $sql .= ', \'\' AS sale_products';
+			}
+			
+			$this->db->select($sql);
+			$this->db->from('products p');
+			$this->db->where(1,1, FALSE);
+			
+			if(!empty($data['rows']))
+			{
+				$this->db->limit($data['rows']);
+			}
+			
+			if(!empty($data['per_page']))
+			{
+				$this->db->offset($data['per_page']);
+			}
+			
+			if(!empty($data['order']))
+			{
+				$this->db->order_by($data['order'], $data['sort']);
+			}
+			
+			if(!empty($data['term']))
+			{
+				$search	= json_decode($data['term']);
 
-                if(!empty($search->term))
-                {
-                    $this->db->group_start();
-                    $this->db->like('p.product_name', $search->term);
-                    $this->db->or_like('p.sku', $search->term);
-                    $this->db->or_like('quantity', $search->term);
-                    //$this->db->or_like('part_description', $search->term);
-                    //$this->db->or_like('mfr_sku', $search->term);
-                    //$this->db->or_like('p.category_id', $search->term);
-                    //$this->db->or_like('subcategory', $search->term);
-                    //$this->db->or_like('barcode', $search->term);
-                    $this->db->group_end();
-                }
+				if(!empty($search->term))
+				{
+					$this->db->group_start();
+					$this->db->like('p.product_name', $search->term);
+					$this->db->or_like('p.sku', $search->term);
+					$this->db->or_like('quantity', $search->term);
+					//$this->db->or_like('part_description', $search->term);
+					//$this->db->or_like('mfr_sku', $search->term);
+					//$this->db->or_like('p.category_id', $search->term);
+					//$this->db->or_like('subcategory', $search->term);
+					//$this->db->or_like('barcode', $search->term);
+					$this->db->group_end();
+				}
 
                 if(!empty($search->filter_category_id)) {
                     $this->db->where('p.category_id', $search->filter_category_id);
                 }
                 if(!empty($search->filter_manufacturer_id)){
                     $this->db->where('p.brand_id', $search->filter_manufacturer_id);
-                }
+				}
 
-            }
+			}
 
-            if(!empty($search->start_date))
-            {
-                $this->db->where('DATE(p.date_added) >=',$search->start_date);
-            }
-            
-            if(!empty($search->end_date))
-            {
-                $this->db->where('DATE(p.date_added) <=',$search->end_date);
-            }
-            
-            if($return_count)
-            {
-                $result = $this->db->get()->row();
-                if(!$result)
-                {
-                    return false;
-                }
-                
-                return $result->found_total; 
-            }
-            else
-            {
-                $result = $this->db->get()->result();
-            }
-        }
-        
-        if(!$result)
-        {
-            return false;
-        }
-        
+			if(!empty($search->start_date))
+			{
+				$this->db->where('DATE(p.date_added) >=',$search->start_date);
+			}
+			
+			if(!empty($search->end_date))
+			{
+				$this->db->where('DATE(p.date_added) <=',$search->end_date);
+			}
+			
+			if($return_count)
+			{
+				$result = $this->db->get()->row();
+				if(!$result)
+				{
+					return false;
+				}
+				
+				return $result->found_total; 
+			}
+			else
+			{
+				$result = $this->db->get()->result();
+			}
+		}
+		
+		if(!$result)
+		{
+			return false;
+		}
+		
 
-        
-        return $result;
-    }
+		
+		return $result;
+	}
 
     function get_products_typehead($data=array(), $return_count=false)
     {
@@ -146,13 +146,13 @@ class Admin_product_model extends Admin_Model
             else
             {
 
-                //  $sql .= ', (SELECT c.name FROM '. $this->db->dbprefix  .'categories AS c WHERE c.category_id = p.category_id) AS category_name';
-                //  $sql .= ', (SELECT b.name FROM '. $this->db->dbprefix  .'brands AS b WHERE b.brand_id = p.brand_id) AS brand_name';
-                //  $sql .= ', (SELECT d.name FROM '. $this->db->dbprefix  .'distributors AS d WHERE d.distributor_id = p.distributor_id) AS distributor_name';
+                //	$sql .= ', (SELECT c.name FROM '. $this->db->dbprefix  .'categories AS c WHERE c.category_id = p.category_id) AS category_name';
+                //	$sql .= ', (SELECT b.name FROM '. $this->db->dbprefix  .'brands AS b WHERE b.brand_id = p.brand_id) AS brand_name';
+                //	$sql .= ', (SELECT d.name FROM '. $this->db->dbprefix  .'distributors AS d WHERE d.distributor_id = p.distributor_id) AS distributor_name';
 
 //                $sql .= ', \'\' AS category_name';
 //                $sql .= ', \'\' AS brand_name';
-//              $sql .= ', \'\' AS distributor_name';
+//				$sql .= ', \'\' AS distributor_name';
             }
 
             $this->db->select($sql);
@@ -176,7 +176,7 @@ class Admin_product_model extends Admin_Model
 
             if(!empty($data['term']))
             {
-                $search = json_decode($data['term']);
+                $search	= json_decode($data['term']);
 
                 if(!empty($search->term))
                 {
@@ -192,7 +192,7 @@ class Admin_product_model extends Admin_Model
                     $this->db->group_end();
                 }
 
-//              if(!empty($search->filter_distributor_id)){
+//				if(!empty($search->filter_distributor_id)){
 //                    $this->db->where('p.distributor_id', $search->filter_distributor_id);
 //                }
 
@@ -237,52 +237,52 @@ class Admin_product_model extends Admin_Model
 
 
     public function get_categories()
-    {
-        return $this->db->select('*')->from('categories')->where(array('is_enabled' => true))->order_by('name', 'ASC')->get()->result();
-    }
+	{
+		return $this->db->select('*')->from('categories')->where(array('is_enabled' => true))->order_by('name', 'ASC')->get()->result();
+	}
 
-    public function get_brands()
-    {
-        return $this->db->select('*')->from('brands')->where(array('is_enabled' => true))->order_by('name', 'ASC')->get()->result();
-    }
+	public function get_brands()
+	{
+		return $this->db->select('*')->from('brands')->where(array('is_enabled' => true))->order_by('name', 'ASC')->get()->result();
+	}
 
-//  public function get_distributors()
-//  {
-//      return $this->db->select('*')->from('distributors')->where(array('is_enabled' => true))->order_by('name', 'ASC')->get()->result();
-//  }
-//  public function get_distributor($distributor_id)
-//  {
-//      return $this->db->select('*')->from('distributors')->where(array('distributor_id' => $distributor_id))->get()->row();
-//  }
+//	public function get_distributors()
+//	{
+//		return $this->db->select('*')->from('distributors')->where(array('is_enabled' => true))->order_by('name', 'ASC')->get()->result();
+//	}
+//	public function get_distributor($distributor_id)
+//	{
+//		return $this->db->select('*')->from('distributors')->where(array('distributor_id' => $distributor_id))->get()->row();
+//	}
 
-    public function get_product_filters($product_id)
-    {
-        $this->db->select('pfa.*, fci.name as item_name, fc.name as category_name');
-        $this->db->from('product_filters_association pfa');
-        $this->db->join('products p', 'p.product_id = pfa.product_id');
-        $this->db->join('filter_categories fc', 'fc.filter_category_id = pfa.filter_category_id');
-        $this->db->join('filter_category_items fci', 'fci.filter_category_item_id = pfa.filter_category_item_id');
-        $this->db->where('pfa.product_id', $product_id);
-        return $this->db->get()->result();
+	public function get_product_filters($product_id)
+	{
+		$this->db->select('pfa.*, fci.name as item_name, fc.name as category_name');
+		$this->db->from('product_filters_association pfa');
+		$this->db->join('products p', 'p.product_id = pfa.product_id');
+		$this->db->join('filter_categories fc', 'fc.filter_category_id = pfa.filter_category_id');
+		$this->db->join('filter_category_items fci', 'fci.filter_category_item_id = pfa.filter_category_item_id');
+		$this->db->where('pfa.product_id', $product_id);
+		return $this->db->get()->result();
 
-    }
+	}
 
-    public function get_product_images($product_id)
-    {
-        return $this->db->select('*')->from('product_images')->where('product_id', $product_id)->order_by('product_id', 'ASC')->get()->result();
-    }
-    
-    function save($data)
-    {
-        // echo '<pre>'; print_r($data);die();
+	public function get_product_images($product_id)
+	{
+		return $this->db->select('*')->from('product_images')->where('product_id', $product_id)->order_by('product_id', 'ASC')->get()->result();
+	}
+	
+	function save($data)
+	{
+	    // echo '<pre>'; print_r($data);die();
 
-        $this->db->trans_start();
-        $success_flag = false;
-        // $product_images = isset($data['product_images']) ? $data['product_images'] : array();
-        // if($product_images) {
-        //  unset($data['product_images']);
-        // }
-        $product_filters = isset($data['filters']) ? $data['filters'] : array();
+		$this->db->trans_start();
+		$success_flag = false;
+		// $product_images = isset($data['product_images']) ? $data['product_images'] : array();
+		// if($product_images) {
+		// 	unset($data['product_images']);
+		// }
+		$product_filters = isset($data['filters']) ? $data['filters'] : array();
         unset($data['filters']);
         $product_related = isset($data['product_related']) ? $data['product_related'] : array();
         unset($data['product_related']);
@@ -297,14 +297,6 @@ class Admin_product_model extends Admin_Model
         unset($data['variants_combination']);
         $variants_imgs = isset($data['variants_imgs']) ? $data['variants_imgs'] : array();
         unset($data['variants_imgs']);
-        $dis_mode = isset($data['dis_mode']) ? $data['dis_mode'] : array();
-        unset($data['dis_mode']);
-        $dis_val = isset($data['dis_val']) ? $data['dis_val'] : array();
-        unset($data['dis_val']);
-        $dis_sdate = isset($data['dis_sdate']) ? $data['dis_sdate'] : array();
-        unset($data['dis_sdate']);
-        $dis_edate = isset($data['dis_edate']) ? $data['dis_edate'] : array();
-        unset($data['dis_edate']);
 
         $variants_type = isset($data['variants_type']) ? $data['variants_type'] : array();
         unset($data['variants_type']);
@@ -346,19 +338,20 @@ class Admin_product_model extends Admin_Model
 
 
         // echo '<pre>';print_r($product_images);die();
-        if ($data['product_id'])
-        {
+		if ($data['product_id'])
+		{
 
-            $id = $data['product_id'];
-            $this->db->where('product_id', $data['product_id']);
-            $this->db->update('products', $data);
+			$id	= $data['product_id'];
+			$this->db->where('product_id', $data['product_id']);
+			$r = $this->db->update('products', $data);
+
 
             $this->db->where('product_id', $id)->delete('product_categories');
             if(!empty($product_categories)) {
                 foreach ($product_categories as $item) {
                     $input_category = array(
-                        'product_id'        => $id,
-                        'category_id'       => $item,
+                        'product_id'		=> $id,
+                        'category_id'		=> $item,
                     );
                     $this->db->insert('product_categories', $input_category);
                 }
@@ -366,22 +359,22 @@ class Admin_product_model extends Admin_Model
 
 
             $this->db->where('product_id', $id)->delete('related_products');
-            if(!empty($product_related)) {
+			if(!empty($product_related)) {
             foreach ($product_related as $item) {
                 $input_filter = array(
-                    'product_id'                => $id,
-                    'related_product_id'        => $item,
+                    'product_id'				=> $id,
+                    'related_product_id'		=> $item,
                 );
                 $this->db->insert('related_products', $input_filter);
             }
-            }
+			}
 
             $this->db->where('product_id', $id)->delete('product_images');
             if(!empty($product_images)) {
                 foreach ($product_images as $item) {
                     $input_filter = array(
                         'product_id' => $id,
-                        'image' => $item,
+                        'image'	=> $item,
                     );
                     $this->db->insert('product_images', $input_filter);
                 }
@@ -390,11 +383,8 @@ class Admin_product_model extends Admin_Model
             //products options values
             // echo '<pre>';print_r($variants_price);die();
 
-            if (true) {
-                if($product_option_value_id)
-                {
-                    $this->db->where('product_id',$id)->where_not_in('product_option_value_id', $product_option_value_id)->delete('product_option_value');
-                }
+            if (!empty($product_option_value_id)) {
+                $this->db->where('product_id',$id)->where_not_in('product_option_value_id', $product_option_value_id)->delete('product_option_value');
                 for ($i = 0; $i < count($product_option_value_id); $i++) {
                     if(true)
                     {
@@ -410,23 +400,16 @@ class Admin_product_model extends Admin_Model
                             'quantity' => $variants_quantity[$i],
                             'price' => $variants_price[$i],
                             'sku' => $variants_sku[$i],
-                            'dis_mode' => (isset($dis_mode[$i]) && $dis_mode[$i]?$dis_mode[$i]:''),
-                            'dis_val' => (isset($dis_val[$i]) && $dis_val[$i]?$dis_val[$i]:''),
-                            'dis_sdate' => (isset($dis_sdate[$i]) && $dis_sdate[$i]?$dis_sdate[$i]:''),
-                            'dis_edate' => (isset($dis_edate[$i]) && $dis_edate[$i]?$dis_edate[$i]:''),
                             'combination' => json_encode($combination),
                         );
                         if(isset($variants_imgs[$i]) && $variants_imgs[$i])
                         {
                             $params['image'] = ($variants_imgs[$i] == 'del')?'':$variants_imgs[$i];
                         }
-
                         // echo "<pre>";var_dump($params);die();
                         if($uid > 0)
                         {
-
-                            $r = $this->db->where('product_option_value_id',$uid)->update('product_option_value', $params);
-                            
+                            $this->db->where('product_option_value_id',$uid)->update('product_option_value', $params);
                         }
                         else
                         {
@@ -495,10 +478,9 @@ class Admin_product_model extends Admin_Model
             }
 
             //products Special Price
-
             if (!empty($special_price) && !empty($start_date) && !empty($end_date)) {
 
-                $r = $this->db->where('product_id', $id)->delete('product_special_price');
+                $this->db->where('product_id', $id)->delete('product_special_price');
 
                 for ($i = 0; $i < count($special_price); $i++) {
                     if($special_price[$i] > 0) {
@@ -514,25 +496,21 @@ class Admin_product_model extends Admin_Model
                 }
 
             }
-            else
-            {
-                $r = $this->db->where('product_id', $id)->delete('product_special_price');
-            }
 
 
         }
-        else
-        {
-            $this->db->insert('products', $data);
-                $id = $this->db->insert_id();
+		else
+		{
+			$this->db->insert('products', $data);
+				$id	= $this->db->insert_id();
 
 
             $this->db->where('product_id', $id)->delete('product_categories');
             if(!empty($product_categories)) {
                 foreach ($product_categories as $item) {
                     $input_category = array(
-                        'product_id'        => $id,
-                        'category_id'       => $item,
+                        'product_id'		=> $id,
+                        'category_id'		=> $item,
                     );
                     $this->db->insert('product_categories', $input_category);
                 }
@@ -541,8 +519,8 @@ class Admin_product_model extends Admin_Model
             $this->db->where('product_id', $id)->delete('related_products');
             foreach ($product_related as $item) {
                 $input_filter = array(
-                    'product_id'                => $id,
-                    'related_product_id'        => $item,
+                    'product_id'				=> $id,
+                    'related_product_id'		=> $item,
                 );
                 $this->db->insert('related_products', $input_filter);
             }
@@ -553,7 +531,7 @@ class Admin_product_model extends Admin_Model
                 foreach ($product_images as $item) {
                     $input_filter = array(
                         'product_id' => $id,
-                        'image'     => $item,
+                        'image'		=> $item,
                     );
                     $this->db->insert('product_images', $input_filter);
                 }
@@ -561,7 +539,7 @@ class Admin_product_model extends Admin_Model
 
             //products options
 
-            if (true) {
+            if (!empty($product_option_value_id)) {
                 $this->db->where('product_id', $id)->delete('product_option_value');
 
                 for ($i = 0; $i < count($product_option_value_id); $i++) {
@@ -581,10 +559,6 @@ class Admin_product_model extends Admin_Model
                                 'quantity' => $variants_quantity[$i],
                                 'price' => $variants_price[$i],
                                 'sku' => $variants_sku[$i],
-                                'dis_mode' => (isset($dis_mode[$i]) && $dis_mode[$i]?$dis_mode[$i]:''),
-                            'dis_val' => (isset($dis_val[$i]) && $dis_val[$i]?$dis_val[$i]:''),
-                            'dis_sdate' => (isset($dis_sdate[$i]) && $dis_sdate[$i]?$dis_sdate[$i]:''),
-                            'dis_edate' => (isset($dis_edate[$i]) && $dis_edate[$i]?$dis_edate[$i]:''),
                                 'image' => $variants_imgs[$i],
                                 'combination' => json_encode($combination),
                             ];
@@ -670,30 +644,30 @@ class Admin_product_model extends Admin_Model
 
 
         }
-            $this->db->trans_complete();
-        return true;
-    }
+			$this->db->trans_complete();
+		return true;
+	}
 
-    
-    function get_product($id)
-    {
-        $this->db->select('*');
-        $this->db->from('products');
-        $this->db->where(1,1, FALSE);
-        $this->db->where('product_id', $id);
-        $result = $this->db->get()->row();
-        //echo $this->db->last_query();
-        if(!$result)
-        {
-            return false;
-        }
+	
+	function get_product($id)
+	{
+		$this->db->select('*');
+		$this->db->from('products');
+		$this->db->where(1,1, FALSE);
+		$this->db->where('product_id', $id);
+		$result = $this->db->get()->row();
+		//echo $this->db->last_query();
+		if(!$result)
+		{
+			return false;
+		}
 
-        return $result;
-    }
+		return $result;
+	}
 
 
-    public function get_products_by_typeahead($query)
-    {
+	public function get_products_by_typeahead($query)
+	{
         if(!empty($query)){
             $this->db->select('product_id as "id", product_name,sku')->from('products');
             $this->db->like('product_name', $query);
@@ -706,7 +680,7 @@ class Admin_product_model extends Admin_Model
 
         return $results;
 
-    }
+	}
 
 
     public function disable_product($pid)
@@ -846,7 +820,6 @@ class Admin_product_model extends Admin_Model
         $variants = [];
         $this->db->select('*');
         $this->db->from('product_option_value');
-        $this->db->order_by('product_option_value_id','ASC');
         $this->db->where('product_id', $product_id);
         $result = $this->db->get()->result_array();
         if(!$result)
@@ -863,11 +836,6 @@ class Admin_product_model extends Admin_Model
                 'price' => $row['price'],
                 'quantity' => $row['quantity'],
                 'sku' => $row['sku'],
-                'dis_mode' => $row['dis_mode'],
-                'dis_mode' => $row['dis_mode'],
-                'dis_val' => $row['dis_val'],
-                'dis_sdate' => $row['dis_sdate'],
-                'dis_edate' => $row['dis_edate'],
                 'image' => $row['image'],
             ];
         }

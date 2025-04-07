@@ -38,16 +38,17 @@ class User_catalog_model extends User_Model
 
 		{
 
-			$this->db = get_base_product_query($this->db, ''); // Base Query Call
+			$sql = 'p.*, p.product_name AS name, \'\' AS is_new, \'\' AS is_special, \'\' AS rate_special, \'\' AS has_tax, \'\' AS price '; 
 
-$this->db->where('p.is_enabled', 1); // Sirf enabled products lein
 
-// Agar config allow nahi karta out of stock products dikhana
-$display_out_stock = site_config_item('config_catalog_outstock');
-if ($display_out_stock != 1) {
-    $this->db->where('p.quantity >', 0);
-}
-$this->db->group_by('p.product_id');
+
+
+
+			$this->db->select($sql);
+
+			
+
+			$this->db->from('products AS p');
 
 			if($is_deals != 1){
 
@@ -60,6 +61,26 @@ $this->db->group_by('p.product_id');
 					$this->db->where('pc.category_id', $data['category_id']);
 
 				}
+
+			}
+
+
+
+			$this->db->where(1,1, FALSE);
+
+
+
+			$this->db->where('p.is_enabled', 1);			
+
+	
+
+			$display_out_stock = site_config_item('config_catalog_outstock');
+
+			if ($display_out_stock == 0) 
+
+			{
+
+				$this->db->where('p.quantity >', 0);
 
 			}
 
@@ -187,7 +208,7 @@ $this->db->group_by('p.product_id');
 
 		}
 
-			$result = $this->db->get()->result();
+		$result = $this->db->get()->result();
 
 		
 
@@ -215,38 +236,169 @@ $this->db->group_by('p.product_id');
 
 
 
-		foreach($result as $key=>&$val) {
-        	$all_images = array();
+		foreach($result as $key=>&$val)
 
-    if (!empty($val->images)) {
-        foreach(explode(', ', $val->images) as $k=> $v)
-        {
-            $all_images[] = $v;
-        }
-    }
+		{
 
-    if (!empty($val->option_images)) {
-        foreach(explode(', ', $val->option_images) as $k=> $v)
-        {
-            $all_images[] = $v;
-        }
-    }
-            $val->images = array_reverse($all_images);//
-            // $val->special_price = get_product_special_price($val->product_id);
+			if (isset($val->option_name, $val->option_value) && ($val->option_name != '') && ($val->option_value != '')) {
+
+                $val->is_variation = 1;
+
+                $p =  get_product_varient_price($val->product_id);
+
+				if(isset($p->price))
+
+				{
+
+					$val->varient_price = $p->price;
+
+					$val->varient_id = $p->product_option_value_id;
+
+				}
+
+            } else {
+
+                $val->is_variation = 0;
+
+                $val->varient_price = 0;
+
+            }
+
+			if(isset($data['price'][1]) && $data['price'][1])
+
+			{
+
+				$price = 0;
+
+				$v = $val;
+
+				if($v->varient_price)
+
+				{
+
+					$price = $v->varient_price;
+
+					
+
+				}
+
+				elseif($v->special_price)
+
+				{
+
+					$price = $v->special_price;
+
+					
+
+				}
+
+				else
+
+				{
+
+					$price = $v->sale_price;
+
+				}
+
+				if(isset($data['price']) && $data['price'])
+
+				{
+
+					$fprice = $data['price'];
+
+					if(isset($fprice[0]) && $price < $fprice[0])
+
+					{
+
+						$val->remove = 1;
+
+					}
+
+					if(isset($price[1]) && $price > $fprice[1])
+
+					{
+
+							$val->remove = 1;
+
+						
+
+					}
+
+				}
+
+			}
+
+			if($result[$key])
+
+			{
+
+				if (isset($val->option_name, $val->option_value) && ($val->option_name != '') && ($val->option_value != '')) {
+
+                $val->is_variation = 1;
+
+                $p =  get_product_varient_price($val->product_id);
+
+				if(isset($p->price))
+
+				{
+
+					$val->varient_price = $p->price;
+
+					$val->varient_id = $p->product_option_value_id;
+
+				}
+
+            } else {
+
+                $val->is_variation = 0;
+
+                $val->varient_price = 0;
+
+            }
+
+
+
+            $val->images = get_product_images($val->product_id);
+
+            $val->special_price = get_product_special_price($val->product_id);
+
+
+
+			//$val->files 		= $this->get_product_files($val->item_id, true);
+
+			$val->brand 		= $this->get_brand($val->brand_id);
+
+
 
             if (isset($val->option_name, $val->option_value) && ($val->option_name != '') && ($val->option_value != '')) {
+
                 $val->is_variation = 1;
+
                 $p =  get_product_varient_price($val->product_id);
+
 				if(isset($p->price))
+
 				{
+
 					$val->varient_price = $p->price;
+
 					$val->varient_id = $p->product_option_value_id;
+
 				}
+
             } else {
+
                 $val->is_variation = 0;
+
                 $val->varient_price = 0;
+
             }
-        }
+
+			}
+
+
+
+		}
 
 		
 
@@ -707,6 +859,7 @@ return $r->quantity;
 
 
 			$this->db->where(1,1, FALSE);
+			$this->db->where('p.is_enabled', 1);
 
 			// echo '<pre>';print_r($data['filter_ids']);die();
 
@@ -1043,6 +1196,10 @@ return $r->quantity;
                 $val->is_variation = 1;
 
                 $val->varient_price =  get_product_varient_price($val->product_id); 
+                if(isset($val->varient_price->price))
+                {
+                	$val->varient_price = $val->varient_price->price;
+                }
 
             } else {
 
@@ -1705,12 +1862,15 @@ return $r->quantity;
 
 	{
 
-		    $this->db = get_base_product_query($this->db,'');
+		$this->db->select('*');
 
-		$this->db->where('p.product_id', $id);
+		$this->db->from('products');
+
+		$this->db->where(1,1, FALSE);
+
+		$this->db->where('product_id', $id);
 
 		$result = $this->db->get()->row();
-
 
 		if(!$result)
 
@@ -1762,7 +1922,11 @@ return $r->quantity;
 
 	{
 
-		$this->db = get_base_product_query($this->db, ''); // Base Query Call
+		$this->db->select('*');
+
+		$this->db->from('products');
+
+		$this->db->where(1,1, FALSE);
 
 		$this->db->where('product_slug', $slug);
 
@@ -1813,98 +1977,20 @@ return $r->quantity;
 		return $result;
 
 	}
-	public function get_min_price_option($product_id) {
-		$product_variant_table = $this->db->dbprefix('product_option_value');
-		$products_table = $this->db->dbprefix('products');
-    $sql = "SELECT 
-    pov.product_option_value_id,
-    pov.product_id,
-    p.brand_id,
-    p.product_name,
-    pov.combination,
-    pov.combination,
-    pov.quantity,
-    pov.price AS original_price,
-
-    -- Variation Discount Applied Price
-    CASE 
-        WHEN pov.dis_val > 0 AND CURDATE() BETWEEN pov.dis_sdate AND pov.dis_edate 
-        THEN 
-            CASE 
-                WHEN pov.dis_mode = 'fixed' THEN (pov.price - pov.dis_val)
-                WHEN pov.dis_mode = 'per' THEN (pov.price - (pov.price * pov.dis_val / 100))
-                ELSE pov.price
-            END
-        ELSE pov.price
-    END AS after_variation_discount,
-
-    -- Brand Discount Applied Price (Only if is_brand = 1)
-    CASE 
-        WHEN pov.is_brand = 1 AND CURDATE() BETWEEN pov.bdis_sdate AND pov.bdis_edate 
-        THEN 
-            CASE 
-                WHEN pov.bdis_mode = 'fixed' THEN (pov.price - pov.bdis_val)
-                WHEN pov.bdis_mode = 'per' THEN (pov.price - (pov.price * pov.bdis_val / 100))
-                ELSE pov.price
-            END
-        ELSE pov.price
-    END AS after_brand_discount,
-
-    -- Discount Source (Brand or Variation)
-    CASE 
-        WHEN pov.is_brand = 1 AND CURDATE() BETWEEN pov.bdis_sdate AND pov.bdis_edate 
-        THEN 'Brand'
-        WHEN pov.dis_val > 0 AND CURDATE() BETWEEN pov.dis_sdate AND pov.dis_edate 
-        THEN 'Variation'
-        ELSE 'None'
-    END AS discount_source,
-
-    -- Final Price After Both Discounts (Priority: Brand First, then Variation)
-    LEAST(
-        CASE 
-            WHEN pov.dis_val > 0 AND CURDATE() BETWEEN pov.dis_sdate AND pov.dis_edate 
-            THEN 
-                CASE 
-                    WHEN pov.dis_mode = 'fixed' THEN (pov.price - pov.dis_val)
-                    WHEN pov.dis_mode = 'per' THEN (pov.price - (pov.price * pov.dis_val / 100))
-                    ELSE pov.price
-                END
-            ELSE pov.price
-        END,
-
-        CASE 
-            WHEN pov.is_brand = 1 AND CURDATE() BETWEEN pov.bdis_sdate AND pov.bdis_edate 
-            THEN 
-                CASE 
-                    WHEN pov.bdis_mode = 'fixed' THEN (pov.price - pov.bdis_val)
-                    WHEN pov.bdis_mode = 'per' THEN (pov.price - (pov.price * pov.bdis_val / 100))
-                    ELSE pov.price
-                END
-            ELSE pov.price
-        END
-    ) AS final_price
-
-FROM $product_variant_table pov
-LEFT JOIN $products_table p ON pov.product_id = p.product_id
-where p.product_id = '$product_id' AND pov.quantity > '0' ORDER BY `final_price` ASC";
-
-    $query = $this->db->query($sql);
-
-    return $query->row(); // Return single row as an array
-}
 
 
 
     function get_single_variants($product_id)
 
 	{
-		$row = $this->get_min_price_option($product_id);
-		if($row)
-		{
-			$row->price = $row->final_price;
-		}
 
-        return $product =  $row;
+		$product_variant_table = $this->db->dbprefix('product_option_value');
+
+		$this->db->order_by('price','ASC');
+
+		$query = $this->db->where('quantity >','0')->where('price >','0')->where('product_id',$product_id)->get($product_variant_table);
+
+        return $product =  $query->row();
 
 	}
 
@@ -2033,92 +2119,6 @@ where p.product_id = '$product_id' AND pov.quantity > '0' ORDER BY `final_price`
 
 
     }
-    public function get_product_option($product_id, $product_option_value_id) {
-$sql1 = "SELECT 
-    pov.product_option_value_id,
-    pov.product_id,
-    p.brand_id,
-    p.product_name,
-    pov.combination,
-    pov.image,
-    pov.quantity,
-    pov.price AS original_price,
-
-    -- Variation Discount
-    CASE 
-        WHEN pov.dis_val > 0 AND CURDATE() BETWEEN pov.dis_sdate AND pov.dis_edate 
-        THEN 
-            CASE 
-                WHEN pov.dis_mode = 'fixed' THEN (pov.price - pov.dis_val)
-                WHEN pov.dis_mode = 'per' THEN (pov.price - (pov.price * pov.dis_val / 100))
-                ELSE pov.price
-            END
-        ELSE pov.price
-    END AS after_variation_discount,
-
-    -- Brand Discount
-    CASE 
-        WHEN pov.is_brand = 1 AND CURDATE() BETWEEN pov.bdis_sdate AND pov.bdis_edate 
-        THEN 
-            CASE 
-                WHEN pov.bdis_mode = 'fixed' THEN (pov.price - pov.bdis_val)
-                WHEN pov.bdis_mode = 'per' THEN (pov.price - (pov.price * pov.bdis_val / 100))
-                ELSE pov.price
-            END
-        ELSE pov.price
-    END AS after_brand_discount,
-
-    -- Discount Source
-    CASE 
-        WHEN pov.is_brand = 1 AND CURDATE() BETWEEN pov.bdis_sdate AND pov.bdis_edate 
-        THEN 'Brand'
-        WHEN pov.dis_val > 0 AND CURDATE() BETWEEN pov.dis_sdate AND pov.dis_edate 
-        THEN 'Variation'
-        ELSE 'None'
-    END AS discount_source,
-
-    -- Final Price Logic (Brand discount preferred, otherwise variation discount)
-    CASE 
-        WHEN pov.is_brand = 1 AND CURDATE() BETWEEN pov.bdis_sdate AND pov.bdis_edate 
-        THEN 
-            CASE 
-                WHEN pov.bdis_mode = 'fixed' THEN (pov.price - pov.bdis_val)
-                WHEN pov.bdis_mode = 'per' THEN (pov.price - (pov.price * pov.bdis_val / 100))
-                ELSE pov.price
-            END
-        WHEN pov.dis_val > 0 AND CURDATE() BETWEEN pov.dis_sdate AND pov.dis_edate 
-        THEN 
-            CASE 
-                WHEN pov.dis_mode = 'fixed' THEN (pov.price - pov.dis_val)
-                WHEN pov.dis_mode = 'per' THEN (pov.price - (pov.price * pov.dis_val / 100))
-                ELSE pov.price
-            END
-        ELSE pov.price
-    END AS final_price
-
-FROM ci_product_option_value pov
-LEFT JOIN ci_products p ON pov.product_id = p.product_id
-WHERE p.product_id = '$product_id' AND pov.product_option_value_id = '$product_option_value_id'
-ORDER BY `final_price` ASC;
-";
-
-        $query_set = $sql1;
-
-        if($config_catalog_purchase)
-
-        {
-
-        }
-
-        else
-
-        {
-
-        }
-        $query = $this->db->query($sql1);
-        
-        return $query->row_array(); // Return single row as an array
-    }
 
 
 
@@ -2129,8 +2129,6 @@ ORDER BY `final_price` ASC;
     function get_product_variants_detail($product_id , $variations)
 
     {
-    	$variations = str_replace(' ', '', $variations);
-
 
 		//arrange values 
 
@@ -2167,83 +2165,28 @@ ORDER BY `final_price` ASC;
 
 
         $product_variant_table = $this->db->dbprefix('product_option_value');
-        $products_table = $this->db->dbprefix('products');
 
         $config_catalog_purchase = $this->db->where('key','config_catalog_purchase')->get('ci_settings')->row();
-		$sql1 = "SELECT 
-    pov.product_option_value_id,
-    pov.product_id,
-    p.brand_id,
-    p.product_name,
-    pov.combination,
-    pov.image,
-    pov.quantity,
-    pov.price AS original_price,
 
-    -- Variation Discount
-    CASE 
-        WHEN pov.dis_val > 0 AND CURDATE() BETWEEN pov.dis_sdate AND pov.dis_edate 
-        THEN 
-            CASE 
-                WHEN pov.dis_mode = 'fixed' THEN (pov.price - pov.dis_val)
-                WHEN pov.dis_mode = 'per' THEN (pov.price - (pov.price * pov.dis_val / 100))
-                ELSE pov.price
-            END
-        ELSE pov.price
-    END AS after_variation_discount,
+        $query_set = "SELECT product_option_value_id as variant_opt_id, product_id, price, quantity, combination, 
 
-    -- Brand Discount
-    CASE 
-        WHEN pov.is_brand = 1 AND CURDATE() BETWEEN pov.bdis_sdate AND pov.bdis_edate 
-        THEN 
-            CASE 
-                WHEN pov.bdis_mode = 'fixed' THEN (pov.price - pov.bdis_val)
-                WHEN pov.bdis_mode = 'per' THEN (pov.price - (pov.price * pov.bdis_val / 100))
-                ELSE pov.price
-            END
-        ELSE pov.price
-    END AS after_brand_discount,
+						image as variant_image
 
-    -- Discount Source
-    CASE 
-        WHEN pov.is_brand = 1 AND CURDATE() BETWEEN pov.bdis_sdate AND pov.bdis_edate 
-        THEN 'Brand'
-        WHEN pov.dis_val > 0 AND CURDATE() BETWEEN pov.dis_sdate AND pov.dis_edate 
-        THEN 'Variation'
-        ELSE 'None'
-    END AS discount_source,
+						FROM $product_variant_table 
 
-    -- Final Price Logic (Brand discount preferred, otherwise variation discount)
-    CASE 
-        WHEN pov.is_brand = 1 AND CURDATE() BETWEEN pov.bdis_sdate AND pov.bdis_edate 
-        THEN 
-            CASE 
-                WHEN pov.bdis_mode = 'fixed' THEN (pov.price - pov.bdis_val)
-                WHEN pov.bdis_mode = 'per' THEN (pov.price - (pov.price * pov.bdis_val / 100))
-                ELSE pov.price
-            END
-        WHEN pov.dis_val > 0 AND CURDATE() BETWEEN pov.dis_sdate AND pov.dis_edate 
-        THEN 
-            CASE 
-                WHEN pov.dis_mode = 'fixed' THEN (pov.price - pov.dis_val)
-                WHEN pov.dis_mode = 'per' THEN (pov.price - (pov.price * pov.dis_val / 100))
-                ELSE pov.price
-            END
-        ELSE pov.price
-    END AS final_price
-
-FROM ci_product_option_value pov
-LEFT JOIN ci_products p ON pov.product_id = p.product_id
-WHERE p.product_id = '".$product_id."' AND pov.quantity > 0 
-ORDER BY `final_price` ASC;
-";
-        
-
-        $query_set = $sql1;
+						WHERE product_id = $product_id AND quantity > 0 order by price Asc";
 
         if($config_catalog_purchase)
 
         {
+
+            $query_set = "SELECT product_option_value_id as variant_opt_id, product_id, price, quantity, combination, 
+
+						image as variant_image
+
+						FROM $product_variant_table 
+
+						WHERE product_id = $product_id order by price Asc";
 
         }
 
@@ -2256,8 +2199,6 @@ ORDER BY `final_price` ASC;
         $query = $this->db->query($query_set);
 
         $product =  $query->result();
-		//dd($product);
-
 
 
 
@@ -2276,7 +2217,6 @@ ORDER BY `final_price` ASC;
         $img_array = array();
 
         $variant_id = '';
-        $price_html = '';
 
         $variant_type = 0;
 
@@ -2291,7 +2231,6 @@ ORDER BY `final_price` ASC;
 
 
             foreach ($product as $key => $prod){
-
 
                 $variant_json_decode = json_decode($prod->combination);
 
@@ -2312,38 +2251,34 @@ ORDER BY `final_price` ASC;
                     }
 
                 }
-                $price = $prod->final_price;
 
-                $group_array[$prod->product_option_value_id] = $temp;
+                $group_array[$prod->variant_opt_id] = $temp;
 
-                $prices_array[$prod->product_option_value_id] = $price;
+                $prices_array[$prod->variant_opt_id] = $prod->price;
 
-                $qty_array[$prod->product_option_value_id] = $prod->quantity;
+                $qty_array[$prod->variant_opt_id] = $prod->quantity;
 
-                $img_array[$prod->product_option_value_id] = $prod->image;
-                if(!empty($temp)){
-
-
-
-                if(trim($variations) == $temp){
-                	$variant_id = $prod->product_option_value_id;
-                    $variant_price = $prod->final_price;
-                    if($prod->final_price < $prod->original_price)
-                    {
-                    $price_html = '<p style="font-weight: bold; margin-left: 10px;"><span style="left: -10px; color:red;" class="cut_price">'. format_currency($prod->original_price).'</span>'.format_currency($prod->final_price).'</p>';
-                }
-                else
-                	    {
-                    $price_html = '<p style="font-weight: bold; margin-left: 10px;">'.format_currency($prod->final_price).'</p>';
-                }
-
-                    $variant_qty = $prod->quantity;
-
-                    $variant_image = $prod->image;
-
-                }
+                $img_array[$prod->variant_opt_id] = $prod->variant_image;
 
             }
+
+			
+
+
+
+            if(!empty($group_array)){
+
+                $variant_id = array_search($variations,$group_array);
+
+                if($variant_id){
+
+                    $variant_price = $prices_array[$variant_id];
+
+                    $variant_qty = $qty_array[$variant_id];
+
+                    $variant_image = $img_array[$variant_id];
+
+                }
 
 
 
@@ -2357,7 +2292,7 @@ ORDER BY `final_price` ASC;
 
        return $data = array('variant_id' => $variant_id, 'variant_type' => $variant_type, 
 
-       	'variant_price' => $variant_price,'price_html'=>$price_html ,'variant_qty' => $variant_qty, 'variant_image'=> $variant_image
+       	'variant_price' => $variant_price, 'variant_qty' => $variant_qty, 'variant_image'=> $variant_image
 
         );
 
@@ -2397,7 +2332,9 @@ ORDER BY `final_price` ASC;
 
 	{
 
-		$this->db = get_base_product_query($this->db, ''); // Base Query Call
+		$this->db->select('p.*');
+
+		$this->db->from('products p');
 
 		$this->db->join('related_products rp', 'rp.related_product_id = p.product_id');
 
@@ -2406,7 +2343,6 @@ ORDER BY `final_price` ASC;
 		$this->db->where('p.is_enabled', 1);
 
 		$this->db->where('rp.product_id', $product_id);
-		$this->db->group_by('p.product_id');
 
 		$display_out_stock = site_config_item('config_catalog_outstock');
 
@@ -3152,15 +3088,7 @@ ORDER BY `final_price` ASC;
 
 	public function srch_pros($search_term){
 
-		    $this->db = get_base_product_query($this->db,'COUNT(op.product_id) AS total,');
-$this->db->join($this->db->dbprefix . 'order_products AS op', 'p.product_id = op.product_id', 'left');
-$this->db->where('p.is_enabled', 1);
-$display_out_stock = site_config_item('config_catalog_outstock');
-if ($display_out_stock != 1)
-{
-    $this->db->where('p.quantity >', 0);
-}
-
+		$this->db->where('is_enabled', 1);
 
 		$this->db->like('product_name', $search_term);
 
@@ -3169,9 +3097,8 @@ if ($display_out_stock != 1)
         $this->db->or_like('meta_title', $search_term);
 
         $this->db->or_like('meta_keywords', $search_term);
-        $this->db->group_by('p.product_id');
 
-        $query = $this->db->get('products'); // 'products' is your products table name
+        $query = $this->db->select('product_id,is_enabled')->get('products'); // 'products' is your products table name
 
         return $query->result_array();
 

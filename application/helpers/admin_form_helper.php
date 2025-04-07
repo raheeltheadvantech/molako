@@ -29,7 +29,7 @@ if ( ! function_exists('form_input_1'))
 	function form_input_1($data = '', $value = '', $extra = '')
 	{
 		$defaults = array(
-			'type' => isset($data['type']) ? $data['type'] : 'text',
+			'type' => 'text',
 			'name' => is_array($data) ? '' : $data,
 			'oninput' => isset($data['oninput']) ? $data['oninput'] : '',
 	        'onkeydown' => isset($data['onkeydown']) ? $data['onkeydown'] : ' ', // Added onkeydown attribute

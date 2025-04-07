@@ -869,7 +869,6 @@ if(isset($_GET['brand_id']))
 
         $product = $this->User_catalog_model->get_product_slug($slug);
 
-
         $product_id = $product->product_id;
 
         // pre($product);
@@ -959,8 +958,6 @@ if(isset($_GET['brand_id']))
 		
 		//Get first variaTOION
         $sing = $this->User_catalog_model->get_single_variants($product_id);
-        if(isset($sing->combination))
-		$data['comb'] = json_decode($sing->combination,true); 
 		$data['sing_var'] = $sing; 
 		$data['combination'] = $combination; 
 		//Get first variation
@@ -1014,7 +1011,6 @@ if(isset($_GET['brand_id']))
 		// +----------------[BESTSELLER PRODUCTS START]----------------------+
 
 		$bestseller_product_rows = (object)array();
-
 
         $data['bestseller_products'] = $this->User_featured_module_model->get_bestseller_products(16);
 
