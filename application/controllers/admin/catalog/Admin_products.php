@@ -3,97 +3,97 @@
 //require_once(APPPATH.'third_party/ImageCache/ImageCache.php');
 
 class Admin_products extends Admin_Controller {
-	
-	function __construct()
-	{
-		parent::__construct();
-		
-		$this->load->model(array(
-		    'admin/catalog/Admin_product_model',
-		    'admin/catalog/Admin_category_model',
-		    'admin/catalog/Admin_brand_model',
+    
+    function __construct()
+    {
+        parent::__construct();
+        
+        $this->load->model(array(
+            'admin/catalog/Admin_product_model',
+            'admin/catalog/Admin_category_model',
+            'admin/catalog/Admin_brand_model',
             'admin/localisation/Admin_weight_model', 
             'admin/localisation/Admin_length_model' , 
             'admin/localisation/Admin_tax_class_model'));
-		
-		$this->controller_dir = 'catalog';
-		$this->controller_name = 'products';
-		$this->view_dir = 'catalog/products';
-	}
-	
-	function index()
-	{
+        
+        $this->controller_dir = 'catalog';
+        $this->controller_name = 'products';
+        $this->view_dir = 'catalog/products';
+    }
+    
+    function index()
+    {
         // show special products button in products
         $data['is_special_products'] = false;
 
-		$data['page_title']		= 'Admin Products';
-		$data['page_header']	= 'Admin Products';
+        $data['page_title']     = 'Admin Products';
+        $data['page_header']    = 'Admin Products';
 
-		$order 		= $this->input->get('order') ? $this->input->get('order') : '';
-		$sort 		= $this->input->get('sort') ? $this->input->get('sort') : 'asc';
-		$code 		= $this->input->get('code') ? $this->input->get('code') : '';
-		$page 		= $this->input->get('page') ? $this->input->get('page') : 0;
-		$rows 		= $this->input->get('rows') ? $this->input->get('rows') : '10';
-		$per_page 	= $this->input->get('per_page') ? $this->input->get('per_page') : '';
-		
-		//Filters list
+        $order      = $this->input->get('order') ? $this->input->get('order') : '';
+        $sort       = $this->input->get('sort') ? $this->input->get('sort') : 'asc';
+        $code       = $this->input->get('code') ? $this->input->get('code') : '';
+        $page       = $this->input->get('page') ? $this->input->get('page') : 0;
+        $rows       = $this->input->get('rows') ? $this->input->get('rows') : '10';
+        $per_page   = $this->input->get('per_page') ? $this->input->get('per_page') : '';
+        
+        //Filters list
         //$data['filter_distributors'] = $this->Admin_product_model->get_product_vendors();
         //$data['filter_manufacturers']       = $this->Admin_manufacturer_model->get_manufacturers(array('is_enabled' => 1, 'order'=>'name', 'sort'=>'asc'));
         $data['filter_categories']   = $this->Admin_category_model->get_categories(array('is_enabled' => 1));
-		
-		$term				= false;
-		$data['code']		= $code;
-		$post				= $this->input->post(null, false);
-		
-		$this->load->model('admin/Admin_search_model');
-		
-		if($post)
-		{
-			
-			$term			= json_encode($post);
-			$code			= $this->Admin_search_model->record_term($term);
-			$data['code']	= $code;
-			
-			custom_redirect(site_url($this->admin_folder .'/'. $this->controller_dir .'/products.html?code='.$code));
-		}
-		elseif ($code)
-		{
-			$term			= $this->Admin_search_model->get_term($code);
-		}
-		
-		$data['term']		= $term;
-		$data['order_by']	= $order;
-		$data['sort_by']	= $sort;
-		
-		$result	= $this->Admin_product_model->get_products(array('term'=>$term, 'order'=>$order, 'sort'=>$sort, 'rows'=>$rows, 'per_page'=>$per_page));
-		$total	= $this->Admin_product_model->get_products(array('term'=>$term, 'order'=>$order, 'sort'=>$sort), true);
+        
+        $term               = false;
+        $data['code']       = $code;
+        $post               = $this->input->post(null, false);
+        
+        $this->load->model('admin/Admin_search_model');
+        
+        if($post)
+        {
+            
+            $term           = json_encode($post);
+            $code           = $this->Admin_search_model->record_term($term);
+            $data['code']   = $code;
+            
+            custom_redirect(site_url($this->admin_folder .'/'. $this->controller_dir .'/products.html?code='.$code));
+        }
+        elseif ($code)
+        {
+            $term           = $this->Admin_search_model->get_term($code);
+        }
+        
+        $data['term']       = $term;
+        $data['order_by']   = $order;
+        $data['sort_by']    = $sort;
+        
+        $result = $this->Admin_product_model->get_products(array('term'=>$term, 'order'=>$order, 'sort'=>$sort, 'rows'=>$rows, 'per_page'=>$per_page));
+        $total  = $this->Admin_product_model->get_products(array('term'=>$term, 'order'=>$order, 'sort'=>$sort), true);
 
-		$data['result']	= $result;
-		$data['total']	= $total;
-		
-		$config['base_url']	= site_url($this->admin_folder .'/'. $this->controller_dir .'/products.html?order='.$order.'&sort='.$sort.'&code='.$code);
-		
-		$config['total_rows']			= $total;
-		$config['per_page']				= $rows;
-		$config['offset']				= $per_page;
-		$config['uri_segment']			= $this->uri->total_segments();
-		$config['use_page_numbers'] 	= TRUE;
-		$config['page_query_string'] 	= TRUE;
-		$config['reuse_query_string'] 	= TRUE;
-		
-		$this->load->library('pagination');
-		
-		$this->pagination->initialize($config);
+        $data['result'] = $result;
+        $data['total']  = $total;
+        
+        $config['base_url'] = site_url($this->admin_folder .'/'. $this->controller_dir .'/products.html?order='.$order.'&sort='.$sort.'&code='.$code);
+        
+        $config['total_rows']           = $total;
+        $config['per_page']             = $rows;
+        $config['offset']               = $per_page;
+        $config['uri_segment']          = $this->uri->total_segments();
+        $config['use_page_numbers']     = TRUE;
+        $config['page_query_string']    = TRUE;
+        $config['reuse_query_string']   = TRUE;
+        
+        $this->load->library('pagination');
+        
+        $this->pagination->initialize($config);
         // echo'<pre>';print_r($result);die;
 
         $data['add_link'] = site_url($this->admin_folder.'/catalog/product-add.html');
-		$this->view($this->admin_view .'/'. $this->view_dir .'/product_list', $data);
-	}
-	
-	function default_data(&$data)
-	{
-		$data['page_title']		= 'Product form';
-		$data['page_header']	= 'Product form';
+        $this->view($this->admin_view .'/'. $this->view_dir .'/product_list', $data);
+    }
+    
+    function default_data(&$data)
+    {
+        $data['page_title']     = 'Product form';
+        $data['page_header']    = 'Product form';
         $all    = $this->db->get('ci_colors')->result();
         $a = array();
         foreach ($all as $key => $value) {
@@ -102,18 +102,18 @@ class Admin_products extends Admin_Controller {
         $data['all_colors'] = $a;
 
 
-		$data['id']				= $this->input->get('id');
-		$data['product_name']       = '';
-		$data['short_description']  = '';
-		$data['long_description']   = '';
-		$data['is_enabled']         = '1';
-		$data['barcode']                = '';
-		$data['sku']        = '';
+        $data['id']             = $this->input->get('id');
+        $data['product_name']       = '';
+        $data['short_description']  = '';
+        $data['long_description']   = '';
+        $data['is_enabled']         = '1';
+        $data['barcode']                = '';
+        $data['sku']        = '';
         $data['quantity']        = '';
-		$data['category_id']        = '';
-		$data['manufacturer_id']    = '';
+        $data['category_id']        = '';
+        $data['manufacturer_id']    = '';
         $data['brand_id']           = '';
-		$data['distributor_id']     = '';
+        $data['distributor_id']     = '';
         $data['sale_price']         = '';
         $data['special_price']      = '';
         $data['map_price']          = '';
@@ -125,8 +125,8 @@ class Admin_products extends Admin_Controller {
         $data['weight']             = '';
         $data['product_unit']       = '';
         $data['weight_unit']        = '';
-        $data['p_unit'] 			= '';
-        $data['w_unit'] 			= '';
+        $data['p_unit']             = '';
+        $data['w_unit']             = '';
 
         $data['is_shippable']       = '';
         $data['meta_title']         = '';
@@ -149,29 +149,30 @@ class Admin_products extends Admin_Controller {
 
         $data['filters']            = array();
         $data['additional_images']  = array();
-        $data['product_inventory'] 	= array();
-        $data['product_images']    	= array();
+        $data['product_inventory']  = array();
+        $data['product_images']     = array();
         $data['related_products']           = array();
 
-        $data['categories']    		= $this->Admin_product_model->get_categories();
-        $data['brands']    	= $this->Admin_product_model->get_brands();
-		
-		$data['route'] = 'product-add.html';
+        $data['categories']         = $this->Admin_product_model->get_categories();
+        $data['brands']     = $this->Admin_product_model->get_brands();
+        
+        $data['route'] = 'product-add.html';
         $data['image'] = array(site_url(site_config_item('config_placeholder')));
-	}
-	
-	function add()
-	{
-		$this->form();
-	}
-	
-	function edit($id = false)
-	{
-		$this->form('edit');
-	}
+    }
+    
+    function add()
+    {
+        $this->form();
+    }
+    
+    function edit($id = false)
+    {
+        $this->form('edit');
+    }
 
     private function form($mode = '')
     {
+
         $this->default_data($data);
         $this->lang->load('product_form');
         $pCategories = '';
@@ -181,7 +182,7 @@ class Admin_products extends Admin_Controller {
         {
 
             $id = $this->input->get('id');
-            $result	= $this->Admin_product_model->get_product($id);
+            $result = $this->Admin_product_model->get_product($id);
 
 
 
@@ -198,19 +199,19 @@ class Admin_products extends Admin_Controller {
             }
 
 
-            $data['related_products']	= $this->Admin_product_model->get_related_products($id);
-            $data['pspecifications']	= $this->Admin_product_model->get_product_specification($id);
-            $data['product_images']	= $this->Admin_product_model->get_product_images($id);
-            $data['special_price']	= $this->Admin_product_model->get_special_prices($id);
-            $data['p_unit'] 				= $this->Admin_length_model->get_length_unit($result->product_unit);
-            $data['w_unit'] 				= $this->Admin_weight_model->get_weight_unit($result->weight_unit);
+            $data['related_products']   = $this->Admin_product_model->get_related_products($id);
+            $data['pspecifications']    = $this->Admin_product_model->get_product_specification($id);
+            $data['product_images'] = $this->Admin_product_model->get_product_images($id);
+            $data['special_price']  = $this->Admin_product_model->get_special_prices($id);
+            $data['p_unit']                 = $this->Admin_length_model->get_length_unit($result->product_unit);
+            $data['w_unit']                 = $this->Admin_weight_model->get_weight_unit($result->weight_unit);
             // echo '<pre>';print_r($data['option_name']);die();
 
-            $pCategories	= $this->Admin_product_model->get_product_categories($id);
+            $pCategories    = $this->Admin_product_model->get_product_categories($id);
 
             $data['product_categories'] = $pCategories;
 
-            $data['route'] 	= 'product-edit.html?id='.$data['id'];
+            $data['route']  = 'product-edit.html?id='.$data['id'];
         }
         // if($_POST)
         // {
@@ -232,10 +233,10 @@ class Admin_products extends Admin_Controller {
         //$this->form_validation->set_rules('meta_description', 'Meta Description', 'trim|required');
         //$this->form_validation->set_rules('meta_keywords', 'Meta Keywords', 'trim|required');
 
-        $data['tree']	          = $this->Admin_product_model->categoryTree('','',$categories);
-        $data['length_menu'] 	  = $this->Admin_length_model->get_lengths_menu();
-        $data['weight_menu'] 	  = $this->Admin_weight_model->get_weights_menu();
-        $data['tax_classes'] 	  = $this->Admin_tax_class_model->get_all_tax_class();
+        $data['tree']             = $this->Admin_product_model->categoryTree('','',$categories);
+        $data['length_menu']      = $this->Admin_length_model->get_lengths_menu();
+        $data['weight_menu']      = $this->Admin_weight_model->get_weights_menu();
+        $data['tax_classes']      = $this->Admin_tax_class_model->get_all_tax_class();
 
 
        // echo '<pre>';print_r($data['tax_classes']);die();
@@ -312,7 +313,7 @@ setcookie('session_set', 1, time() + (86400 * 30), "/"); // 86400 = 1 day
             $save['quantity']                   = $this->input->post('quantity');
 
             // Links Tab
-			//$save['distributor_id']   			= $this->input->post('distributor_id');
+            //$save['distributor_id']               = $this->input->post('distributor_id');
             $save['brand_id']                   =$brand_id= $this->input->post('brand_id');
             $brand                              = $this->Admin_brand_model->get_brand($this->input->post($brand_id));
             $save['brand_name']                 = ($brand)?$brand->name:'';
@@ -348,10 +349,12 @@ setcookie('session_set', 1, time() + (86400 * 30), "/"); // 86400 = 1 day
             $save['variants_type']                = $this->input->post('option_type');
             $save['variants_quantity']            = $this->input->post('variants_quantity');
             $save['variants_price']               = $this->input->post('variants_price');
-            // $save['dis_mode']               = $this->input->post('dis_mode');
-            // $save['dis_val']               = $this->input->post('dis_val');
-            // $save['dis_sdate']               = $this->input->post('dis_sdate');
-            // $save['dis_edate']               = $this->input->post('dis_edate');
+            $save['dis_mode']               = $this->input->post('dis_mode');
+            $save['dis_val']               = $this->input->post('dis_val');
+            $save['dis_sdate']               = $this->input->post('dis_sdate');
+            $save['dis_edate']               = $this->input->post('dis_edate');
+            $save['variants_imgs']               = $this->input->post('att_img');
+            $save['variants_sku']                 = $this->input->post('variants_sku');
             $save['variants_imgs']               = $this->input->post('att_img');
             $save['variants_sku']                 = $this->input->post('variants_sku');
 
@@ -362,15 +365,15 @@ setcookie('session_set', 1, time() + (86400 * 30), "/"); // 86400 = 1 day
 
 
             if(!empty($this->input->post('option_value')))
-			{
-				$vls = $this->input->post('option_value');
-				foreach($vls as $k=> $v)
-				{
-					$exp = array_unique(explode(',',$v));
-					$vls[$k] = implode(',',$exp);
-				}
+            {
+                $vls = $this->input->post('option_value');
+                foreach($vls as $k=> $v)
+                {
+                    $exp = array_unique(explode(',',$v));
+                    $vls[$k] = implode(',',$exp);
+                }
                 $save['option_value']                 =  json_encode($vls);
-			}
+            }
             else
                 $save['option_value']                 = '';
             if(!empty($this->input->post('color_code')))
@@ -440,18 +443,20 @@ setcookie('session_set', 1, time() + (86400 * 30), "/"); // 86400 = 1 day
 
              
             // echo'<pre>';print_r($save['product_option_value_id']);die;
+            
+
             $this->Admin_product_model->save($save);
             wite_nav_curl();
 
 
 
-			// $this->admin_session->set_flashdata('message', 'Product have been saved successfully!'); 
+            // $this->admin_session->set_flashdata('message', 'Product have been saved successfully!'); 
             $_SESSION['message'] = 'Product have been saved successfully!';
 
-			
-			custom_redirect(base_url($this->admin_folder .'/'. $this->controller_dir. '/products.html'));
-		}
-	}
+            
+            custom_redirect(base_url($this->admin_folder .'/'. $this->controller_dir. '/products.html'));
+        }
+    }
 
     public function createSlug($str, $delimiter = '-')
     {
@@ -469,7 +474,7 @@ setcookie('session_set', 1, time() + (86400 * 30), "/"); // 86400 = 1 day
     function is_product_sku_already_exist($str)
     {
 
-        $product_id	= $this->input->get('id');
+        $product_id = $this->input->get('id');
         $result = $this->Admin_product_model->is_sku_already_exist($str , $product_id);
         if ($result)
         {
@@ -501,41 +506,134 @@ setcookie('session_set', 1, time() + (86400 * 30), "/"); // 86400 = 1 day
         ajax_response($json);
     }
 
-	public function products_autocomplete()
+    public function products_autocomplete()
     {
-        $term['term'] 		= $this->input->post('term') ? $this->input->post('term') : '';
+        $term['term']       = $this->input->post('term') ? $this->input->post('term') : '';
 
         $term = json_encode($term);
 
-        $rows 		= 10;
-        $per_page 	= '';
+        $rows       = 10;
+        $per_page   = '';
 
-        $result['result']	= $this->Admin_product_model->get_products_typehead(array('term'=>$term,'rows'=>$rows, 'per_page'=>$per_page));
+        $result['result']   = $this->Admin_product_model->get_products_typehead(array('term'=>$term,'rows'=>$rows, 'per_page'=>$per_page));
        echo json_encode($result['result']);
         //ajax_response($result);
-	}
+    }
 
 
     public function category_autocomplete()
     {
-        $term['term'] 		= $this->input->post('term') ? $this->input->post('term') : '';
+        $term['term']       = $this->input->post('term') ? $this->input->post('term') : '';
 
         $term = json_encode($term);
 
-        $rows 		= 10;
-        $per_page 	= '';
+        $rows       = 10;
+        $per_page   = '';
 
-        $result['result']	= $this->Admin_category_model->get_category_typehead(array('term'=>$term,'rows'=>$rows, 'per_page'=>$per_page));
+        $result['result']   = $this->Admin_category_model->get_category_typehead(array('term'=>$term,'rows'=>$rows, 'per_page'=>$per_page));
 
         echo json_encode($result['result']);
         //ajax_response($result);
+    }
+    private function create_comb($data)
+    {
+        $data = $_POST;
+        $variants_quantity = isset($data['variants_quantity']) ? $data['variants_quantity'] : array();
+        unset($data['variants_quantity']);
+        $dis_mode = isset($data['dis_mode']) ? $data['dis_mode'] : array();
+        unset($data['dis_mode']);
+        $dis_val = isset($data['dis_val']) ? $data['dis_val'] : array();
+        unset($data['dis_val']);
+        $dis_sdate = isset($data['dis_sdate']) ? $data['dis_sdate'] : array();
+        unset($data['dis_sdate']);
+        $dis_edate = isset($data['dis_edate']) ? $data['dis_edate'] : array();
+        unset($data['dis_edate']);
+
+        $variants_price = isset($data['variants_price']) ? $data['variants_price'] : array();
+        unset($data['variants_price']);
+        $variants_imgs = isset($data['att_img']) ? $data['att_img'] : array();
+        // dd($variants_imgs);
+
+        $variants_sku = isset($data['variants_sku']) ? $data['variants_sku'] : array();
+        unset($data['variants_sku']);
+
+        $option_name = isset($data['option_filter_name']) ? $data['option_filter_name'] : array();
+        unset($data['option_filter_name']);
+        $product_option_value_id = isset($data['product_option_value_id']) ? $data['product_option_value_id'] : array();
+        unset($data['product_option_value_id']);
+        $variants_combination = isset($data['variants_combination']) ? $data['variants_combination'] : array();
+        $c = array();
+        for ($i = 0; $i < count($product_option_value_id); $i++) {
+                    if(isset($variants_sku[$i]) && $variants_sku[$i])
+                    {
+                        $combination = [];
+                        $uid = $product_option_value_id[$i];
+
+
+                        foreach ($variants_combination as $key => $value) {
+                            $combination[$key] = $value[$i];
+                        }
+
+                            $params = array(
+                                'product_option_value_id' => $uid,
+                                'product_id' => $id,
+                                'quantity' => $variants_quantity[$i],
+                                'price' => $variants_price[$i],
+                                'sku' => $variants_sku[$i],
+                                'dis_mode' => $dis_mode[$i],
+                                'dis_val' => $dis_val[$i],
+                                'dis_sdate' => $dis_sdate[$i],
+                                'dis_edate' => $dis_edate[$i],
+                                'combination' => $combination,
+                            );
+                            if(isset($variants_imgs[$i]) && $variants_imgs[$i])
+                            {
+                                $params['image'] = ($variants_imgs[$i] == 'del')?'':$variants_imgs[$i];
+                                $target_folder = 'images/products/small/'.$params['image'];
+                                $exist = file_exists($target_folder);
+                            $variants[$key]['exist'] = $exist;
+                            $variants[$key]['pexist'] = $target_folder;
+
+
+                            if($exist)
+                            {
+                                $params['path'] = 'small';
+                            }
+                            else
+                            {
+                                $params['path'] = 'temp';
+                            }
+                                
+                            }
+                            $c[] = $params;
+                    }
+
+                }
+        if(isset($data['variants_combination']) && $data['variants_combination'])
+        {
+            return $c;
+        }
+    }
+    function check_exist($data, $id)
+    {
+        $r = array();
+        foreach ($data as $key => $value) {
+            if($value['product_option_value_id'] == $id)
+            {
+                $r = $value;
+
+            }
+        }
+        return $r;
     }
 
     public function save_options()
     {
 
+        $comb = $this->create_comb($_POST);
         $product_id =  $this->input->post('product_id');
         $product_name =  $this->input->post('product_name');
+        // dd($_POST);
 
         $option_name = null;
         $option_value = null;
@@ -544,21 +642,21 @@ setcookie('session_set', 1, time() + (86400 * 30), "/"); // 86400 = 1 day
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($this->input->post('option_name'))) {
             $option_name = $this->input->post('option_name');
             $option_value = $option_value_def = $this->input->post('option_value');
-			$vls = $this->input->post('option_value');
-				foreach($vls as $k=> $v)
-				{
-					$exp = array_unique(explode(',',$v));
-					$vls[$k] = implode(',',$exp);
-				}
-				$option_value = $vls;
-			
+            $vls = $this->input->post('option_value');
+                foreach($vls as $k=> $v)
+                {
+                    $exp = array_unique(explode(',',$v));
+                    $vls[$k] = implode(',',$exp);
+                }
+                $option_value = $vls;
+            
         }
 
         // Check for DB if from data unavailable
         if (!empty($product_id) && (!empty($option_name) || !empty($option_value))) {
             try {
 
-                $result	= $this->Admin_product_model->get_product_options($product_id);
+                $result = $this->Admin_product_model->get_product_options($product_id);
 
                 $option_name = !empty($result['option_name']) ? json_decode($result['option_name']) : null;
                 $option_value = !empty($result['option_value']) ? json_decode($result['option_value']) : null;
@@ -567,8 +665,46 @@ setcookie('session_set', 1, time() + (86400 * 30), "/"); // 86400 = 1 day
 
                 $options = $this->prepareOptions($option_name, $option_value);
 
-                $variants	= $this->Admin_product_model->get_product_option_value($product_id);
-                // dd($variants);
+                $variants   = $this->Admin_product_model->get_product_option_value($product_id);
+                if($variants)
+                {
+                    $exists = array();
+                    // dd($variants[0]);
+                    foreach ($variants as $key => $value) {
+                        $al = $this->check_exist($comb, $value['product_option_value_id']);
+                        $variants[$key]['path'] = 'small';
+                        $target_folder = 'images/products/small/'.$variants[$key]['image'];
+                        if($variants[$key]['image'])
+                        {
+                            $exist = file_exists($target_folder);
+                            $variants[$key]['exist'] = $exist;
+                            $variants[$key]['pexist'] = $target_folder;
+
+                            if($exist)
+                            {
+                                $variants[$key]['path'] = 'small';
+                            }
+                            else
+                            {
+                                $variants[$key]['path'] = 'temp';
+                            }
+                            
+                        }
+                        
+                        if($al)
+                        {
+                            $variants[$key] = $al;
+                        }
+                    }
+                    
+                    foreach ($comb as $key => $value) {
+                        if(!$value['product_option_value_id'])
+                        {
+                            $variants[] = $value;
+                        }
+                    }
+                }
+
 
 
                 $optionCol = [];
@@ -580,7 +716,7 @@ setcookie('session_set', 1, time() + (86400 * 30), "/"); // 86400 = 1 day
                     $variantsData = [
                         'options' => $options,
                         'columns' => $optionCol,
-                        'rows' => [],
+                        'rows' => $variants,
                     ];
 
                     echo $theHTMLResponse    = $this->load->view($this->admin_view . '/' . $this->view_dir . '/new_options.php', $variantsData, true);
@@ -594,10 +730,11 @@ setcookie('session_set', 1, time() + (86400 * 30), "/"); // 86400 = 1 day
         $combinations = $this->getVariantCombinations($options);
         // echo 'option<pre>';print_r($options);die;
         $variants = [];
+
         $variant_tmpl = [
             'product_option_value_id' => 1,
             'product_id' => 1,
-            'combination' => [],
+            'combination' =>$comb,
             'price' => 1,
             'quantity' => 1,
             'sku' => 1,
@@ -652,11 +789,12 @@ setcookie('session_set', 1, time() + (86400 * 30), "/"); // 86400 = 1 day
 
 
         // if options are not available on this stage then return empty object
+
         if (empty($option_name) || empty($option_value)) {
             $variantsData = [
                 'options' => [],
                 'columns' => [],
-                'rows' => [],
+                'rows' => array(),
             ];
 
 
@@ -664,8 +802,6 @@ setcookie('session_set', 1, time() + (86400 * 30), "/"); // 86400 = 1 day
             echo $theHTMLResponse    = $this->load->view($this->admin_view . '/' . $this->view_dir . '/options.php', $variantsData, true);
             exit();
         }
-
-
 
         $options = $this->prepareOptions($option_name, $option_value);
         // Get all combinations
@@ -705,7 +841,7 @@ setcookie('session_set', 1, time() + (86400 * 30), "/"); // 86400 = 1 day
         $variantsData = [
             'options' => $options,
             'columns' => $optionCol,
-            'rows' => array(),
+            'rows' => $comb,
         ];
 
 
@@ -857,14 +993,14 @@ setcookie('session_set', 1, time() + (86400 * 30), "/"); // 86400 = 1 day
 
         $target_folder = 'images/products/';
 
-        //$data['file_name'] 		= false;
-        $data['error']			= false;
+        //$data['file_name']        = false;
+        $data['error']          = false;
 
-        $config['allowed_types'] 	= 'gif|jpg|png|jpeg|webp';
-        $config['max_size']		= $this->config->item('size_limit');
-        $config['upload_path'] 		= $target_folder . 'temp/';
-        $config['encrypt_name'] 	= true;
-        $config['remove_spaces']	= false;
+        $config['allowed_types']    = 'gif|jpg|png|jpeg|webp';
+        $config['max_size']     = $this->config->item('size_limit');
+        $config['upload_path']      = $target_folder . 'temp/';
+        $config['encrypt_name']     = true;
+        $config['remove_spaces']    = false;
 
         $this->load->library('upload', $config);
 
@@ -886,7 +1022,7 @@ setcookie('session_set', 1, time() + (86400 * 30), "/"); // 86400 = 1 day
                 $data['file_name'] = base_url($config['upload_path'].'/'.$data['file_name']);
                 $data['success'] = 1;
             }
-            $data['file_name_orig']	= $upload_data['orig_name'];
+            $data['file_name_orig'] = $upload_data['orig_name'];
 
         }
 
@@ -914,13 +1050,13 @@ setcookie('session_set', 1, time() + (86400 * 30), "/"); // 86400 = 1 day
 
 
         //this is the image
-        $config['image_library'] 	= 'gd2';
-        $config['source_image'] 	= $target_folder . 'temp/'. $image_name;
-        $config['new_image']		= $target_folder . 'full/'. $image_name;
-        $config['maintain_ratio'] 	= TRUE;
-        $config['width'] 			=  $size['primary']['width'];
-        $config['height']			=  $size['primary']['height'];
-		
+        $config['image_library']    = 'gd2';
+        $config['source_image']     = $target_folder . 'temp/'. $image_name;
+        $config['new_image']        = $target_folder . 'full/'. $image_name;
+        $config['maintain_ratio']   = TRUE;
+        $config['width']            =  $size['primary']['width'];
+        $config['height']           =  $size['primary']['height'];
+        
         $this->image_lib->initialize($config);
 
         $r = $this->image_lib->resize();
@@ -928,35 +1064,35 @@ setcookie('session_set', 1, time() + (86400 * 30), "/"); // 86400 = 1 day
 
 
         //this is the larger image
-        $config['image_library'] 	= 'gd2';
-        $config['source_image'] 	= $target_folder . 'full/'. $image_name;
-        $config['new_image']		= $target_folder . 'medium/'. $image_name;
-        $config['maintain_ratio'] 	= TRUE;
-        $config['width'] 			=  $size['large']['width'];
-        $config['height']			=  $size['large']['height'];
+        $config['image_library']    = 'gd2';
+        $config['source_image']     = $target_folder . 'full/'. $image_name;
+        $config['new_image']        = $target_folder . 'medium/'. $image_name;
+        $config['maintain_ratio']   = TRUE;
+        $config['width']            =  $size['large']['width'];
+        $config['height']           =  $size['large']['height'];
         $this->image_lib->initialize($config);
         $this->image_lib->resize();
         $this->image_lib->clear();
 
         //small image
-        $config['image_library'] 	= 'gd2';
-        $config['source_image'] 	= $target_folder . 'medium/'. $image_name;
-        $config['new_image']		= $target_folder . 'small/'. $image_name;
-        $config['maintain_ratio'] 	= TRUE;
-        $config['width'] 			=  $size['small']['width'];
-        $config['height']			=  $size['small']['height'];
+        $config['image_library']    = 'gd2';
+        $config['source_image']     = $target_folder . 'medium/'. $image_name;
+        $config['new_image']        = $target_folder . 'small/'. $image_name;
+        $config['maintain_ratio']   = TRUE;
+        $config['width']            =  $size['small']['width'];
+        $config['height']           =  $size['small']['height'];
         $this->image_lib->initialize($config);
         $this->image_lib->resize();
         $this->image_lib->clear();
 
         //cropped thumbnail
-        $config['image_library'] 	= 'gd2';
-        $config['source_image'] 	= $target_folder . 'medium/'. $image_name;
-        $config['new_image']		= $target_folder . 'thumbnails/'.$image_name;
-        $config['maintain_ratio'] 	= TRUE;
-        $config['width'] 			=  $size['thumb']['width'];
-        $config['height']			=  $size['thumb']['height'];
-        $config['exact_size']		= TRUE;
+        $config['image_library']    = 'gd2';
+        $config['source_image']     = $target_folder . 'medium/'. $image_name;
+        $config['new_image']        = $target_folder . 'thumbnails/'.$image_name;
+        $config['maintain_ratio']   = TRUE;
+        $config['width']            =  $size['thumb']['width'];
+        $config['height']           =  $size['thumb']['height'];
+        $config['exact_size']       = TRUE;
         $this->image_lib->initialize($config);
         $this->image_lib->resize();
         $this->image_lib->clear();

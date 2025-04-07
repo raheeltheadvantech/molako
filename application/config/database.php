@@ -15,7 +15,7 @@ if (strpos($ip_address, '192.168') === 0) {
 
 	'password' => '',
 
-	'database' => 'molako3',
+	'database' => 'molako5',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => 'ci_',
 	'pconnect' => FALSE,
@@ -39,7 +39,7 @@ if (strpos($ip_address, '192.168') === 0) {
 
 	'password' => '',
 
-	'database' => 'molako3',
+	'database' => 'molako5',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => 'ci_',
 	'pconnect' => FALSE,

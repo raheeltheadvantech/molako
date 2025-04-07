@@ -924,7 +924,8 @@ class Onepage_checkout extends User_Public_Controller {
                         'product_options' => $product_options,
                         'sku' => $v['sku'],
                         'quantity' => $v['quantity'],
-                        'unite_price' => format_currency(round($v['price'], 2)),
+                        'cut_price' => $v['cut_price'],
+                        'unite_price' => round($v['price'], 2),
                         'unite_price_simple' => round($v['price'], 2),
                         'total' => format_currency(round($item_total, 2)),
                     );

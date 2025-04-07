@@ -41,13 +41,16 @@ class User_home extends User_Public_Controller {
     { 
         $data['special_products'] = $this->User_featured_module_model->get_new_special_products(4); // Fetch special products
         // dd($data['special_products']);
+        //dd($this->db->last_query());
+        // dd($data['special_products']);
         echo $this->load->view('special_products1', $data, true);
         exit();
     }
 
-    public function best_products()
+    public function best_products() 
     { 
         $data['bestseller_products'] = $this->User_featured_module_model->get_bestseller_products(8); // Fetch special products
+        // dd($this->db->last_query());
         // dd($data['bestseller_products'][2]);
         echo $this->load->view('best_products', $data, true);
         exit();
@@ -130,7 +133,7 @@ class User_home extends User_Public_Controller {
 
 		// +----------------[BESTSELLER PRODUCTS START]----------------------+
 		$bestseller_product_rows = (object)array();
-        $data['bestseller_products'] = $this->User_featured_module_model->get_bestseller_products(8);
+        $data['bestseller_products'] = array();
 
 
          // pre($data['bestseller_products']);die;

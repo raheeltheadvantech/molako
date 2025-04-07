@@ -30,12 +30,27 @@
             <link rel="stylesheet" href="<?php echo site_url($assets_dir.'animate.css') ?>">
             <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
 
-            <link rel="stylesheet" href="<?php echo site_url($assets_dir.'styles.css') ?>">
+            <link rel="stylesheet" href="<?php echo site_url($assets_dir.'styles.css') ?>?v=<?= time() ?>">
             <!--Adeel css-->
             <style type="text/css">
                 .hover-tooltip{
                     border:1px solid #c9c9c9 !important;
                 }
+                #whatsapp-button {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 9999;
+        background-color: #25d366;
+        padding: 0px;
+        border-radius: 50%;
+        box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+        transition: transform 0.2s ease-in-out;
+    }
+    
+    #whatsapp-button:hover {
+        transform: scale(1.1);
+    }
 
   #footer{
     background-color: #000 !important;
@@ -101,9 +116,6 @@
     padding-bottom: 7px;
     color: #fff !important;
     position: relative;
-  }
-  .tf-login-wrap .btn-line {
-    color: #000 !important;
   }
   .btn-line .icon {
     margin-inline-start: 8px;
@@ -258,6 +270,7 @@
 .tf-sw-collection {
     .swiper-slide {
         img {
+            height: 300px !important;
 	    object-fit: contain !important; 
         }
     }
@@ -277,8 +290,8 @@
             <div class="px_15 lg-px_40">
                 <div class="tf-top-bar_wrap grid-3 gap-30 align-items-center">
                     <ul class="tf-top-bar_item tf-social-icon d-flex gap-10">
-                        <li><a  target="_blank" href="https://www.facebook.com/MolakoPeshawar?mibextid=ZbWKwL" class="box-icon w_28 round social-facebook bg_line"><img src="<?= base_url($assets_img_dir) ?>facebook_icon.png" /></a></li>
-                        <li><a target="_blank" href="https://www.instagram.com/molako_peshawar?igsh=c3R2eTY1bDlxcWhs" class="box-icon w_28 round social-instagram bg_line"><img src="<?= base_url($assets_img_dir) ?>instagram_icon.png" /></a></li>
+                        <li><a  target="_blank" href="https://www.facebook.com/MolakoPeshawar?mibextid=ZbWKwL" class="box-icon w_28 round social-facebook bg_line"><img src="<?= live_img_url().$assets_img_dir ?>facebook_icon.png" /></a></li>
+                        <li><a target="_blank" href="https://www.instagram.com/molako_peshawar?igsh=c3R2eTY1bDlxcWhs" class="box-icon w_28 round social-instagram bg_line"><img src="<?= live_img_url().$assets_img_dir ?>instagram_icon.png" /></a></li>
                     </ul>
                     <div class="text-center overflow-hidden">
                         <div class="swiper tf-sw-top_bar" data-preview="1" data-space="0" data-loop="true" data-speed="1000" data-delay="2000">

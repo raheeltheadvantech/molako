@@ -82,7 +82,21 @@
                                                 <p class="name"><?= $product->product_name; ?></p>
                                                 <span class="variant"><?= $product->product_options; ?></span>
                                             </div>
-                                            <span class="price"><?= $product->unite_price; ?></span>
+                                            <span class="price"><?php
+                                                if((double)$product->unite_price < (double)$product->cut_price)
+                                    {
+                                        $product->unite_price = (float) $product->unite_price;
+                                        ?>
+                                        <p style="font-weight: bold; margin-left: 10px;"><span style="left: -10px; color:red;" class="cut_price"><?php echo format_currency($product->cut_price); ?></span><?php echo format_currency($product->unite_price); ?></p>
+                                        <?php
+                                    }
+                                    else
+                                    {
+                                        ?>
+                                        <p style="font-weight: bold; margin-left: 10px;"><?php echo format_currency($val->unite_price); ?></p>
+                                        <?php
+                                    }
+                                    ?></span>
                                         </div>
                                     </li>
                                     <?php endforeach; ?>

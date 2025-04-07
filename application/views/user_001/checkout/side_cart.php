@@ -49,8 +49,25 @@
                                             <a href="<?php echo href_product($product)?>"><?php echo $product->product_name; ?></a>
 
                                             <div class="cart-meta-variant"><?php echo $product->product_options; ?></div>
+											
 
-                                            <div class="price fw-6 cart-total"><?= $product->total ?></div>
+                                            <div class="price fw-6 cart-total">
+                                                <?php
+                                                if((double)$product->total < (double)$product->cut_price)
+                                    {
+                                        $product->total = (float) $product->total;
+                                        ?>
+                                        <p style="font-weight: bold; margin-left: 10px;"><span style="left: -10px; color:red;" class="cut_price"><?php echo format_currency($product->cut_price); ?></span><?php echo format_currency($product->total); ?></p>
+                                        <?php
+                                    }
+                                    else
+                                    {
+                                        ?>
+                                        <p style="font-weight: bold; margin-left: 10px;"><?php echo format_currency($val->total); ?></p>
+                                        <?php
+                                    }
+                                    ?>
+                                            </div>
 
 <div class="tf-mini-cart-btns">
 
@@ -101,7 +118,7 @@
                                 <div class="tf-mini-cart-line"></div>
 
                                 <div class="tf-mini-cart-view-checkout">
-
+ 
                                     <a href="<?= base_url('checkout/cart.html'); ?>" class="tf-btn btn-outline radius-3 link w-100 justify-content-center">View cart</a>
 
                                 </div>
@@ -293,3 +310,16 @@
                     </div>
 
                 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<script type="text/javascript">
+    function side_cart()
+    {
+        if(document.getElementById('side_check').checked) {
+    location.href = '<?= base_url('checkout/cart.html'); ?>';
+
+} else {
+    toastr.error('error','Please Agree to Term and condition to continue');
+}
+
+    }
+</script>

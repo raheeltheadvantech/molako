@@ -18,7 +18,6 @@ if ( ! function_exists('force_ssl'))
 		}
 	}
 }
-
 if ( ! function_exists('remove_ssl'))
 {
 	function remove_ssl()

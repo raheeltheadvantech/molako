@@ -90,16 +90,30 @@
                                 }
                                 else
                                 {
+                                    // echo get_current_price($val->product_id);
+                                    if($val->final_price < $val->sale_price)
+                                    {
+                                        ?>
+                                        <p style="font-weight: bold; margin-left: 10px;"><span style="left: -10px; color:red;" class="cut_price"><?php echo format_currency($val->sale_price); ?></span><?php echo format_currency($val->final_price); ?></p>
+                                        <?php
+                                    }
+                                    else
+                                    {
+                                        ?>
+                                        <p style="font-weight: bold; margin-left: 10px;"><?php echo format_currency($val->final_price); ?></p>
+                                        <?php
+                                    }
+                                }
 
 
-                                if(!empty($val->varient_price) && $val->varient_price >0){?>
+                                /*if(!empty($val->varient_price) && $val->varient_price >0){?>
                                     <p style="font-weight: bold;">Rs <?php echo ($val->varient_price)?$val->varient_price:$val->sale_price; ?></p>
                                 <?php } else { 
                                     if(!empty($val->special_price)){?>
                                     <p style="font-weight: bold; margin-left: 10px;"><span style="left: -10px; color:red;" class="cut_price"><?php echo format_currency($val->sale_price); ?></span><?php echo format_currency($val->special_price); ?></p>                                <?php }else{?>
                                     <p style="font-weight: bold;">Rs <?php echo ($val->sale_price); ?></p>
-                                <?php }}
-                            }
+                                <?php }}*/
+                            
 
                                 ?>
                                                     <div class="tf-product-btns">

@@ -223,10 +223,12 @@ class Cart_lib {
     {
         $product_id = $item['product_id'];
         $product_info = $this->CI->User_catalog_model->get_product($product_id);
+
         if(!$product_info)
         {
             return (object)array('error'=>true, 'message'=>'Product not found', 'data'=>false);
         }
+        $cut_price = $product_info->sale_price;
         
         $cart = $this->CI->user_session->userdata('cart') ? $this->CI->user_session->userdata('cart') : array();
 
@@ -255,10 +257,13 @@ class Cart_lib {
             $options = ($item['options'])?$item['options']:array();
             $product_option_value_id = $item['product_option_value_id'];
 
+
             if(!empty($product_option_value_id)) {
+                $row = (object)$this->CI->User_catalog_model->get_product_option($product_id, $product_option_value_id);
+                $cut_price = $row->original_price;
 
 				 
-                $product_option_price = $this->CI->User_catalog_model->get_column_value('product_option_value', 'product_option_value_id', $product_option_value_id, 'price');
+                $product_option_price = $row->final_price;
                 $product_option_image = $this->CI->User_catalog_model->get_column_value('product_option_value', 'product_option_value_id', $product_option_value_id, 'image');
                 if(true)
                 {
@@ -294,7 +299,9 @@ class Cart_lib {
         // }
 
         $special_price = get_product_special_price($product_id);
-        $product_info->price = $special_price > 0 ? $special_price : $product_info->sale_price;
+        $product_info->price = get_current_price($product_id);
+        
+        // dd($this->CI->db->last_query());
         $product_cur_qty = 0;
 		if($options && !$product_option_value_id)
 		{
@@ -307,12 +314,16 @@ class Cart_lib {
         }
 
 
-        if($product_option_value_id != '' && $product_option_price > 0){
-            $product_info->price = $product_option_price;
+        if($product_option_value_id != '' ){
+            $row = $this->CI->User_catalog_model->get_product_option($product_id, $product_option_value_id);
+
+            $product_option_price = $row['final_price'];
+            $product_info->price = $row['final_price'];
         }
 		
 
         if($product_option_value_id != '' && $product_option_sku != ''){
+
             $product_info->sku = $product_option_sku;
         }
         if ($options) 
@@ -322,6 +333,7 @@ class Cart_lib {
             $curr_qty = get_current_qty($product_info->product_id);
         }
         $product_cur_qty = $curr_qty;
+
 
         //here check config_catalog_purchase
         $config_catalog_purchase = $this->CI->db->where('key','config_catalog_purchase')->get('ci_settings')->row();
@@ -363,11 +375,13 @@ class Cart_lib {
 		} 
 
         // ADDING OR UPDATING THE QUANTITY IN CART
+        
         $cart[$product_info->sku] = array(
             'product_id'    => $product_id,
             'variant_id'      => $product_option_value_id,
             'quantity'      => $quantity,
             'price'         => $product_info->price,
+            'cut_price'     => $cut_price,
             'options'       => $options,
             'product_option_value_id'       => $product_option_value_id,
             'product_option_value_img'       => $product_option_image,

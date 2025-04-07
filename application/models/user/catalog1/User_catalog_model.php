@@ -6,6 +6,36 @@ class User_catalog_model extends User_Model
 	{
 		parent::__construct();
 	}
+	public function get_product_option($product_id, $product_option_value_id) {
+        $this->db->select("
+            product_option_value_id,
+            product_id,
+            price AS original_price,
+            dis_mode,
+            dis_val,
+            dis_sdate,
+            dis_edate,
+            quantity,
+            combination,
+            CASE 
+                WHEN dis_val > 0 
+                     AND NOW() BETWEEN dis_sdate AND dis_edate 
+                     AND dis_mode = 'fixed' 
+                THEN price - dis_val 
+                WHEN dis_val > 0 
+                     AND NOW() BETWEEN dis_sdate AND dis_edate 
+                     AND dis_mode = 'per' 
+                THEN price - (price * dis_val / 100)
+                ELSE price 
+            END AS final_price
+        ");
+        $this->db->from('ci_product_option_value');
+        $this->db->where('product_id', $product_id);
+        $this->db->where('product_option_value_id', $product_option_value_id);
+        $query = $this->db->get();
+        
+        return $query->row_array(); // Return single row as an array
+    }
 	
 	function get_products($data=array(), $return_count=false, $is_deals=null, $brand_slug=0)
 	{

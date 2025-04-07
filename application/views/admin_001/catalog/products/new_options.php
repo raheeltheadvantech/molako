@@ -15,6 +15,10 @@
         <th>Price</th>
         <th>Stock</th>
         <th>SKU</th>
+        <th>Discount Mode</th>
+        <th>Discount Value</th>
+        <th>start date</th>
+        <th>end date</th>
         <th>Image</th>
         <th></th>
     </tr>
@@ -58,6 +62,22 @@
         </td>
         <td>
             <input type="text" name="variants_sku[]" class="form-control"/>
+        </td>
+        <td>
+            <select name="dis_mode[]" class="form-control">
+                <option value=" ">Discount Mode</option>
+                <option value="fixed">Fixed</option>
+                <option value="per">Percentage</option>
+            </select>
+        </td>
+        <td>
+            <input type="text" name="dis_val[]" class="form-control"/>
+        </td>
+        <td>
+            <input type="date" name="dis_sdate[]" class="form-control date_ex"/>
+        </td>
+        <td>
+            <input type="date" name="dis_edate[]" class="form-control date_ex"/>
         </td>
         <td>
             <div class="col-sm-8">
@@ -128,20 +148,39 @@
                                                 type="text" name="variants_sku[]"
                                                 value="<?php echo $val['sku']; ?>" readonly></div>
         </td>
+
+        <td>
+            <select name="dis_mode[]" class="form-control">
+                <option value=" ">Discount Mode</option>
+                <option value="fixed" <?= ($val['dis_mode'] == 'fixed')?'selected':
+                '' ?>>Fixed</option>
+                <option value="per" <?= ($val['dis_mode'] == 'per')?'selected':
+                '' ?>>Percentage</option>
+            </select>
+        </td>
+        <td>
+            <input type="text" name="dis_val[]" value="<?php echo $val['dis_val'] ?>" class="form-control"/>
+        </td>
+        <td>
+            <input type="date" name="dis_sdate[]" value="<?= $val['dis_sdate'] ?>" class="form-control"/>
+        </td>
+        <td>
+            <input type="date" name="dis_edate[]" value="<?= $val['dis_edate'] ?>" class="form-control"/>
+        </td>
         <td>
             <div class="col-sm-8">
             <input type="file" name="image_file[]" class="form-control" id="imageUpload" <?= (isset($val['image']) && $val['image'])?'disabled':''; ?>>
             </div>
             <div class="col-sm-4">
         <button type="button" onclick="uploadImage(event)" class="upatt_img btn btn-primary">Upload</button></div>
-            <input type="hidden" name="att_img[]" class="att_img" />
+            <input type="hidden" value="<?php echo $val['image']; ?>" name="att_img[]" class="att_img" />
         </td>
         <td id="uploadedImageContainer" class="uploadedImageContainer">
             <?php
             if(isset($val['image']) && $val['image'])
             {
                 ?>
-                        <img src="<?= base_url(); ?>/images/products/small/<?= $val['image'] ?>" class="img-thumbnail" width="100">
+                        <img src="<?= base_url(); ?>/images/products/<?= isset($val['path'])?$val['path']:'small'; ?>/<?= $val['image'] ?>" class="img-thumbnail" width="100">
                         <button type="button" class="btn btn-danger removeImage" >Remove</button>
 
                 <?php
@@ -155,7 +194,7 @@
     </tr>
     <?php $num++; } ?>
     </tbody>
-    <tfoot><tr> <td colspan="<?= count($options)+4 ?>"></td><td><td>
+    <tfoot><tr> <td colspan="<?= count($options)+8 ?>"></td><td><td>
             <button type="button" onclick="copy_row();" class="btn btn-primary">+</button>
         </td></td> </tr></tfoot>
     
@@ -307,4 +346,5 @@ function remo_var() {
     row.remove();
     ch_attr();  // Recalculate after removing a row
 }
+$(".date_ex").datepicker({ dateFormat: 'yy-mm-dd' });
 </script>

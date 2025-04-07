@@ -21,7 +21,7 @@
                     <div class="swiper-slide">
                         <div class="wrap-slider">
                             <img src="<?php echo live_img_url().'images/slides/temp/' . $val->image; ?>" alt="slider-image">
-                            <div class="box-content c-box">
+                            <div class="box-content">
                                 <div class="container">
                                     <?php if($val->head): ?>
                                     <h5 class="fade-item fade-item-1 text text-uppercase"><?php echo html_entity_decode($val->head); ?></h5>
