@@ -247,7 +247,7 @@ class Email_model extends CI_Model
         CURLOPT_TIMEOUT => 30,
         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
         CURLOPT_CUSTOMREQUEST => "POST",
-        CURLOPT_POSTFIELDS => json_encode($data),
+        CURLOPT_POSTFIELDS => json_encode($data), //test
         CURLOPT_HTTPHEADER => [
             "authorization: Bearer ".$settings['sendgrid_key'], // Replace this with your real SendGrid API key
             "cache-control: no-cache",
