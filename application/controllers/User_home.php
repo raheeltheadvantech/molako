@@ -70,7 +70,90 @@ class User_home extends User_Public_Controller {
         echo $this->load->view('best_products', $data, true);
         exit();
     }
+ public function test_sku() { 
+        // Load DB
+        $this->load->database();
 
+        // 1. Fetch all product variations
+        $query = $this->db->select('product_option_value_id, product_id, sku')
+                          ->from('ci_product_option_value')
+                          ->order_by('product_id')
+                          ->get();
+
+        $results = $query->result();
+
+        // 2. Organize SKUs by product_id
+        $sku_tracker = [];
+
+        foreach ($results as $row) {
+            $product_id = $row->product_id;
+            $sku = $row->sku;
+            $id = $row->product_option_value_id;
+
+            if (!isset($sku_tracker[$product_id])) {
+                $sku_tracker[$product_id] = [];
+            }
+
+            if (in_array($sku, $sku_tracker[$product_id])) {
+                // Duplicate SKU found, append number
+                $counter = 1;
+                $new_sku = $sku . '-' . $counter;
+
+                // Keep increasing counter until unique
+                while (in_array($new_sku, $sku_tracker[$product_id])) {
+                    $counter++;
+                    $new_sku = $sku . '-' . $counter;
+                }
+
+                // Update the record with new SKU
+                $this->db->where('product_option_value_id', $id)
+                         ->update('ci_product_option_value', ['sku' => $new_sku]);
+
+                echo "Updated SKU for ID $id => New SKU: $new_sku <br>";
+                $sku_tracker[$product_id][] = $new_sku;
+
+            } else {
+                // No duplicate, keep as it is
+                $sku_tracker[$product_id][] = $sku;
+            }
+        }
+
+        echo "SKU fixing completed!";
+    }
+
+    public function test_email()
+{
+$this->load->library('email');
+
+$config = array(
+    'protocol'  => 'smtp',
+    'smtp_host' => 'ssl://mail.molako.com', // Bluehost SMTP host
+    'smtp_port' => 465,  
+    'smtp_user' => 'info@molako.com',
+    'smtp_pass' => '!tJC{v^.zp0R', // Yahan runtime par set hoga
+    'mailtype'  => 'html',
+    'charset'   => 'utf-8',
+    'newline'   => "\r\n",
+    'wordwrap'  => TRUE,
+);
+
+// Email library ko config ke saath initialize karo
+$this->email->initialize($config);
+
+// Ab email bhejo
+$this->email->from('info@molako.com', 'Molako');
+$this->email->to('raheel@theadvantech.com');
+$this->email->subject('Testing SMTP Email');
+$this->email->message('<h1>SMTP Email Test</h1><p>This is a test email.</p>');
+
+// Send Email
+if ($this->email->send()) {
+    echo 'Email sent successfully!';
+} else {
+    echo 'Email sending failed: ' . $this->email->print_debugger();
+}
+
+}
     public function test()
     {  
     	wite_nav();
@@ -111,6 +194,7 @@ class User_home extends User_Public_Controller {
 		
 		$data['page_title']			= site_config_item('config_meta_title');
 		$data['page_header']		= site_config_item('config_meta_title');
+		$this->db->where('is_enabled', 1);
 		$brands = $this->db->get('brands')->result_array();
 		$data['brands'] = $brands;
 		$data['fbrands'] = $this->getUniqueFirstLetters($brands);

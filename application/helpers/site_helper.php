@@ -69,6 +69,7 @@ function wite_nav_curl()
 {
     $curl = curl_init();
 
+
 curl_setopt_array($curl, array(
   CURLOPT_URL => base_url().'/test.html',
   CURLOPT_RETURNTRANSFER => true,
@@ -251,8 +252,6 @@ if (!function_exists('get_base_product_query')) {
         $db->select("
             p.*, 
             ".$select."
-            
-            -- Determine the sale price (base or from variations)
             CASE 
                 WHEN NOT EXISTS (
                     SELECT 1 
@@ -266,8 +265,6 @@ if (!function_exists('get_base_product_query')) {
                     WHERE pov.product_id = p.product_id
                 )
             END AS sale_price,
-
-            -- Determine the final price after applying discounts
             CASE 
                 WHEN NOT EXISTS (
                     SELECT 1 
@@ -275,7 +272,6 @@ if (!function_exists('get_base_product_query')) {
                     WHERE pov.product_id = p.product_id
                 ) 
                 THEN 
-                    -- Apply brand discount if available
                     CASE 
                         WHEN b.dis_val > 0 
                         AND CURDATE() BETWEEN b.dis_sdate AND b.dis_edate 
@@ -287,7 +283,6 @@ if (!function_exists('get_base_product_query')) {
                                 THEN (p.sale_price - (p.sale_price * b.dis_val / 100))
                                 ELSE p.sale_price
                             END
-                        -- If no brand discount, check special price table
                         ELSE COALESCE(
                             (SELECT sp.price 
                             FROM " . $db->dbprefix('product_special_price') . " sp 
@@ -298,10 +293,8 @@ if (!function_exists('get_base_product_query')) {
                         )
                     END
                 ELSE 
-                    -- If variations exist, get the lowest discounted price
                     (SELECT MIN(
                         CASE 
-                            -- Brand-based discount for variations
                             WHEN b.is_enabled = '1' 
                             AND pov.is_brand = 1 
                             AND pov.bdis_val > 0 
@@ -314,8 +307,7 @@ if (!function_exists('get_base_product_query')) {
                                     THEN (pov.price - (pov.price * pov.bdis_val / 100))
                                     ELSE pov.price
                                 END
-                            -- Regular discount for variations
-                            WHEN pov.dis_val > 0 
+                            WHEN pov.dis_val > 0  
                             AND CURDATE() BETWEEN pov.dis_sdate AND pov.dis_edate 
                             THEN 
                                 CASE 
@@ -331,8 +323,6 @@ if (!function_exists('get_base_product_query')) {
                     FROM " . $db->dbprefix('product_option_value') . " pov
                     WHERE pov.product_id = p.product_id)
             END AS final_price,
-
-            -- Concatenate product images
             GROUP_CONCAT(DISTINCT pi.image ORDER BY pi.id ASC SEPARATOR ', ') AS images,
             CASE 
         WHEN EXISTS (

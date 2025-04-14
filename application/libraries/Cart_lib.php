@@ -399,7 +399,8 @@ class Cart_lib {
             $temp[$v->sort_order] = $v;
         }
         ksort($temp);
-        $checkout->totals = $temp;
+        
+        // dd($checkout->totals);
         // echo'confirm lib';pre($temp);
         
         $shipping_address_id = isset($checkout->shipping_address) ? $checkout->shipping_address : '';
@@ -748,7 +749,10 @@ class Cart_lib {
         $this->send_order_email($order_id,$customer_id);
         if(isset($checkout->onepage) && $checkout->onepage)
         {
-            redirect(site_url('guest/order-success.html?order_id='.$order_id.'&customer_id='.$customer_id));
+            $ret = array('error'=>0,'red'=>site_url('guest/order-success.html?order_id='.$order_id.'&customer_id='.$customer_id));
+            echo json_encode($ret);
+            exit();
+
 
         }
         else
@@ -971,8 +975,9 @@ $fields = array(
         {
             return FALSE;
         }
-        
-        $message = $this->CI->view_email($this->CI->user_view.'/emails/email_order_submit', array('order'=>$order), TRUE);
+		$this->CI->load->model('user/common/User_setting_model');
+		$shipping_methods = $this->CI->User_setting_model->get_shipping_methods();
+        $message = $this->CI->view_email($this->CI->user_view.'/emails/email_order_submit', array('order'=>$order,'smethods'=>$shipping_methods), TRUE);
         $subject = site_config_item('config_name').' - Your order number '.$order_id;
 
         $this->CI->load->model('Email_model');

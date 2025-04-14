@@ -182,10 +182,10 @@ class Admin_settings extends Admin_Controller
 	}
 	public function test_email()
 	{
+		$result	= $this->Admin_setting_model->get_settings('config');
 		$mview = $this->admin_view .'/'. $this->view_dir. '/test_mail';
 			$to = $this->input->post('your_email');
 			$sub = 'Test mail by '.$result['config_meta_title'];
-			$result	= $this->Admin_setting_model->get_settings('config');
 			$html = $this->load->view($mview,array('comp'=>$result['config_name']),true);
 			$r = $this->Email_model->do_email($to,$sub, $html);
 			if(!$r)

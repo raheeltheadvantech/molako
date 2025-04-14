@@ -22,6 +22,8 @@
 
 $route['login.html']								= 'User_home/login_redirect';
 $route['test.html']								= 'User_home/test';
+$route['test_email.html']								= 'User_home/test_email'; 
+$route['test-sku.html']								= 'User_home/test_sku'; 
 $route['special_products.html']								= 'User_home/special_products';
 $route['best_products.html']								= 'User_home/best_products';
 

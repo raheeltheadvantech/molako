@@ -62,6 +62,15 @@ $route[$admin_url_prefix . 'catalog/brand/simple-image-uploader.html']	= $admin_
 
 // file manger routes
 $route[$admin_url_prefix . 'tool/filemanager.html']				= $admin_dir_prefix . 'module/Admin_file_manager/index';
+$route[$admin_url_prefix . 'inventory/export.html']				= $admin_dir_prefix . 'module/Inventory/export_inventory';
+$route[$admin_url_prefix . 'inventory/upload.html']				= $admin_dir_prefix . 'module/Inventory/uploadCSV';
+$route[$admin_url_prefix . 'import_csv.html']				= $admin_dir_prefix . 'module/Inventory/importProductsFromCSV';
+$route[$admin_url_prefix . 'inventory.html']				= $admin_dir_prefix . 'module/Inventory/importView';
+//variation inventory routes
+$route[$admin_url_prefix . 'inventory/variations-export.html']				= $admin_dir_prefix . 'module/Inventory/var_export_inventory';
+$route[$admin_url_prefix . 'inventory/variations-upload.html']				= $admin_dir_prefix . 'module/Inventory/var_uploadCSV';
+$route[$admin_url_prefix . 'variations-import_csv.html']				= $admin_dir_prefix . 'module/Inventory/var_importProductsFromCSV';
+$route[$admin_url_prefix . 'variations-inventory.html']				= $admin_dir_prefix . 'module/Inventory/var_importView';
 $route[$admin_url_prefix . 'tool/file_manager.html']			= $admin_dir_prefix . 'module/Admin_file_manager/index';
 $route[$admin_url_prefix . 'tool/file_manager/folder.html']		= $admin_dir_prefix . 'module/Admin_file_manager/folder';
 $route[$admin_url_prefix . 'tool/file_manager/delete.html']		= $admin_dir_prefix . 'module/Admin_file_manager/delete';

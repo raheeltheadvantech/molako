@@ -87,6 +87,16 @@ function get_menu_data($nav_slug){
         $nav['url'] = site_url('admin/module/boxes.html');
     }
 
+    if($nav_slug =='inventory')
+    {
+        $nav['url'] = site_url('admin/inventory.html');
+    }
+
+    if($nav_slug =='variations-inventory')
+    {
+        $nav['url'] = site_url('admin/variations-inventory.html');
+    }
+
     if($nav_slug =='admin_navigations')
     {
         $nav['url'] = site_url('admin/module/navigations.html');

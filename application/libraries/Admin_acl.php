@@ -91,9 +91,11 @@ class Admin_Acl {
 
             if (!in_array($controller, $ignore_control_list)) {
 
+
                 $res = $this->CI->Admin_acl_model->get_acl_module_id_by_slug($controller);
                 if ($res) {
                     $module_id = $res->acl_module_id;
+
                     $result = $this->CI->Admin_acl_model->get_permissions($module_id, $method , $this->user['admin_role_id']);
                     if (!$result) {
                         //$this->CI->admin_session->set_flashdata('error', lang('error_access_not_allowed'));

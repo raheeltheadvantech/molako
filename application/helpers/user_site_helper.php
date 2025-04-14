@@ -533,7 +533,13 @@ if ( !function_exists('create_navigation_html')) {
                 $html .= '</li >';
 
             }elseif($value->module == 'category') {
-                // var_dump($value);
+                $cat_id = $value->cat_id;
+                $CI->db->from($CI->db->dbprefix . 'categories');
+        $CI->db->where('is_enabled', 1);
+        $CI->db->where('category_id', $cat_id);
+            $cat = $CI->db->get()->row();
+                if($cat)
+                {
                 $subcategories = category_tree($value->cat_id);
                 // var_dump();
                 $hasSubcategories = !empty($subcategories);
@@ -587,6 +593,7 @@ if ( !function_exists('create_navigation_html')) {
                 }
                 $html .= '</ul>';
                 $html .= '</li >';*/
+                }
             }else{
                 if($value->parent_id == 0):
                     $html .= '<li class="menu-item"><a class="item-link" href = "' . $value->slug . '.html" >' . html_entity_decode($value->name) . '</a ></li >';
@@ -687,6 +694,13 @@ if (!function_exists('create_mobile_navigation_html')) {
                             </div>
                         </li>';
             } elseif ($value->module == 'category') {
+                $cat_id = $value->cat_id;
+                $CI->db->from($CI->db->dbprefix . 'categories');
+        $CI->db->where('is_enabled', 1);
+        $CI->db->where('category_id', $cat_id);
+            $cat = $CI->db->get()->row();
+                if($cat)
+                {
                 $subcategories = category_tree($value->cat_id);
                 $hasSubcategories = !empty($subcategories);
 
@@ -705,6 +719,7 @@ if (!function_exists('create_mobile_navigation_html')) {
                 $html .= '   </ul>
                             </div>
                         </li>';
+                    }
             } else {
                 $html .= '<li class="nav-mb-item">
                             <a href="' . $value->slug . '.html" class="mb-menu-link">
@@ -746,6 +761,7 @@ if (!function_exists('get_brands_html')) {
         $CI->db->select('*');
         $CI->db->from($CI->db->dbprefix . 'categories');
         $CI->db->where('parent_id', 0);
+        $CI->db->where('is_enabled', 1);
         $CI->db->order_by('sort', 'ASC');
         $CI->db->limit(10);
 
@@ -817,7 +833,7 @@ if (!function_exists('get_brands_html1')) {
         $CI->db->where('is_enabled', 1);
         $CI->db->where('show_home', 1);
         // $CI->db->where('dis_val >', 0);
-        // $CI->db->where('CURDATE() BETWEEN dis_sdate AND dis_edate', NULL, FALSE);
+        $CI->db->where('CURDATE() BETWEEN dis_sdate AND dis_edate', NULL, FALSE);
 
         $CI->db->order_by('sort', 'ASC');
 

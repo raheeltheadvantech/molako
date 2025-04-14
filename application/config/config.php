@@ -42,7 +42,7 @@ $baseUrl = $protocol . $host . '/';  // Ensure a trailing slash
 
 // Now, you can set your config array with this dynamic URL
 $config['base_url'] = $baseUrl;
-$config['img_url'] = $baseUrl; 
+$config['img_url'] = 'https://www.molako.com/'; 
 }
 // die($config['base_url']);
 /*

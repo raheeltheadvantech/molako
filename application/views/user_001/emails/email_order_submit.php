@@ -103,11 +103,6 @@
 			<td
 				style="text-align: left; padding: 8px; line-height: 1.42857143; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; border-bottom-width: 2px; border-top: 0;"
 			>
-				Orignal Price
-			</td>
-			<td
-				style="text-align: left; padding: 8px; line-height: 1.42857143; vertical-align: top; border-top: 1px solid #ddd; border: 1px solid #ddd; border-bottom-width: 2px; border-top: 0;"
-			>
 				Price
 			</td>
 			<td
@@ -139,28 +134,7 @@
 					<td
 						style="text-align: right; padding: 8px; line-height: 1.42857143; vertical-align: top; border: 1px solid #ddd; border-top: 0;"
 					>
-						<span style="text-decoration: bold;"><?php
-							if($product->unit_price < $product->orignal_price)
-							{
-								?>
-						
-						<span style="text-decoration: line-through;     color: red;margin-left:5px;font-size"><?php echo format_currency($product->orignal_price);
-						?></span>
-						<?php
-							}
-							else
-							{
-								?>
-								<?php echo format_currency($product->orignal_price);
-						?>
-								<?php
-							}
-						?></span>
-					</td>
-					<td
-						style="text-align: right; padding: 8px; line-height: 1.42857143; vertical-align: top; border: 1px solid #ddd; border-top: 0;"
-					>
-						<span style="text-decoration: bold;"><?php echo format_currency($product->unit_price); ?></span>
+						<span style="text-decoration: bold;"><?php echo format_currency($product->unite_price); ?></span>
 					</td>
 					<td
 						style="text-align: right; padding: 8px; line-height: 1.42857143; vertical-align: top; border: 1px solid #ddd; border-top: 0;"
@@ -174,30 +148,28 @@
 		</tbody>
 		<tfoot>
 		<?php if(isset($order->totals) && !empty($order->totals)): ?>
-			<?php foreach ($order->totals as $total): ?>
-				<?php
+			<?php foreach ($order->totals as $total): 
 				if($total->value)
 				{
-					?>
-				<tr style="display: table-row; vertical-align: inherit; border-color: inherit;">
-					<td colspan="4"></td>
-					<td
-						style="text-align: right; padding: 8px; line-height: 1.42857143; vertical-align: top; border: 1px solid #ddd; border-top: 0;"
-					>
-						<b><?php echo ucfirst(str_replace('_', ' ', $total->title)) ?></b>
-					</td>
-					<td
-						style="text-align: right; padding: 8px; line-height: 1.42857143; vertical-align: top; border: 1px solid #ddd; border-top: 0;"
-					>
-						<?php echo format_currency($total->value); ?>
-					</td>
-
-				</tr>
-				<?php
-				}
-				
 				?>
-			<?php endforeach; ?>
+						<tr style="display: table-row; vertical-align: inherit; border-color: inherit;">
+							<td colspan="3"></td>
+							<td
+								style="text-align: right; padding: 8px; line-height: 1.42857143; vertical-align: top; border: 1px solid #ddd; border-top: 0;"
+							>
+								<b><?php echo ucfirst(str_replace('_', ' ', $total->title)) ?></b>
+							</td>
+							<td
+								style="text-align: right; padding: 8px; line-height: 1.42857143; vertical-align: top; border: 1px solid #ddd; border-top: 0;"
+							>
+								<?php echo format_currency($total->value); ?>
+							</td>
+
+						</tr>
+					<?php 
+				}
+
+		endforeach; ?>
 		<?php endif; ?>
 		</tfoot>
 	</table>

@@ -404,7 +404,7 @@ $result = $query->result();
             $all_images[] = $v;
         }
     }
-            $val->images = array_reverse($all_images);//
+            $val->images = $all_images;//
             // $val->special_price = get_product_special_price($val->product_id);
 
             if (isset($val->option_name, $val->option_value) && ($val->option_name != '') && ($val->option_value != '')) {

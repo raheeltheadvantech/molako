@@ -101,11 +101,23 @@ class User_order_model extends User_Model {
 {		$order_id = false;
 		$customer_id = false;
 		
-		if(!empty($data->order))
-		{
-			$this->db->insert('order', $data->order);
-			$order_id = $this->db->insert_id();
-		}
+		if (!empty($data->order)) {
+    // ❌ Don't set order_id manually
+    // unset in case it's already there
+    if (isset($data->order['order_id'])) {
+        unset($data->order['order_id']);
+    }
+
+    try {
+        $this->db->insert('order', $data->order); // Backticks around 'order' if it's a reserved word
+        $order_id = $this->db->insert_id();
+    } catch (Exception $e) {
+        // echo "Error in inserting order: " . $e->getMessage() . "<br>";
+        // echo "Query was: " . $this->db->last_query();
+        // die();
+    }
+}
+
 		
 		if(!$order_id)
 		{
@@ -137,8 +149,8 @@ class User_order_model extends User_Model {
 				$save['product_name'] 	= $v->product_name;
 				$save['sku'] 			= $v->sku;
 				$save['quantity'] 		= $v->quantity;
-				$save['unit_price'] 	= $v->final_price;
-				$save['orignal_price'] 	= $v->cut_price;
+				$save['unit_price'] 	= $v->unit_price;
+				$save['orignal_price'] 	= ($v->cut_price)?$v->cut_price:0.00;
 				$save['special_price'] 	= $v->special_price;
 				$save['varient_price'] 	= (isset($v->varient_price->price)?$v->varient_price->price:0); 
 				$save['discount_total'] = ($v->total/100)*$discount;

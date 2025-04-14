@@ -594,7 +594,6 @@ $('#tax-state').delegate('.fa-minus-circle', 'click', function() {
     {
         $('.all_mail').hide();
         var val = $('select[name="config_mail_engine"]').val();
-        alert(val);
         $('.'+val).show();
 
     }

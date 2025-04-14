@@ -174,57 +174,80 @@ class Email_model extends CI_Model
 
 
 	}
+	public function smtp_try($to, $html, $sub,$settings = array())
+	{
+		$this->load->library('email');
+
+$config = array(
+    'protocol'  => 'smtp',
+    'smtp_host' => $settings['config_mail_smtp_hostname'], // Bluehost SMTP host
+    'smtp_host' => $settings['config_mail_smtp_hostname'], // Bluehost SMTP host
+    'smtp_port' => $settings['config_mail_smtp_port'],  
+    'smtp_user' => $settings['config_mail_smtp_username'],
+    'smtp_pass' => $settings['config_mail_smtp_password'], // Yahan runtime par set 
+    'mailtype'  => 'html',
+    'charset'   => 'utf-8',
+    'newline'   => "\r\n",
+    'wordwrap'  => TRUE,
+);
+
+// Email library ko config ke saath initialize karo
+$this->email->initialize($config);
+
+// Ab email bhejo
+$this->email->from($settings['config_mail_from_email'], $settings['config_mail_from_name']);
+//$this->email->to('raheel@theadvantech.com');
+$this->email->to($to); // Recipient's email address
+    $this->email->subject($sub);
+$this->email->message($html);
+
+// Send Email
+if ($this->email->send()) {
+    return true;
+} else {
+    return false;
+}
+	} 
 
 
 	public function smtp_mail($to, $html, $sub,$settings = array()) {
-    // Load the Email library
-    $this->load->library('email');
-
-    // SMTP Configuration for SendGrid
-    $config = array(
-        'protocol'  => 'smtp',
-        'smtp_host' => $settings['config_mail_smtp_hostname'],
-        'smtp_port' => 587, // TLS port (or use 465 for SSL)
-        'smtp_user' => $settings['config_mail_smtp_username'], // SendGrid uses 'apikey' as the username
-        'smtp_pass' => $settings['config_mail_smtp_password'], // Replace with your actual API key
-        'mailtype'  => 'html',
-        'charset'   => 'utf-8',
-        'wordwrap'  => TRUE,
-        'smtp_crypto' => 'tls', // Use 'tls' for port 587 or 'ssl' for port 465
-        'newline'   => "\r\n",
-        'crlf'      => "\r\n"
-    );
-
-    $this->email->initialize($config);
-
-    // Email details
-    $this->email->from($settings['config_mail_from_email'], $settings['config_mail_from_name']);
-    $this->email->to($to); // Recipient's email address
-    $this->email->subject($sub);
-    $this->email->message($html);
-
-    // Send email
-    if ($this->email->send()) {
-        return true;
-    } else {
-    	var_dump($this->email->print_debugger());
-        return false;
-    }
+		return $this->smtp_try($to, $html, $sub,$settings);
+    		
 }
 	public function send_mail($to, $html, $sub,$settings = array()) {
+	$apiKey = $settings['sendgrid_key']; 
 
- $data = [
+        // Receiver Email
+        $to_email = 'raheelshehzad188@gmail.com';
+        
+        $url = 'https://api.sendgrid.com/v3/mail/send';
+
+        // Email Data
+        $emailData = [
+            'personalizations' => [[
+                'to' => [['email' => $to, 'name' => 'Raheel Shehzad']],
+                'subject' => $sub
+            ]],
+            'from' => ['email' => $settings['config_mail_from_email'], 'name' => 'Molako'],
+            'content' => [[
+                'type' => 'text/html',
+                'value' => $html
+            ]]
+        ];
+ $emailData = [
    "personalizations" => [
          [
             "to" => [
-               [
-                  "email" => $to 
-               ]
+				[
+                  "email" => $to, 
+                  "name" => '' 
+				]
             ] 
          ] 
       ], 
    "from" => [
-                     "email" => $settings['config_mail_from_email']
+                     "email" => $settings['config_mail_from_email'],
+					"name"=> $settings['config_mail_from_name']
                   ], 
    "subject" => $sub, 
    "content" => [
@@ -234,6 +257,81 @@ class Email_model extends CI_Model
                         ] 
                      ] 
 ]; 
+
+        // cURL Setup
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($emailData));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Authorization: Bearer ' . $apiKey,
+            'Content-Type: application/json'
+        ]);
+
+        // Execute cURL
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        // Response Handling
+        if ($httpCode == 202) {
+            return true;
+        } else {
+            RETURN 0;
+return false;
+
+        }
+
+ $data = [
+   "personalizations" => [
+         [
+            "to" => [
+				[
+                  "email" => $to, 
+                  "name" => $settings['config_mail_from_name'] 
+				]
+            ] 
+         ] 
+      ], 
+   "from" => [
+                     "email" => $settings['config_mail_from_email'],
+					"name"=> $settings['config_mail_from_name']
+                  ], 
+   "subject" => $sub, 
+   "content" => [
+                        [
+                           'type' => 'text/html',
+                           "value" => $html 
+                        ] 
+                     ] 
+]; 
+
+ $data = [
+   "personalizations" => [
+         [
+            "to" => [
+               [
+                  "email" => $to, 
+                  "name" => "Raheel client" 
+               ] 
+            ], 
+            "subject" => "Test Email from SendGrid" 
+         ] 
+      ], 
+   "from" => [
+                     "email" => $settings['config_mail_from_email'], 
+                     "name" => "Raheel Theadvantech" 
+                  ], 
+   "content" => [
+                        [
+                           "type" => "text/plain", 
+                           "value" => "Hello Client, this is a test email sent via SendGrid using cURL!" 
+                        ] 
+                     ] 
+]; 
+ 
+ 
  
  
 
@@ -247,7 +345,7 @@ class Email_model extends CI_Model
         CURLOPT_TIMEOUT => 30,
         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
         CURLOPT_CUSTOMREQUEST => "POST",
-        CURLOPT_POSTFIELDS => json_encode($data), //test
+        CURLOPT_POSTFIELDS => json_encode($data),
         CURLOPT_HTTPHEADER => [
             "authorization: Bearer ".$settings['sendgrid_key'], // Replace this with your real SendGrid API key
             "cache-control: no-cache",
