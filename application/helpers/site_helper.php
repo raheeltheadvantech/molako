@@ -262,7 +262,7 @@ if (!function_exists('get_base_product_query')) {
                 ELSE (
                     SELECT MIN(pov.price) 
                     FROM " . $db->dbprefix('product_option_value') . " pov 
-                    WHERE pov.product_id = p.product_id
+                    WHERE pov.product_id = p.product_id AND pov.price > 0  
                 )
             END AS sale_price,
             CASE 
@@ -321,25 +321,25 @@ if (!function_exists('get_base_product_query')) {
                         END
                     ) 
                     FROM " . $db->dbprefix('product_option_value') . " pov
-                    WHERE pov.product_id = p.product_id)
+                    WHERE pov.product_id = p.product_id AND pov.price > 0)  
             END AS final_price,
             GROUP_CONCAT(DISTINCT pi.image ORDER BY pi.id ASC SEPARATOR ', ') AS images,
             CASE 
-        WHEN EXISTS (
-            SELECT 1 
-            FROM `ci_product_special_price` sp 
-            WHERE sp.product_id = p.product_id 
-            AND CURDATE() BETWEEN sp.start_date AND sp.end_date
-        ) 
-        OR EXISTS (
-            SELECT 1 
-            FROM `ci_product_option_value` pov 
-            WHERE pov.product_id = p.product_id 
-            AND pov.dis_val > 0 
-            AND CURDATE() BETWEEN pov.dis_sdate AND pov.dis_edate
-        ) 
-        THEN 1 ELSE 0 
-    END AS is_special
+                WHEN EXISTS (
+                    SELECT 1 
+                    FROM " . $db->dbprefix('product_special_price') . " sp 
+                    WHERE sp.product_id = p.product_id 
+                    AND CURDATE() BETWEEN sp.start_date AND sp.end_date
+                ) 
+                OR EXISTS (
+                    SELECT 1 
+                    FROM " . $db->dbprefix('product_option_value') . " pov 
+                    WHERE pov.product_id = p.product_id 
+                    AND pov.dis_val > 0 
+                    AND CURDATE() BETWEEN pov.dis_sdate AND pov.dis_edate
+                ) 
+                THEN 1 ELSE 0 
+            END AS is_special
         ");
 
         $db->from($db->dbprefix('products') . ' as p');
@@ -350,6 +350,7 @@ if (!function_exists('get_base_product_query')) {
         return $db;
     }
 }
+
 
 
 

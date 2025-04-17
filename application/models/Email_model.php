@@ -180,15 +180,16 @@ class Email_model extends CI_Model
 
 $config = array(
     'protocol'  => 'smtp',
-    'smtp_host' => $settings['config_mail_smtp_hostname'], // Bluehost SMTP host
-    'smtp_host' => $settings['config_mail_smtp_hostname'], // Bluehost SMTP host
+    'smtp_host' => $settings['config_mail_smtp_hostname'],
+    'smtp_host' => $settings['config_mail_smtp_hostname'],
     'smtp_port' => $settings['config_mail_smtp_port'],  
     'smtp_user' => $settings['config_mail_smtp_username'],
-    'smtp_pass' => $settings['config_mail_smtp_password'], // Yahan runtime par set 
-    'mailtype'  => 'html',
-    'charset'   => 'utf-8',
-    'newline'   => "\r\n",
-    'wordwrap'  => TRUE,
+    'smtp_pass' => $settings['config_mail_smtp_password'],
+    'mailtype'  => 'html',        
+    'charset'   => 'utf-8',       
+    'newline'   => "\r\n",        
+    'crlf'      => "\r\n",        
+    'wordwrap'  => FALSE          
 );
 
 // Email library ko config ke saath initialize karo

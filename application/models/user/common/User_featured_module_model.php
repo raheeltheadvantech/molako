@@ -169,8 +169,7 @@ $query = $this->db->get();
 $result = $query->result();
 
 
-        // echo $this->db->last_query();
-        // die();
+        // dd($result[1]);
 
         if(!$result)
         {

@@ -7,6 +7,6 @@
 <base href="<?php echo base_url(); ?>" /> 
 <body style="margin: 0;font-family:'Helvetica Neue', Helvetica, Arial,sans-serif;font-size: 13px;line-height: 18px;color: #333;background-color: #fff;">
 	<div style="display:block; width:100%;">
-   		<a href="<?php echo site_url();?>"><img src="<?php echo site_url($assets_img_dir.'logo/logo44.png') ?>" alt="<?php echo $this->config->item('config_name')?>" width="150px" /></a>
+   		<a href="<?php echo site_url();?>"><img src="<?php echo rawurlencode(site_url($assets_img_dir.'logo/logo44.png')); ?>" alt="<?php echo $this->config->item('config_name')?>" width="150px" /></a>
     </div>
 <div style="clear:both;"></div>

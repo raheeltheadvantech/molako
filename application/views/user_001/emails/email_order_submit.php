@@ -149,7 +149,7 @@
 		<tfoot>
 		<?php if(isset($order->totals) && !empty($order->totals)): ?>
 			<?php foreach ($order->totals as $total): 
-				if($total->value)
+				if((int)$total->value)
 				{
 				?>
 						<tr style="display: table-row; vertical-align: inherit; border-color: inherit;">

@@ -847,7 +847,7 @@ if (!function_exists('get_brands_html1')) {
             return FALSE;
         }
         // Start the HTML structure for "SHOP BY CATEGORIES"
-        $html = '<section class="flat-spacing-4 flat-categorie">';
+        $html = '<section class="flat-spacing-4 flat-categorie brands_slider">';
         $html .= '<div class="container-full">';
         $html .= '<div class="flat-title-v2">';
         $html .= '<div class="box-sw-navigation">';

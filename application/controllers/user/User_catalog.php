@@ -1,56 +1,50 @@
-<?php defined('BASEPATH') OR exit('No direct script access allowed');
+<?php defined('BASEPATH') or exit('No direct script access allowed');
 
 
+class User_catalog extends User_Public_Controller
+{
 
-class User_catalog extends User_Public_Controller {
 
-	
+    private $is_solr_ping = true;
 
-	private $is_solr_ping = true;
 
-	
+    function __construct()
 
-	function __construct()
+    {
 
-	{
+        parent::__construct();
 
-		parent::__construct();
 
-		
+        // load User_featured_module_model
 
-		// load User_featured_module_model
+        $this->load->model('user/common/User_featured_module_model');
 
-		$this->load->model('user/common/User_featured_module_model');
-
-		$this->load->model('user/catalog/User_catalog_model');
+        $this->load->model('user/catalog/User_catalog_model');
 
         $this->load->model('Search_model');
 
-		$this->load->model('user/catalog/User_brand_model');
+        $this->load->model('user/catalog/User_brand_model');
 
-		
 
-		$this->controller_name = 'user_catalog';
+        $this->controller_name = 'user_catalog';
 
-		$this->controller_dir = 'user';
+        $this->controller_dir = 'user';
 
-		$this->view_dir = 'catalog';
+        $this->view_dir = 'catalog';
 
-		
 
-		$this->load->helper('string');
+        $this->load->helper('string');
 
-	}
+    }
 
-	
 
-	function index()
+    function index()
 
-	{
+    {
 
-		$this->catalog();
+        $this->catalog();
 
-	}
+    }
 
 
 
@@ -58,83 +52,64 @@ class User_catalog extends User_Public_Controller {
 
     // $this->load->model('User_catalog_model'); 
 
-	// 	$data['categories'] = $this->User_catalog_model->category_tree();
+    // 	$data['categories'] = $this->User_catalog_model->category_tree();
 
     //     $data['bestseller_products'] = $pros = $this->User_catalog_model->get_best_seller_products();
 
-	// 	$data['assets_img_dir'] = 'images/products/full/';
+    // 	$data['assets_img_dir'] = 'images/products/full/';
 
     //     $this->load->view('your_view', $data); 
 
     // }
 
 
+    function do_search_ajax()
 
-	
+    {
 
-	function do_search_ajax()
+        is_ajax();
 
-	{
 
-		is_ajax();
+        $term = $this->input->post();
 
-		
 
-		$term = $this->input->post();
+        $result = $this->User_catalog_model->do_search(array('term' => $term));
 
-		
 
-		$result	= $this->User_catalog_model->do_search(array('term'=>$term));
+        if (!$result) {
 
-		
+            ajax_response(array('message' => 'Item not found'));
 
-		if(!$result)
+        }
 
-		{
 
-			ajax_response(array('message'=>'Item not found'));
+        $data = array();
 
-		}
+        foreach ($result as $key => $val) {
 
-		
+            if ($val->product_name == '') {
 
-		$data = array();
+                continue;
 
-		foreach($result as $key=>$val)
+            }
 
-		{
 
-			if($val->product_name == '')
+            $data[] = array('name' => $val->product_name, 'value' => $val->product_name, 'q' => $term['q'],);
 
-			{
+        }
 
-				continue;
 
-			}
+        if (!$data) {
 
-			
+            ajax_response(array('message' => 'Item not found'));
 
-			$data[] = array('name'=>$val->product_name, 'value'=>$val->product_name, 'q'=>$term['q'], );
+        }
 
-		}
 
-		
+        ajax_response(array('error' => false, 'data' => $data, 'message' => 'Item found', 'sit' => true));
 
-		if(!$data)
+    }
 
-		{
-
-			ajax_response(array('message'=>'Item not found'));
-
-		}
-
-		
-
-		ajax_response(array('error'=>false, 'data'=>$data, 'message'=>'Item found', 'sit'=>true));
-
-	}
-
-	
 
     public function catalog_ajax()
 
@@ -148,155 +123,77 @@ class User_catalog extends User_Public_Controller {
 
         exit;
 
-	}
-
-	
-
-	function catalog()
-
-	{
-
-		$data['meta_title']			= 'Catalog';
-
-		$data['meta_keywords']		= 'Catalog';
-
-		$data['meta_description']	= 'Catalog';
-
-		
-		$data['title']		= 'Catalog';
-
-		$data['page_title']		= 'Catalog';
-
-		$data['page_header']	= 'Catalog';
-
-		
-
-		$layout_id = 
-
-		$this->input->get('layout') ? $this->input->get('layout') : '';
-
-		$this->input->get('layout_id') ? $this->input->get('layout_id') : '';
+    }
 
 
-
-		$layout_style ='grid_3';
-
-		$this->by_category($layout_style, $data);
-
-	}
-
-
-
-	public function deals(){		
-
-		// $data['sale_products'] = $this->User_featured_module_model->get_sale_products();
-
-		$data['meta_title']         = 'Deals';
-
-        $data['meta_keywords']      = 'Deals';
-
-        $data['meta_description']   = 'Deals';
-
-        
-
-        $data['page_title']     = 'Deals';
-
-        $data['page_header']    = 'Check it out Deals';
-
-        
-
-        
-
-        $layout_id = 
-
-        $this->input->get('layout') ? $this->input->get('layout') : '';
-
+    function catalog()
+    {
+        $data['meta_title'] = 'Catalog';
+        $data['meta_keywords'] = 'Catalog';
+        $data['meta_description'] = 'Catalog';
+        $data['title'] = 'Catalog';
+        $data['page_title'] = 'Catalog';
+        $data['page_header'] = 'Catalog';
+        $layout_id = $this->input->get('layout') ? $this->input->get('layout') : '';
         $this->input->get('layout_id') ? $this->input->get('layout_id') : '';
+        $layout_style = 'grid_3';
+        $this->by_category($layout_style, $data);
+    }
 
 
-
-        $layout_style ='grid_3';
+    public function deals()
+    {
+        $data['meta_title'] = 'Deals';
+        $data['meta_keywords'] = 'Deals';
+        $data['meta_description'] = 'Deals';
+        $data['page_title'] = 'Deals';
+        $data['page_header'] = 'Check it out Deals';
+        $layout_id = $this->input->get('layout') ? $this->input->get('layout') : '';
+        $this->input->get('layout_id') ? $this->input->get('layout_id') : '';
+        $layout_style = 'grid_3';
         $ret['products'] = $this->User_featured_module_model->get_new_special_products_remove();
-
         $data['result'] = (object)$ret;
         $data['sort_id'] = '';
         $data['is_special'] = 1;
+        $this->view($this->user_view . '/' . $this->view_dir . '/catalog_by_deals.php', $data);
+    }
 
 
-
-        $this->view($this->user_view .'/'. $this->view_dir .'/catalog_by_deals.php', $data);
-
-	}
-
-
-
-	public function brands($slug)
-
-	{		
-
-		// $data['sale_products'] = $this->User_featured_module_model->get_sale_products();
-
-		$data['meta_title']         = 'Brands';
-
-		$data['meta_keywords']      = 'Brands';
-
-		$data['meta_description']   = 'Brands';
-
-	
-
-		$data['page_title']         = 'Brands';
-
-		$data['page_header']        = 'Brands';
-
-	
-
-		$layout_id = $this->input->get('layout') ?: $this->input->get('layout_id') ?: '';
-
-		$layout_style = 'grid_3';
-
-		$brand = $this->User_brand_model->get_brands($slug);
-
-		// Fetch products with variants based on the brand slug
-
-		$pros =  array();
-
-		if(isset($brand[0]->brand_id))
-
-		{
-
-			$brand_id = $brand[0]->brand_id;
-
-			$pros = $this->User_brand_model->get_products_by_brand($brand_id);
-
-			// var_dump($this->db->last_query());
-
-			//  var_dump($pros);die();
-
-
-
-		}
-
-		$data['products'] = $pros ; 
-
-
-
-        $this->by_category($layout_style,null,$slug, $data);
-
-	}
-	function super_unique($array,$key)
+    public function brands($slug)
     {
-       $temp_array = [];
-       foreach ($array as &$v) {
-           if (!isset($temp_array[$v[$key]]))
-           $temp_array[$v[$key]] =& $v;
-       }
-       $array = array_values($temp_array);
-       return $array;
+        $data['meta_title'] = 'Brands';
+        $data['meta_keywords'] = 'Brands';
+        $data['meta_description'] = 'Brands';
+        $data['page_title'] = 'Brands';
+        $data['page_header'] = 'Brands';
+        $layout_id = $this->input->get('layout') ?: $this->input->get('layout_id') ?: '';
+        $layout_style = 'grid_3';
+        $brand = $this->User_brand_model->get_brands($slug);
+        // Fetch products with variants based on the brand slug
+        $pros = array();
+        if (isset($brand[0]->brand_id)) {
+            $brand_id = $brand[0]->brand_id;
+            $pros = $this->User_brand_model->get_products_by_brand($brand_id);
+        }
+        $data['products'] = $pros;
+        $this->by_category($layout_style, null, $slug, $data);
 
     }
-    public function get_parent_categories($category_id) {
-        $categories = [];
 
+    function super_unique($array, $key)
+    {
+        $temp_array = [];
+        foreach ($array as &$v) {
+            if (!isset($temp_array[$v[$key]]))
+                $temp_array[$v[$key]] =& $v;
+        }
+        $array = array_values($temp_array);
+        return $array;
+    }
+
+    public function get_parent_categories($category_id)
+    {
+        $categories = [];
         while ($category_id != null) {
             $query = $this->db->get_where('categories', ['id' => $category_id]);
             $category = $query->row_array();
@@ -308,686 +205,427 @@ class User_catalog extends User_Public_Controller {
                 break;
             }
         }
-
         return array_reverse($categories); // Parent to Child Order
     }
 
 
+    private function by_category($layout_style = 'grid', $data = array(), $is_deals = false, $brand_slug = false)
 
-	private function by_category($layout_style = 'grid', $data = array(), $is_deals = false, $brand_slug=false)
-
-	{
-
-		$data['meta_title']			= '';
-
-        $data['meta_keywords']		= '';
-
-        $data['meta_description']	= '';
-
-
-
-        $data['page_title']		= 'Catalog';
-
-        $data['page_header']	= 'Catalog';
-
-		$data['is_deals'] = $is_deals;
-		$data['is_special'] = $this->input->get('is_special');
-
-
-
-		$params = array();
-
-		$order = $this->input->get('order') ? $this->input->get('order') : '';
-
-		$sort = $this->input->get('sort') ? $this->input->get('sort') : 'asc';
-
-		$code = $this->input->get('code') ? $this->input->get('code') : '';
-
-		$page = $this->input->get('page') ? $this->input->get('page') : 1;
-
-		$rows = $this->input->get('rows') ? $this->input->get('rows') : '12';
-
-		$per_page = $this->input->get('per_page') ? $this->input->get('per_page') : '12';
-
-
-
-		$data['sort_menu'] = get_sort_menu();
-
-		$data['sort_id'] = $order . '.' . $sort;
-
-
-
-		$result = new stdClass();
-
-		if ($this->input->get('category_id')) {
-
-			$category_id = $this->input->get('category_id');
-
-		} else {
-
-			$category_id = '';
-
-		}
-
-
-
-		$result->category_menu = $this->User_catalog_model->get_category_menu($category_id);
-
-
-
-		$filter_ids = false;
-
-		$filter_url_append = false;
-
-
-
-		$filter_link = 'catalog.html?layout_id=1&category_id=' . $category_id;
-		if ($this->input->get('filter_id')) {
-
-			$data['filter_ids'] = $this->input->get('filter_id');
-
-			$filter_ids = $this->input->get('filter_id');
-
-		}
-		$price = array();
-		$price[0] = $this->input->get('min_price');
-		$price[1] = $this->input->get('max_price');
-
-
-
-		if (!empty($filter_ids)) {
-
-			foreach ($filter_ids as $filter_id) {
-
-				$filter_url_append .= '&filter_id[]=' . $filter_id;
-
-			}
-
-		}
-
-
-
-		$data['filter_link'] = $filter_link;
-
-		$data['filter_ids'] = $filter_ids;
-
-		$this->current_active_nav = 'category-' . $category_id;
-
-		$data['category_id'] = $category_id;
-		$data['sub_cats'] = $result->category_menu;
-
-		$data['breadcrumb'] = getbreadcrumb($category_id);
-		// dd($data['breadcrumb']);
-
-		$term = false;
-
-		$data['code'] = $code;
-
-		$post = $this->input->post(null, false);
-
-
-
-
-
-		if ($post) {
-
-			$term = json_encode($post);
-
-			$code = $this->Search_model->record_term($term);
-
-			$data['code'] = $code;
-
-
-
-			if ($_POST['is_special'] == 1) {
-
-				redirect(site_url($this->user_url . '/' . 'deals.html?layout_id=1&code=' . $code));
-
-			} else {
-
-				redirect(site_url($this->user_url . '/' . 'catalog.html?layout_id=1&code=' . $code));
-
-			}
-
-		} elseif ($code) {
-
-			$term = $this->Search_model->get_term($code);
-
-		}
-
-
-
-		$data['term'] = $term;
-
-		$data['order_by'] = $order;
-
-		$data['sort_by'] = $sort;	
-
-		$brand_id = 0;
-
-		if($this->input->get('brand_id'))
-
-		{
-
-			$brand_id = $this->input->get('brand_id');
-
-		}
-		$total1 = array();
-
-		
-
-		
-		
-		if (!empty($filter_ids))
-		{
-			
-
-
-			$total1 = $this->User_catalog_model->get_filter_products(array('is_special'=>$this->input->get('is_special'),'params' => $params, 'category_id' => $category_id, 'term' => $term, 'order' => $order,'brand_id'=>$brand_id, 'sort' => $sort, 'rows' => $rows, 'per_page' => $per_page, 'filter_ids' => $filter_ids), true,$brand_slug);
-			$total = $this->User_catalog_model->get_filter_products(array('is_special'=>$this->input->get('is_special'),'price'=>$price,'params' => $params, 'category_id' => $category_id, 'term' => $term, 'order' => $order,'brand_id'=>$brand_id, 'sort' => $sort, 'rows' => $rows, 'per_page' => $per_page, 'filter_ids' => $filter_ids), true,$brand_slug);
-			
-
-			
-
-		} else {
-
-
-
-			$total1 =  $this->User_catalog_model->get_products(array('is_special'=>$this->input->get('is_special'),'brand_id'=>$brand_id,'params' => $params, 'category_id' => $category_id, 'term' => $term, 'order' => $order, 'sort' => $sort), true, $is_deals, 'test');
-			$total1 = $total = $this->User_catalog_model->get_products(array('is_special'=>$this->input->get('is_special'),'price'=>$price,'brand_id'=>$brand_id,'params' => $params, 'category_id' => $category_id, 'term' => $term, 'order' => $order, 'sort' => $sort), true, $is_deals, 'test');
-
-		
-							$total_all = $this->User_catalog_model->get_products(array('params' => $params, 'category_id' => $category_id, 'term' => $term, 'order' => $order, 'sort' => $sort, 'rows' => $rows, 'per_page' => $per_page), null, $is_deals, $brand_slug);
-
-		}
-		$page_pro = array();
-		foreach($total as $k=> $v)
-		{
-			if(!isset($v->remove))
-			{
-				$page_pro[] = $v;
-			}
-		}
-
-		$products = $page_pro;
-		$current_page = $page; // Set this to the current page you want to display
-
-// Calculate Total Pages
-$total_items = count($products);
-$total_pages = ceil($total_items / $per_page);
-
-// Calculate Offset
-$offset = ($current_page - 1) * $per_page;
-
-// Get Current Page Products
-$current_page_products = array_slice($products, $offset, $per_page);
-
-// Pagination Data
-$pagination_data = [
-    "current_page" => $current_page,
-    "per_page" => $per_page,
-    "total_items" => $total_items,
-    "total_pages" => $total_pages,
-    "products" => $current_page_products,
-];
-
-// Display Pagination Data
-		$data['tpage'] = $total_pages;
-		$data['cpage'] = $current_page;
-		
-
-		$res = $result->products = $current_page_products;
-		//fdind min and max
-		$min = 0;
-		$max = 0;
-		$pbrands = [];
-		foreach($total1 as $k=> $v)
-		{
-			if(!in_array($v->brand_id,$pbrands))
-			{
-				$pbrands[] = $v->brand_id;
-			}
-			$price = 0;
-			if($v->varient_price)
-			{
-				$price = $v->varient_price->price;
-				
-			}
-			elseif($v->special_price)
-			{
-				$price = $v->special_price;
-				
-			}
-			else
-			{
-				$price = $v->sale_price;
-			}
-			if($price > $max)
-			{
-				$max = $price;
-			}
-			if($price < $min)
-			{
-				$min = $price;
-			}
-		}
-		
-		$data['max_price'] =  $max;
-		$data['min_price'] = $min; 
-		if($this->input->get('price'))
-		{
-			$exp = explode('_',$this->input->get('price'));
-			if(isset($exp[0]))
-				$min = $exp[0];
-			else{
-				$min = $data['min_price'];
-			}
-			if(isset($exp[1]))
-				$max = $exp[1];
-			else{
-				$max = $data['max_price'];
-			}
-		}
-		if($data['smax_price'] > $data['max_price'])
-		{
-			die('come hgere');
-			$data['smax_price'] = $data['max_price'];
-		}
-		if($data['smin_price'] < $data['min_price'])
-		{
-			$data['smin_price'] = $data['min_price'];
-		}
-		$data['smax_price'] =  $max;
-		$data['smin_price'] =  $min;
-		if($this->input->get('price'))
-		{
-			$exp = explode('_',$this->input->get('price'));
-			if(isset($exp[0]))
-				$min = $exp[0];
-			else{
-				$min = $data['min_price'];
-			}
-			if(isset($exp[1]))
-				$max = $exp[1];
-			else{
-				$max = $data['max_price'];
-			}
-		}
-		if($data['smax_price'] > $data['max_price'])
-		{
-			die('come hgere');
-			$data['smax_price'] = $data['max_price'];
-		}
-		if($data['smin_price'] < $data['min_price'])
-		{
-			$data['smin_price'] = $data['min_price'];
-		}
-		$data['smax_price'] =  $max;
-		$data['smin_price'] =  $min;
-		//fdind min and max
-		$this->db->select('*');
-		if($pbrands)
-		$this->db->where_in('brand_id',$pbrands);
-
-		$this->db->from('brands');
-
-		$this->db->where(1,1, FALSE);
-
-
-		$this->db->where('is_enabled', 1);
-		$brands = $this->db->get()->result();
-		$brand_ids = [];
-		// foreach($result->products as $k=> $v)
-		// {
-		// 	if(!in_array($v->brand_id,$brand_ids))
-		// 	{
-		// 		$brand_ids[] = $v->brand_id;
-		// 		$brands[] = $v->brand;
-
-		// 	}
-		// }
-
-
-		$result->brands = $brands;
-		$data['result'] = $result;
-
-
-		$data['total'] = $total;
-
-
-
-		$data['badge'] = '';
-
-		if($is_deals == 1){
-
-			$config['base_url'] = site_url($this->user_url .'/'. 'deals.html?layout_id=1&order='.$order.'&sort='.$sort.'&code='.$code);
-
-		}
-
-		else{
-
-			$config['base_url'] = site_url($this->user_url .'/'. 'catalog.html?layout_id=1&order='.$order.'&sort='.$sort.'&code='.$code);
-
-            $data['badge'] = 1;
-
-		}
-
-		
-
-
-
-		$filter = array();
-		$all_colors = array();
-		$newColorsArray = [];
-
-		if (!empty($res)) {
-
-			foreach ($total as $key => &$val) {
-$mtypes = array();
-$color_code = array();
-$codes = array();
-if(isset($val->option_type) && $val->option_type)
-{
-$option_type = json_decode($val->option_type, true);
-$color_code = json_decode($val->color_code, true);
-
-
-foreach ($color_code as $colorGroup) {
-    foreach ($colorGroup as $colorName => $hexCode) {
-        $newColorsArray[$colorName] = $hexCode;
-    }
-}
-$option_name = json_decode($val->option_name, true);
-$codes = array();
-foreach($option_name as $k=> $v)
-{
-$mtypes[$v] =  $option_type[$k];
-$codes[$v] =  $color_code[$k];
-}
-}
-
-
-				$filters_val = $this->User_catalog_model->get_filters($val->product_id);
-				// var_dump($newColorsArray);
-				// die();
-
-
-				if (!empty($filters_val)) {
-
-					foreach ($filters_val as $keyy => $attribute) {
-						
-	$t = '';
-	$index = -1;
-	// var_dump($val->product_id);
-	// if($val->product_id == '72')
-	// {
-	// 	var_dump($filters_val);
-	// 	var_dump($option_name);
-	// 	var_dump($attribute);
-	// 	var_dump();
-	// 	die();
-	// }
-if(isset($mtypes[$attribute['filter_key']]))
-						{
-							$t = $mtypes[$attribute['filter_key']];
-							$index = array_search($attribute['filter_key'], $option_name);
-							
-						}
-						$cool = (isset($color_code[$index]))?$color_code[$index]:array();
-						// if($attribute['filter_key'] == 'Bcolor')
-						// {
-							// die();l
-						// }
-						if($index != -1)
-						{
-							if(isset($codes[$attribute['filter_key']]))
-							{
-								$color_code= $codes[$attribute['filter_key']];
-							}
-							
-						}
-
-						
-
-						foreach ($attribute['filter_value'] as $vall) {
-if($t == 'color')
-{
-	$c = $vall;
-
-$filter[$attribute['filter_key']][] = array('color'=>trim($vall),'code'=>(isset($newColorsArray[$c])?$newColorsArray[$c]:'#000'));
-}
-else
-{
-$filter[$attribute['filter_key']][] = trim($vall);
-}
-
-						}
-						$filter[$attribute['filter_key']]['type'] = $t;
-						
-
-
-					}
-
-				}
-
-			}
-
-			$filters = array();
-
-			if (!empty($filter)) {
-
-				foreach ($filter as $key => $val) {
-					
-					// $filters[$key] = super_unique($val,'color');
-
-					if($val['type'] == 'color')
-					{
-						$cool = $color_code;
-
-							$colors = $val;
-						unset($val['type']);
-						$uniqueColors = [];
-foreach ($colors as $color) {
-    // Use color as the key to filter unique entries
-    if(isset($color['color']))
     {
-    	$uniqueColors[$color['color']] = $color;
+
+        $data['meta_title'] = '';
+        $data['meta_keywords'] = '';
+        $data['meta_description'] = '';
+        $data['page_title'] = 'Catalog';
+        $data['page_header'] = 'Catalog';
+        $data['is_deals'] = $is_deals;
+        $data['is_special'] = $this->input->get('is_special');
+        $params = array();
+        $order = $this->input->get('order') ? $this->input->get('order') : '';
+        $sort = $this->input->get('sort') ? $this->input->get('sort') : 'asc';
+        $code = $this->input->get('code') ? $this->input->get('code') : '';
+        $page = $this->input->get('page') ? $this->input->get('page') : 1;
+        $rows = $this->input->get('rows') ? $this->input->get('rows') : '12';
+        $per_page = $this->input->get('per_page') ? $this->input->get('per_page') : '12';
+        $data['sort_menu'] = get_sort_menu();
+        $data['sort_id'] = $order . '.' . $sort;
+        $result = new stdClass();
+        if ($this->input->get('category_id')) {
+            $category_id = $this->input->get('category_id');
+        } else {
+            $category_id = '';
+        }
+        $result->category_menu = $this->User_catalog_model->get_category_menu($category_id);
+        $filter_ids = false;
+        $filter_url_append = false;
+        $filter_link = 'catalog.html?layout_id=1&category_id=' . $category_id;
+        if ($this->input->get('filter_id')) {
+            $data['filter_ids'] = $this->input->get('filter_id');
+            $filter_ids = $this->input->get('filter_id');
+        }
+        $price = array();
+        $price[0] = $this->input->get('min_price');
+        $price[1] = $this->input->get('max_price');
+        if (!empty($filter_ids)) {
+            foreach ($filter_ids as $filter_id) {
+                $filter_url_append .= '&filter_id[]=' . $filter_id;
+            }
+        }
+        $data['filter_link'] = $filter_link;
+        $data['filter_ids'] = $filter_ids;
+        $this->current_active_nav = 'category-' . $category_id;
+        $data['category_id'] = $category_id;
+        $data['sub_cats'] = $result->category_menu;
+        $data['breadcrumb'] = getbreadcrumb($category_id);
+        $term = false;
+        $data['code'] = $code;
+        $post = $this->input->post(null, false);
+        if ($post) {
+            $term = json_encode($post);
+            $code = $this->Search_model->record_term($term);
+            $data['code'] = $code;
+            if ($_POST['is_special'] == 1) {
+                redirect(site_url($this->user_url . '/' . 'deals.html?layout_id=1&code=' . $code));
+            } else {
+                redirect(site_url($this->user_url . '/' . 'catalog.html?layout_id=1&code=' . $code));
+            }
+        } elseif ($code) {
+            $term = $this->Search_model->get_term($code);
+        }
+        $data['term'] = $term;
+        $data['order_by'] = $order;
+        $data['sort_by'] = $sort;
+        $brand_id = 0;
+        if ($this->input->get('brand_id')) {
+            $brand_id = $this->input->get('brand_id');
+        }
+        $total1 = array();
+        if (!empty($filter_ids)) {
+            $total1 = $this->User_catalog_model->get_filter_products(array('is_special' => $this->input->get('is_special'), 'params' => $params, 'category_id' => $category_id, 'term' => $term, 'order' => $order, 'brand_id' => $brand_id, 'sort' => $sort, 'rows' => $rows, 'per_page' => $per_page, 'filter_ids' => $filter_ids), true, $brand_slug);
+            $total = $this->User_catalog_model->get_filter_products(array('is_special' => $this->input->get('is_special'), 'price' => $price, 'params' => $params, 'category_id' => $category_id, 'term' => $term, 'order' => $order, 'brand_id' => $brand_id, 'sort' => $sort, 'rows' => $rows, 'per_page' => $per_page, 'filter_ids' => $filter_ids), true, $brand_slug);
+        } else {
+            $total1 = $this->User_catalog_model->get_products(array('is_special' => $this->input->get('is_special'), 'brand_id' => $brand_id, 'params' => $params, 'category_id' => $category_id, 'term' => $term, 'order' => $order, 'sort' => $sort), true, $is_deals, 'test');
+            $total1 = $total = $this->User_catalog_model->get_products(array('is_special' => $this->input->get('is_special'), 'price' => $price, 'brand_id' => $brand_id, 'params' => $params, 'category_id' => $category_id, 'term' => $term, 'order' => $order, 'sort' => $sort), true, $is_deals, 'test');
+            $total_all = $this->User_catalog_model->get_products(array('params' => $params, 'category_id' => $category_id, 'term' => $term, 'order' => $order, 'sort' => $sort, 'rows' => $rows, 'per_page' => $per_page), null, $is_deals, $brand_slug);
+        }
+        $page_pro = array();
+        foreach ($total as $k => $v) {
+            if (!isset($v->remove)) {
+                $page_pro[] = $v;
+            }
+        }
+        $products = $page_pro;
+        $current_page = $page; // Set this to the current page you want to display
+// Calculate Total Pages
+        $total_items = count($products);
+        $total_pages = ceil($total_items / $per_page);
+// Calculate Offset
+        $offset = ($current_page - 1) * $per_page;
+// Get Current Page Products
+        $current_page_products = array_slice($products, $offset, $per_page);
+// Pagination Data
+        $pagination_data = [
+            "current_page" => $current_page,
+            "per_page" => $per_page,
+            "total_items" => $total_items,
+            "total_pages" => $total_pages,
+            "products" => $current_page_products,
+        ];
+// Display Pagination Data
+        $data['tpage'] = $total_pages;
+        $data['cpage'] = $current_page;
+        $res = $result->products = $current_page_products;
+        //fdind min and max
+        $min = 0;
+        $max = 0;
+        $pbrands = [];
+        foreach ($total1 as $k => $v) {
+            if (!in_array($v->brand_id, $pbrands)) {
+                $pbrands[] = $v->brand_id;
+            }
+            $price = 0;
+            if ($v->varient_price) {
+                $price = $v->varient_price->price;
+
+            } elseif ($v->special_price) {
+                $price = $v->special_price;
+
+            } else {
+                $price = $v->sale_price;
+            }
+            if ($price > $max) {
+                $max = $price;
+            }
+            if ($price < $min) {
+                $min = $price;
+            }
+        }
+        $data['max_price'] = $max;
+        $data['min_price'] = $min;
+        if ($this->input->get('price')) {
+            $exp = explode('_', $this->input->get('price'));
+            if (isset($exp[0]))
+                $min = $exp[0];
+            else {
+                $min = $data['min_price'];
+            }
+            if (isset($exp[1]))
+                $max = $exp[1];
+            else {
+                $max = $data['max_price'];
+            }
+        }
+        if ($data['smax_price'] > $data['max_price']) {
+            die('come hgere');
+            $data['smax_price'] = $data['max_price'];
+        }
+        if ($data['smin_price'] < $data['min_price']) {
+            $data['smin_price'] = $data['min_price'];
+        }
+        $data['smax_price'] = $max;
+        $data['smin_price'] = $min;
+        if ($this->input->get('price')) {
+            $exp = explode('_', $this->input->get('price'));
+            if (isset($exp[0]))
+                $min = $exp[0];
+            else {
+                $min = $data['min_price'];
+            }
+            if (isset($exp[1]))
+                $max = $exp[1];
+            else {
+                $max = $data['max_price'];
+            }
+        }
+        if ($data['smax_price'] > $data['max_price']) {
+            die('come hgere');
+            $data['smax_price'] = $data['max_price'];
+        }
+        if ($data['smin_price'] < $data['min_price']) {
+            $data['smin_price'] = $data['min_price'];
+        }
+        $data['smax_price'] = $max;
+        $data['smin_price'] = $min;
+        //fdind min and max
+        $this->db->select('*');
+        if ($pbrands)
+            $this->db->where_in('brand_id', $pbrands);
+        $this->db->from('brands');
+        $this->db->where(1, 1, FALSE);
+        $this->db->where('is_enabled', 1);
+        $brands = $this->db->get()->result();
+        $result->brands = $brands;
+        $data['result'] = $result;
+        $data['total'] = $total;
+        $data['badge'] = '';
+        if ($is_deals == 1) {
+            $config['base_url'] = site_url($this->user_url . '/' . 'deals.html?layout_id=1&order=' . $order . '&sort=' . $sort . '&code=' . $code);
+
+        } else {
+            $config['base_url'] = site_url($this->user_url . '/' . 'catalog.html?layout_id=1&order=' . $order . '&sort=' . $sort . '&code=' . $code);
+            $data['badge'] = 1;
+        }
+        $filter = array();
+        $all_colors = array();
+        $newColorsArray = [];
+        if (!empty($res)) {
+            foreach ($total as $key => &$val) {
+                $mtypes = array();
+                $color_code = array();
+                $codes = array();
+                if (isset($val->option_type) && $val->option_type) {
+                    $option_type = json_decode($val->option_type, true);
+                    $color_code = json_decode($val->color_code, true);
+                    foreach ($color_code as $colorGroup) {
+                        foreach ($colorGroup as $colorName => $hexCode) {
+                            $newColorsArray[$colorName] = $hexCode;
+                        }
+                    }
+                    $option_name = json_decode($val->option_name, true);
+                    $codes = array();
+                    foreach ($option_name as $k => $v) {
+                        $mtypes[$v] = $option_type[$k];
+                        $codes[$v] = $color_code[$k];
+                    }
+                }
+
+
+                $filters_val = $this->User_catalog_model->get_filters($val->product_id);
+                if (!empty($filters_val)) {
+                    foreach ($filters_val as $keyy => $attribute) {
+                        $t = '';
+                        $index = -1;
+                        if (isset($mtypes[$attribute['filter_key']])) {
+                            $t = $mtypes[$attribute['filter_key']];
+                            $index = array_search($attribute['filter_key'], $option_name);
+
+                        }
+                        $cool = (isset($color_code[$index])) ? $color_code[$index] : array();
+                        if ($index != -1) {
+                            if (isset($codes[$attribute['filter_key']])) {
+                                $color_code = $codes[$attribute['filter_key']];
+                            }
+
+                        }
+                        foreach ($attribute['filter_value'] as $vall) {
+                            if ($t == 'color') {
+                                $c = $vall;
+
+                                $filter[$attribute['filter_key']][] = array('color' => trim($vall), 'code' => (isset($newColorsArray[$c]) ? $newColorsArray[$c] : '#000'));
+                            } else {
+                                $filter[$attribute['filter_key']][] = trim($vall);
+                            }
+
+                        }
+                        $filter[$attribute['filter_key']]['type'] = $t;
+                    }
+                }
+            }
+            $filters = array();
+            if (!empty($filter)) {
+                foreach ($filter as $key => $val) {
+                    if ($val['type'] == 'color') {
+                        $cool = $color_code;
+                        $colors = $val;
+                        unset($val['type']);
+                        $uniqueColors = [];
+                        foreach ($colors as $color) {
+                            // Use color as the key to filter unique entries
+                            if (isset($color['color'])) {
+                                $uniqueColors[$color['color']] = $color;
+                            }
+                        }
+                        $uniqueColors = array_values($uniqueColors);
+                        $n = array('type' => 'color');
+                        foreach ($uniqueColors as $k => $v) {
+                            if (isset($v['color']))
+                                $n[] = array('color' => $v['color'], 'code' => $v['code']);
+                        }
+
+                        $filters[$key] = $n;
+                    } else {
+                        $filters[$key] = array_unique($val);
+                    }
+
+                }
+
+            }
+
+            $data['filters'] = $filters;
+
+        }
+
+
+        $data['result'] = $result;
+
+        $data['total'] = $total;
+        $brand_id = '';
+        if (isset($_GET['brand_id'])) {
+            $brand_id = $_GET['brand_id'];
+        }
+
+
+        $config['base_url'] = site_url($this->user_url . '/' . 'catalog.html?layout_id=1&price=' . $this->input->get('price') . '&order=' . $order . '&category_id=' . $category_id . '&brand_id=' . $brand_id . '&sort=' . $sort . '&code=' . $code . $filter_url_append);
+
+
+        $config['total_rows'] = $total;
+
+        $config['per_page'] = $per_page;
+
+        $config['offset'] = $per_page;
+
+        $config['uri_segment'] = $this->uri->total_segments();
+
+        $config['use_page_numbers'] = TRUE;
+
+        $config['page_query_string'] = TRUE;
+
+        $config['reuse_query_string'] = TRUE;
+
+
+        $this->load->library('pagination');
+
+        $this->pagination->initialize($config);
+
+
+        $this->view($this->user_view . '/' . $this->view_dir . '/catalog_by_category', $data);
+        if (isset($_GET['debug'])) {
+            $this->output->enable_profiler(TRUE);
+        }
 
     }
-}
 
 
-// Reset the keys to make it a regular indexed array
-$uniqueColors = array_values($uniqueColors);
-// var_dump($val);
-$n = array('type'=>'color');
-foreach($uniqueColors as $k=> $v)
-{
-	if(isset($v['color']))
-	$n[] = array('color'=>$v['color'],'code'=>$v['code']);
-}
-
-						$filters[$key] = $n;
-					}
-					else{
-						$filters[$key] = array_unique($val);
-					}
-
-				}
-
-			}
-
-			$data['filters'] = $filters;
-
-		}
-
-
-
-		$data['result'] = $result;
-
-		$data['total'] = $total;
-$brand_id = '';
-if(isset($_GET['brand_id']))
-{
-	$brand_id = $_GET['brand_id'];
-}
-
-
-
-
-		$config['base_url'] = site_url($this->user_url . '/' . 'catalog.html?layout_id=1&price='.$this->input->get('price').'&order=' . $order . '&category_id=' . $category_id .  '&brand_id=' . $brand_id . '&sort=' . $sort . '&code=' . $code . $filter_url_append);
-
-
-
-		$config['total_rows'] = $total;
-
-		$config['per_page'] = $per_page;
-
-		$config['offset'] = $per_page;
-
-		$config['uri_segment'] = $this->uri->total_segments();
-
-		$config['use_page_numbers'] = TRUE;
-
-		$config['page_query_string'] = TRUE;
-
-		$config['reuse_query_string'] = TRUE;
-
-
-
-		$this->load->library('pagination');
-
-		$this->pagination->initialize($config);
-
-
-
-
-		 $this->view($this->user_view .'/'. $this->view_dir .'/catalog_by_category', $data);
-		 if(isset($_GET['debug']))
-		{
-			$this->output->enable_profiler(TRUE);
-		}
-
-	}
-
-
-
-    function product_detail($slug) 
+    function product_detail($slug)
 
     {
 
         $product = $this->User_catalog_model->get_product_slug($slug);
-		// dd($product);
+        // dd($product);
 
         $product_id = $product->product_id;
 
         // pre($product);
 
-        if(!$product)
+        if (!$product) {
 
-        {
-
-            redirect($this->user_url .'/'. 'catalog.html');
+            redirect($this->user_url . '/' . 'catalog.html');
 
         }
-        if(!$product->is_enabled)
+        if (!$product->is_enabled) {
 
-        {
-
-            redirect($this->user_url .'/'. 'catalog.html');
+            redirect($this->user_url . '/' . 'catalog.html');
 
         }
 
 
-
-       // $images = explode('|', $product->image);
+        // $images = explode('|', $product->image);
 
         //$product->images = $images;
-		//var_dump($product);
-		// die('OKK');
-		$val = (object) $product;
-		$val->images = get_product_images($val->product_id);
-            $val->special_price = get_product_special_price($val->product_id);
+        //var_dump($product);
+        // die('OKK');
+        $val = (object)$product;
+        $val->images = get_product_images($val->product_id);
+        $val->special_price = get_product_special_price($val->product_id);
 
-            if (isset($val->option_name, $val->option_value) && ($val->option_name != '') && ($val->option_value != '')) {
-                $val->is_variation = 1;
-                $val->varient_price =  get_product_varient_price($val->product_id)->price;
-            } else {
-                $val->is_variation = 0;
-                $val->varient_price = 0;
-            }
-			$product = $val; 
-			if(json_decode($val->option_name,true))
-			{
-
-				$p = get_product_varient_price($val->product_id);
-				if(isset($p->quantity) && $p)
-				{
-					$product->quantity = $p->quantity;
-				}
-				else
-				{
-					$product->quantity = 0;
-				}
-			}
-
-
-
-        $data['result']				= $product;
-        $data['option_name']				= json_decode($product->option_name);
-        $data['option_type']				= json_decode($product->option_type);
-        $data['color_code']				= json_decode($product->color_code,true);
-        $data['option_value']				= json_decode($product->option_value);
-        $config_catalog_purchase = $this->db->where('key','config_catalog_purchase')->get('ci_settings')->row();
-        if($config_catalog_purchase)
-        {
-            $config_catalog_purchase = $config_catalog_purchase->value;
+        if (isset($val->option_name, $val->option_value) && ($val->option_name != '') && ($val->option_value != '')) {
+            $val->is_variation = 1;
+            $val->varient_price = get_product_varient_price($val->product_id)->price;
+        } else {
+            $val->is_variation = 0;
+            $val->varient_price = 0;
         }
-        else
-        {
+        $product = $val;
+        if (json_decode($val->option_name, true)) {
+
+            $p = get_product_varient_price($val->product_id);
+            if (isset($p->quantity) && $p) {
+                $product->quantity = $p->quantity;
+            } else {
+                $product->quantity = 0;
+            }
+        }
+
+
+        $data['result'] = $product;
+        $data['option_name'] = json_decode($product->option_name);
+        $data['option_type'] = json_decode($product->option_type);
+        $data['color_code'] = json_decode($product->color_code, true);
+        $data['option_value'] = json_decode($product->option_value);
+        $config_catalog_purchase = $this->db->where('key', 'config_catalog_purchase')->get('ci_settings')->row();
+        if ($config_catalog_purchase) {
+            $config_catalog_purchase = $config_catalog_purchase->value;
+        } else {
             $config_catalog_purchase = 0;
         }
-		$data['config_catalog_purchase'] = $config_catalog_purchase;
-        $config_catalog_outstock = $this->db->where('key','config_catalog_outstock')->get('ci_settings')->row();
-        if($config_catalog_outstock)
-        {
+        $data['config_catalog_purchase'] = $config_catalog_purchase;
+        $config_catalog_outstock = $this->db->where('key', 'config_catalog_outstock')->get('ci_settings')->row();
+        if ($config_catalog_outstock) {
             $config_catalog_outstock = $config_catalog_outstock->value;
-        }
-        else
-        {
+        } else {
             $config_catalog_outstock = 0;
         }
-		$data['config_catalog_outstock'] = $config_catalog_outstock;
-
-
-
-
-
+        $data['config_catalog_outstock'] = $config_catalog_outstock;
 
 
         $variants_data = $this->User_catalog_model->get_product_variants($product_id);
         $com = $this->User_catalog_model->get_combinations($product_id);
         $combination = array();
-        foreach($com as $k=> $v)
-        {
-        	$combination[] =array('comb'=>json_decode($v->combination),'stock'=>$v->quantity);
+        foreach ($com as $k => $v) {
+            $combination[] = array('comb' => json_decode($v->combination), 'stock' => $v->quantity);
         }
-		
-		//Get first variaTOION
-        $sing = $this->User_catalog_model->get_single_variants($product_id);
-        if(isset($sing->combination))
-		$data['comb'] = json_decode($sing->combination,true); 
-		$data['sing_var'] = $sing; 
-		// dd($data['sing_var']);
-		$data['combination'] = $combination; 
-		//Get first variation
 
+        //Get first variaTOION
+        $sing = $this->User_catalog_model->get_single_variants($product_id);
+        if (isset($sing->combination))
+            $data['comb'] = json_decode($sing->combination, true);
+        $data['sing_var'] = $sing;
+        // dd($data['sing_var']);
+        $data['combination'] = $combination;
+        //Get first variation
 
 
         //$variants_data = json_decode($variants_resp, true);
-
-
-
 
 
         $data['variations'] = '';
@@ -999,23 +637,19 @@ if(isset($_GET['brand_id']))
         }
 
 
-
-       // dd($data['variations']);
-	   
+        // dd($data['variations']);
 
 
+        $data['meta_title'] = isset($product->meta_title) ? $product->meta_title : '';
 
-        $data['meta_title']			= isset($product->meta_title) ? $product->meta_title : '';
+        $data['meta_keywords'] = isset($product->meta_keywords) ? $product->meta_keywords : '';
 
-        $data['meta_keywords']		= isset($product->meta_keywords) ? $product->meta_keywords: '';
-
-        $data['meta_description']	= isset($product->meta_description) ? $product->meta_description : '';
-
+        $data['meta_description'] = isset($product->meta_description) ? $product->meta_description : '';
 
 
-        $data['page_title']			= ((isset($product->meta_title) ? $product->meta_title: '') ? $product->meta_title : $product->product_name);
+        $data['page_title'] = ((isset($product->meta_title) ? $product->meta_title : '') ? $product->meta_title : $product->product_name);
 
-        $data['page_header']		= $product->product_name;
+        $data['page_header'] = $product->product_name;
 
 
         $this->load->model('user/common/User_featured_module_model');
@@ -1023,18 +657,14 @@ if(isset($_GET['brand_id']))
         $data['most_view_products'] = array_reverse($this->User_featured_module_model->get_most_view_products());
 
 
-
-		// +-----------------[MOST VIEW PRODUCTS ENDS]----------------------+
-
+        // +-----------------[MOST VIEW PRODUCTS ENDS]----------------------+
 
 
-		// +----------------[BESTSELLER PRODUCTS START]----------------------+
+        // +----------------[BESTSELLER PRODUCTS START]----------------------+
 
-		$bestseller_product_rows = (object)array();
+        $bestseller_product_rows = (object)array();
 
         $data['bestseller_products'] = $this->User_featured_module_model->get_bestseller_products(16);
-
-
 
 
         $query_parameters = $previous_url = array();
@@ -1042,28 +672,23 @@ if(isset($_GET['brand_id']))
         $url_type = $url_id = false;
 
 
-
-
-
-        if(isset($_SERVER['HTTP_REFERER'])) {
+        if (isset($_SERVER['HTTP_REFERER'])) {
 
             $previous_url = parse_url($_SERVER['HTTP_REFERER']);
 
         }
 
 
+        if (isset($previous_url['query'])) {
 
-        if(isset($previous_url['query'])){
-
-            parse_str($previous_url['query'],$query_parameters);
+            parse_str($previous_url['query'], $query_parameters);
 
         }
 
 
+        if ($url_id != false) {
 
-        if($url_id != false) {
-
-            if(isset($query_parameters['category_id'])){
+            if (isset($query_parameters['category_id'])) {
 
                 $category = $this->User_catalog_model->get_category($query_parameters['category_id']);
 
@@ -1078,8 +703,7 @@ if(isset($_GET['brand_id']))
             }
 
 
-
-            if(isset($query_parameters['brand_id'])){
+            if (isset($query_parameters['brand_id'])) {
 
                 $brand = $this->User_catalog_model->get_brand($query_parameters['brand_id']);
 
@@ -1096,8 +720,7 @@ if(isset($_GET['brand_id']))
         }
 
 
-
-        if(isset($previous_url['path']) && strpos($previous_url['path'],'special.html')){
+        if (isset($previous_url['path']) && strpos($previous_url['path'], 'special.html')) {
 
             $this->breadcrumbs[] = array(
 
@@ -1110,10 +733,9 @@ if(isset($_GET['brand_id']))
         }
 
 
-
         //IF PRODUCT IS VISITED DIRECTLY FROM URL
 
-        if(empty($previous_url)){
+        if (empty($previous_url)) {
 
             // ALL BRANDS BREADCRUMB LINK
 
@@ -1126,27 +748,23 @@ if(isset($_GET['brand_id']))
             );
 
 
-
             // PRODUCT BRAND BREADCRUMB LINK
 
             $brand = $this->User_catalog_model->get_brand($product->brand_id);
 
-            if($brand)
+            if ($brand) {
 
-            {
+                $this->breadcrumbs[] = array(
 
-            $this->breadcrumbs[] = array(
+                    'title' => $brand->name,
 
-                'title' => $brand->name,
+                    'href' => href_brand($brand)
 
-                'href' => href_brand($brand)
+                );
 
-            );
-
-        }
+            }
 
         }
-
 
 
         $this->breadcrumbs[] = array(
@@ -1158,14 +776,12 @@ if(isset($_GET['brand_id']))
         );
 
 
-
         // +----------------[ADDING VIEW TO PRODUCT VIEW COUNTER START]-----------------+
 
         $this->User_catalog_model->add_product_view($product_id);
 
         // +-----------------[ADDING VIEW TO PRODUCT VIEW COUNTER ENDS]-----------------+
 
- 
 
         // +----------------[ADDING RELATED PRODUCTS START]-----------------+
 
@@ -1176,766 +792,586 @@ if(isset($_GET['brand_id']))
         // pre($data);
 
 
-
-
-        $this->view($this->user_view .'/'. $this->view_dir .'/product_detail', $data);
+        $this->view($this->user_view . '/' . $this->view_dir . '/product_detail', $data);
 
     }
 
 
-
     private function set_search_args()
 
-	{
+    {
 
-		$ignore = array('order', 'sort', 'code', 'page', 'rows', 'per_page', 'facet', 'category_id', 'layout_id',);
+        $ignore = array('order', 'sort', 'code', 'page', 'rows', 'per_page', 'facet', 'category_id', 'layout_id',);
 
-		
 
-		$terms = array();
+        $terms = array();
 
-		$QS = $this->input->get();
+        $QS = $this->input->get();
 
-		if(!empty($QS)):
+        if (!empty($QS)):
 
-		foreach($QS as $key=>$val)
+            foreach ($QS as $key => $val) {
 
-		{
+                if (in_array($key, $ignore)) {
 
-			if(in_array($key, $ignore))
+                    continue;
 
-			{
+                }
 
-				continue;
 
-			}
+                $terms[$key] = $val;
 
-			
+            }
 
-			$terms[$key] = $val;
+        endif;
 
-		}
 
-		endif;
+        $terms['q'] = trim($this->input->get('q'));
 
-		
+        $terms['code'] = trim($this->input->get('code'));
 
-		$terms['q'] = trim($this->input->get('q'));
+        $this->user_session->set_userdata('search_items', $terms);
 
-		$terms['code'] = trim($this->input->get('code'));
+        $this->user_session->set_userdata('search_facet_items', $this->input->get('facet'));
 
-		$this->user_session->set_userdata('search_items', $terms);
+    }
 
-		$this->user_session->set_userdata('search_facet_items', $this->input->get('facet'));
 
-	}
+    function search_results_solr($args, $is_count = false, $is_count_with_facet = true)
 
-	
+    {
 
-	function search_results_solr($args, $is_count = false, $is_count_with_facet = true)
+        $this->load->library('Solr_search');
 
-	{
+        $this->solr_search->setPath('/solr/mccormackracing_products');
 
-		$this->load->library('Solr_search');
 
-		$this->solr_search->setPath('/solr/mccormackracing_products');
+        if (!$this->solr_search->ping()) {
 
-		
+            //echo 'Solr service is not responding.'; exit;
 
-		if ( !$this->solr_search->ping() )
+            return;
 
-		{
+        }
 
-			//echo 'Solr service is not responding.'; exit;
 
-			return;
+        $this->is_solr_ping = true;
 
-		}
 
-		
+        $facet = $args['facet'];
 
-		$this->is_solr_ping = true;
+        $term = $args['term'];
 
-		
+        $q = $term['q'];
 
-		$facet 		= $args['facet'];
 
-		$term 		= $args['term'];
+        $sort = $args['sort'];
 
-		$q 			= $term['q'];
+        $order = $args['order'];
 
-		
+        $rows = $args['rows'];
 
-		$sort 		= $args['sort'];
+        $per_page = $args['per_page'];
 
-		$order 		= $args['order'];
+        $category_id = !empty($args['category_id']) ? $args['category_id'] : FALSE;
 
-		$rows 		= $args['rows'];
+        $brand_id = !empty($args['brand_id']) ? $args['brand_id'] : FALSE;
 
-		$per_page 	= $args['per_page'];
 
-		$category_id = !empty($args['category_id']) ? $args['category_id'] : FALSE;
+        $group_by = !empty($args['group_by']) ? $args['group_by'] : FALSE;
 
-		$brand_id 	= !empty($args['brand_id']) ? $args['brand_id'] : FALSE;
 
-		
+        if (is_array($q)) {
 
-		
+            extract($q);
 
-		$group_by 	= !empty($args['group_by']) ? $args['group_by'] : FALSE;
+        }
 
-		
 
-		if(is_array($q))
+        //var_dump($q);
 
-		{
 
-			extract($q);
+        $offset = $per_page;
 
-		}
+        $limit = $rows;
 
-		
+        //var_dump($offset, $limit);
 
-		//var_dump($q);
+        //$query = '(product_name:*' .$q. '* OR short_description:*' .$q. '* OR long_description:*' .$q. '*)';
 
-		
 
-		$offset = $per_page;
+        $cols = array('product_name', 'part_number', 'brand_name', 'distributor_name', 'category_name', 'short_description', 'long_description',);
 
-		$limit 	= $rows;
 
-		//var_dump($offset, $limit);
+        $query = '';
 
-		//$query = '(product_name:*' .$q. '* OR short_description:*' .$q. '* OR long_description:*' .$q. '*)';	
+        $SQL = array();
 
-		
+        if (!empty($q)) {
 
-		$cols = array('product_name', 'part_number', 'brand_name', 'distributor_name', 'category_name', 'short_description', 'long_description', );
+            /*$qs = explode(' ', $q);
 
-		
 
-		$query = '';
 
-		$SQL = array();
+            foreach($qs as $qv)
 
-		if(!empty($q))
+            {
 
-		{
+                foreach($cols as $col)
 
-			/*$qs = explode(' ', $q);
+                {
 
-			
+                    $SQL[] = $col.':'.$qv.'*';
 
-			foreach($qs as $qv)
+                }
 
-			{
+            }*/
 
-				foreach($cols as $col)
 
-				{
+            foreach ($cols as $col) {
 
-					$SQL[] = $col.':'.$qv.'*';
+                $SQL[] = $col . ':"' . $q . '*"';
 
-				}
+            }
 
-			}*/
 
-			
+            $query = '(' . implode(' OR ', $SQL) . ')';
 
-			foreach($cols as $col)
 
-			{
+            if ($category_id) {
 
-				$SQL[] = $col.':"'.$q.'*"';
+                $query .= ' AND category_id:' . intval($category_id) . '';
 
-			}
+            }
 
-			
+            if ($brand_id) {
 
-			
+                $query .= ' AND brand_id:' . intval($brand_id) . '';
 
-			$query = '('.implode(' OR ', $SQL).')';
+            }
 
-			
+        } else {
 
-			if($category_id)
+            if ($category_id) {
 
-			{
+                $query .= 'category_id:' . intval($category_id) . '';
 
-				$query .= ' AND category_id:'.intval($category_id).'';
+            }
 
-			}
+            if ($brand_id) {
 
-			if($brand_id)
+                $query .= 'brand_id:' . intval($brand_id) . '';
 
-			{
+            }
 
-				$query .= ' AND brand_id:'.intval($brand_id).'';
+        }
 
-			}
 
-		}
+        $query = array($query);
 
-		else
 
-		{
+        $sort = strtolower($sort);
 
-			if($category_id)
+        if (!in_array($sort, array('desc', 'asc',))) {
 
-			{
+            $sort = 'asc';
 
-				$query .= 'category_id:'.intval($category_id).'';
+        }
 
-			}
 
-			if($brand_id)
+        $order = strtolower($order);
 
-			{
+        if ($order == 'name') {
 
-				$query .= 'brand_id:'.intval($brand_id).'';
+            $order = 'product_name_sort';
 
-			}
+        } elseif ($order == 'price') {
 
-		}
+            $order = 'sale_price';
 
-		
+        }
 
-		
 
-		$query = array($query);
+        if (!in_array($order, array('product_name', 'sale_price',))) {
 
-		
+            $order = 'product_name_sort';
 
-		
+        }
 
-		$sort = strtolower($sort);
 
-		if(!in_array($sort, array('desc', 'asc', )))
+        $sort_order = $order . ' ' . $sort;
 
-		{
 
-			$sort = 'asc';
+        $filter_query = array();
 
-		}
+        $facet_query = array();
 
-		
+        $facet_field = array();
 
-		
 
-		$order = strtolower($order);
+        $group_query = array();
 
-		if($order == 'name')
+        $group_field = array();
 
-		{
 
-			$order = 'product_name_sort';
+        $this->load->model('user/catalog/User_filter_model');
 
-		}
+        $facet_data = $this->User_filter_model->get_filter_items_by_id($facet);
 
-		elseif($order == 'price')
+        $category_facets = $this->User_filter_model->get_filter_categories(array('order' => 'sort_order', 'sort' => 'ASC', 'category_id' => $category_id, 'brand_id' => $brand_id));
 
-		{
 
-			$order = 'sale_price';
+        if (!empty($category_facets)) {
 
-		}
+            foreach ($category_facets as $key => $val) {
 
-		
+                if (empty($val->column_id)) {
 
-		if(!in_array($order, array('product_name', 'sale_price', )))
+                    continue;
 
-		{
+                }
 
-			$order = 'product_name_sort';
 
-		}
+                $post_fix = $val->column_scope == 'key' ? '_str' : '';
 
-		
+                $facet_field[] = $val->column_id . $post_fix;
 
-		$sort_order = $order .' '. $sort;
+            }
 
-		
+        }
 
 
+        if (!empty($facet)) {
 
-		$filter_query = array();
+            foreach ($facet as $key => $val) {
 
-		$facet_query = array();
+                $cat_item_id = $val;
 
-		$facet_field = array();
+                $facet_query[] = $this->get_facet_data($cat_item_id, $facet_data);
 
-		
+                $filter_query[] = $this->get_facet_data($cat_item_id, $facet_data);
 
-		$group_query = array();
+            }
 
-		$group_field = array();
 
-		
+            $facet_field = array_unique($facet_field);
 
-		
+        }
 
-		$this->load->model('user/catalog/User_filter_model');
 
-		$facet_data = $this->User_filter_model->get_filter_items_by_id($facet);
+        $QF = 'product_id^10 product_name^9 part_number^8 distributor_name^7 category_name^6 brand_name^5 short_description^4 long_description^3';
 
-		$category_facets = $this->User_filter_model->get_filter_categories(array('order'=>'sort_order', 'sort'=>'ASC', 'category_id'=>$category_id, 'brand_id'=>$brand_id));
+        $addit_param = array('qf' => $QF, 'facet' => 'true', 'facet.mincount' => 1, 'facet.limit' => 2000, 'facet.sort' => 'count', 'facet.field' => $facet_field, 'facet.query' => $facet_query, 'fq' => $filter_query, 'sort' => $sort_order,);
 
-		
+        //var_dump($query, $addit_param);
 
-		
 
-		if(!empty($category_facets))
+        if ($is_count == true) {
 
-		{
+            $addit_param = array('facet' => 'true', 'facet.mincount' => 1, 'facet.limit' => 2000, 'facet.sort' => 'count', 'facet.field' => $facet_field, 'facet.query' => $facet_query, 'fq' => $filter_query, 'sort' => $sort_order, 'fl' => array());
 
-			foreach($category_facets as $key=>$val)
+            $response = $this->solr_search->search($query, $offset, $limit, $addit_param);
 
-			{
+            return $response->response->numFound;
 
-				if(empty($val->column_id))
+        }
 
-				{
 
-					continue;
+        if ($group_by !== false) {
 
-				}
+            //&group=true&group.field=manu_exact
 
-				
+            $addit_param = array('group' => 'true', 'group.limit' => 1, 'group.field' => $group_by,);
 
-				$post_fix = $val->column_scope == 'key' ? '_str' : '';
+            $addit_param = array('facet' => 'true', 'facet.mincount' => 1, 'facet.limit' => 2000, 'facet.field' => array('distributor_id', 'category_id', 'brand_id'), 'facet.query' => array(), 'fq' => $filter_query, 'sort' => $sort_order, 'fl' => array('distributor_id', 'category_id', 'brand_id'));
 
-				$facet_field[] = $val->column_id . $post_fix;
+            //$addit_param = array('group'=>'true', 'group.field'=>$group_by, );
 
-			}
+            $response = $this->solr_search->search($query, $offset, 1, $addit_param);
 
-		}
+            $facets = (array)$response->facet_counts->facet_fields;
 
-		
+        } else {
 
-		
+            $response = $this->solr_search->search($query, $offset, $limit, $addit_param);
 
-		if(!empty($facet))
+            $facets = (array)$response->facet_counts->facet_fields;
 
-		{
+        }
 
-			foreach($facet as $key=>$val)
 
-			{
+        $raw_resp = json_decode($response->getRawResponse());
 
-				$cat_item_id = $val;
+        $docs = $raw_resp->response->docs;
 
-				$facet_query[] = $this->get_facet_data($cat_item_id, $facet_data);
+        $facets = $raw_resp->facet_counts->facet_fields;
 
-				$filter_query[] = $this->get_facet_data($cat_item_id, $facet_data);
 
-			}
+        //var_dump( $facets, '-RAW-', $raw_resp ); exit;
 
-			
+        //var_dump( $facets );
 
-			$facet_field = array_unique($facet_field);
+        //echo rawurldecode($response->response->query);
 
-		}
+        //var_dump($facets, $response->response->query); exit;
 
-		
-
-		
-
-		$QF = 'product_id^10 product_name^9 part_number^8 distributor_name^7 category_name^6 brand_name^5 short_description^4 long_description^3';
-
-		$addit_param = array('qf'=>$QF, 'facet'=>'true', 'facet.mincount'=>1, 'facet.limit'=>2000, 'facet.sort'=>'count', 'facet.field'=>$facet_field, 'facet.query'=>$facet_query, 'fq'=>$filter_query, 'sort'=>$sort_order, );
-
-		//var_dump($query, $addit_param);
-
-		
-
-		if($is_count == true)
-
-		{
-
-			$addit_param = array('facet'=>'true', 'facet.mincount'=>1, 'facet.limit'=>2000, 'facet.sort'=>'count', 'facet.field'=>$facet_field, 'facet.query'=>$facet_query, 'fq'=>$filter_query, 'sort'=>$sort_order, 'fl'=>array() );
-
-			$response 	 = $this->solr_search->search($query, $offset, $limit, $addit_param);
-
-			return $response->response->numFound;
-
-		}
-
-		
-
-		
-
-		
-
-		if($group_by !== false)
-
-		{
-
-			//&group=true&group.field=manu_exact
-
-			$addit_param = array('group'=>'true', 'group.limit'=>1, 'group.field'=>$group_by, );
-
-			$addit_param = array('facet'=>'true', 'facet.mincount'=>1, 'facet.limit'=>2000, 'facet.field'=>array('distributor_id', 'category_id', 'brand_id'), 'facet.query'=>array(), 'fq'=>$filter_query, 'sort'=>$sort_order, 'fl'=>array('distributor_id', 'category_id', 'brand_id') );
-
-			//$addit_param = array('group'=>'true', 'group.field'=>$group_by, );
-
-			$response = $this->solr_search->search($query, $offset, 1, $addit_param);
-
-			$facets = (array)$response->facet_counts->facet_fields;
-
-		}
-
-		else
-
-		{
-
-			$response = $this->solr_search->search($query, $offset, $limit, $addit_param);
-
-			$facets = (array)$response->facet_counts->facet_fields;
-
-		}
-
-		
-
-		$raw_resp = json_decode($response->getRawResponse());
-
-		$docs = $raw_resp->response->docs;
-
-		$facets = $raw_resp->facet_counts->facet_fields;
-
-		
-
-		//var_dump( $facets, '-RAW-', $raw_resp ); exit;
-
-		//var_dump( $facets ); 
-
-		//echo rawurldecode($response->response->query);
-
-		//var_dump($facets, $response->response->query); exit;
-
-		
 
         // http://89.47.164.12:8718/solr/mccormackracing_products/select?qf=product_id^10+product_name^9+part_number^8+distributor_name^7+category_name^6+brand_name^5+short_description^4+long_description^3&facet=true&facet.mincount=1&facet.limit=2000&facet.sort=count&facet.field=brand_name_str&facet.field=style_str&facet.field=bolt_pattern_str&facet.field=back_space_str&facet.field=diameter_str&facet.field=offset_str&facet.field=finish_str&facet.field=width_str&facet.query=tags:99c2d2edb99729b3b3c9dc8ab77fb330&fq=tags:99c2d2edb99729b3b3c9dc8ab77fb330&sort=product_name+asc&wt=json&json.nl=map&q=category_id:1&start=0&rows=12		
 
 
+        // http://89.47.164.12:8718/solr/mccormackracing_products/select?qf=product_id^10+product_name^9+part_number^8+distributor_name^7+category_name^6+brand_name^5+short_description^4+long_description^3&facet=true&facet.mincount=1&facet.limit=2000&facet.sort=count&facet.field=style_str&facet.field=category_name_str&facet.field=back_space_str&facet.field=bolt_pattern_str&facet.field=diameter_str&facet.field=offset_str&facet.field=finish_str&facet.field=width_str&sort=product_name_sort+asc&wt=json&json.nl=map&q=brand_id:26&start=0&rows=12
 
-        // http://89.47.164.12:8718/solr/mccormackracing_products/select?qf=product_id^10+product_name^9+part_number^8+distributor_name^7+category_name^6+brand_name^5+short_description^4+long_description^3&facet=true&facet.mincount=1&facet.limit=2000&facet.sort=count&facet.field=style_str&facet.field=category_name_str&facet.field=back_space_str&facet.field=bolt_pattern_str&facet.field=diameter_str&facet.field=offset_str&facet.field=finish_str&facet.field=width_str&sort=product_name_sort+asc&wt=json&json.nl=map&q=brand_id:26&start=0&rows=12		
 
-		
+        $brands = $this->get_brands();
 
-		$brands = $this->get_brands();
 
-		
+        if (!empty($docs)) {
 
-		if(!empty($docs))
+            foreach ($docs as $key => &$val) {
 
-		{
+                $val->brand = $this->get_brand_info($val->brand_id, $brands);
 
-			foreach($docs as $key=>&$val)
+                $val->has_tax = false;
 
-			{
+            }
 
-				$val->brand = $this->get_brand_info($val->brand_id, $brands);
+        }
 
-				$val->has_tax = false;
 
-			}
+        $facet_category_id = $facet_brand_id = 0;
 
-		}
 
-		
+        if (!empty($facets)) {
 
-		$facet_category_id = $facet_brand_id = 0;
+            foreach ($facets as $key => &$val) {
 
-		
+                $obj = new stdClass();
 
-		if(!empty($facets))
+                foreach ($val as $key2 => $val2) {
 
-		{
+                    if (!empty($facet) and $category_id > 0 and $key == 'brand_name_str') {
 
-			foreach($facets as $key=>&$val)
+                        $dt = $this->get_brand_by_name($key2);
 
-			{
+                        if ($dt and in_array($dt->filter_category_item_id, $facet)) {
 
-				$obj = new stdClass();
+                            $facet_brand_id = $dt->brand_id;
 
-				foreach($val as $key2=>$val2)
+                        }
 
-				{
+                    }
 
-					if(!empty($facet) and $category_id > 0 and $key == 'brand_name_str')
 
-					{
+                    if (!empty($facet) and $brand_id > 0 and $key == 'category_name_str') {
 
-						$dt = $this->get_brand_by_name($key2);
+                        $dt = $this->get_category_by_name($key2);
 
-						if($dt and in_array($dt->filter_category_item_id, $facet))
+                        if ($dt and in_array($dt->filter_category_item_id, $facet)) {
 
-						{
+                            $facet_category_id = $dt->category_id;
 
-							$facet_brand_id = $dt->brand_id;
+                        }
 
-						}
+                    }
 
-					}
 
-					
+                    $obj->{strtolower($key2)} = $val2;
 
-					if(!empty($facet) and $brand_id > 0 and $key == 'category_name_str')
+                }
 
-					{
+                $val = $obj;
 
-						$dt = $this->get_category_by_name($key2);
+            }
 
-						if($dt and in_array($dt->filter_category_item_id, $facet))
+        }
 
-						{
 
-							$facet_category_id = $dt->category_id;
+        //var_dump( '-RAW-', $facets ); exit;
 
-						}
+        $return = array('total_found' => $response->response->numFound, 'docs' => $docs, 'facets' => $facets, 'facet_category_id' => $facet_category_id, 'facet_brand_id' => $facet_brand_id);
 
-					}
+        //var_dump($return); exit;
 
-					
+        return $return;
 
-					$obj->{strtolower($key2)} = $val2;
+    }
 
-				}
 
-				$val = $obj;
+    private function get_facet_data($cat_item_id, $facet_data, $scope = '')
 
-			}
+    {
 
-		}
+        $return = '';
 
-		
+        foreach ($facet_data as $key => $val) {
 
-		//var_dump( '-RAW-', $facets ); exit;
+            if ($cat_item_id == $val->filter_category_item_id) {
 
-		$return = array('total_found'=>$response->response->numFound, 'docs'=>$docs, 'facets'=>$facets, 'facet_category_id'=>$facet_category_id, 'facet_brand_id'=>$facet_brand_id);
+                //$post_fix = ($scope == 'filter' and $val->column_scope == 'key') ? '_str' : '';
 
-		//var_dump($return); exit;
+                //$return = $val->column_id.$post_fix .':'. $val->unique_id;
 
-		return $return;
 
-	}
+                $return = 'tags:' . $val->unique_id;
 
-	
+                break;
 
-	private function get_facet_data($cat_item_id, $facet_data, $scope = '')
+            }
 
-	{
+        }
 
-		$return = '';
 
-		foreach($facet_data as $key=>$val)
+        return $return;
 
-		{
+    }
 
-			if( $cat_item_id == $val->filter_category_item_id )
 
-			{
+    private function get_brands()
 
-				//$post_fix = ($scope == 'filter' and $val->column_scope == 'key') ? '_str' : '';
+    {
 
-				//$return = $val->column_id.$post_fix .':'. $val->unique_id;
+        $result = $this->User_catalog_model->get_brands(array('is_enabled' => 1,));
 
-				
 
-				$return = 'tags:'. $val->unique_id;
+        $return = array();
 
-				break;
+        foreach ($result as $key => $val) {
 
-			}
+            $return[$val->brand_id] = $val;
 
-		}
+        }
 
-		
 
-		return $return;
+        return $return;
 
-	}
+    }
 
-	
 
-	private function get_brands()
+    private function get_brand_info($brand_id, $brands)
 
-	{
+    {
 
-		$result = $this->User_catalog_model->get_brands(array('is_enabled'=>1, ));
+        if (!empty($brands[$brand_id])) {
 
-		
+            return $brands[$brand_id];
 
-		$return = array();
+        }
 
-		foreach($result as $key=>$val)
 
-		{
+        return FALSE;
 
-			$return[$val->brand_id] = $val;
+    }
 
-		}
 
-		
+    private function get_category_by_name($brand_name)
 
-		return $return;
+    {
 
-	}
+        return $this->User_catalog_model->get_product_by_category_name($brand_name);
 
-	
+    }
 
-	private function get_brand_info($brand_id, $brands)
 
-	{
+    private function get_brand_by_name($brand_name)
 
-		if(!empty($brands[$brand_id]))
+    {
 
-		{
+        return $this->User_catalog_model->get_product_by_brand_name($brand_name);
 
-			return $brands[$brand_id];
 
-		}
+    }
 
-		
 
-		return FALSE;
+    private function by_brand()
 
-	}
+    {
 
-	
+        $data['meta_title'] = '';
 
-	private function get_category_by_name($brand_name)
+        $data['meta_keywords'] = '';
 
-	{
+        $data['meta_description'] = '';
 
-		return $this->User_catalog_model->get_product_by_category_name($brand_name);
 
-	}
+        $data['page_title'] = 'Catalog';
 
-	
+        $data['page_header'] = 'Catalog';
 
-	private function get_brand_by_name($brand_name)
 
-	{
+        $params = array();
 
-		return $this->User_catalog_model->get_product_by_brand_name($brand_name);
+        $order = $this->input->get('order') ? $this->input->get('order') : '';
 
-	
+        $sort = $this->input->get('sort') ? $this->input->get('sort') : 'asc';
 
-	}
+        $code = $this->input->get('code') ? $this->input->get('code') : '';
 
+        $page = $this->input->get('page') ? $this->input->get('page') : 0;
 
+        $rows = $this->input->get('rows') ? $this->input->get('rows') : '12';
 
-	private function by_brand()
+        $per_page = $this->input->get('per_page') ? $this->input->get('per_page') : 0;
 
-	{
 
-		$data['meta_title']			= '';
+        $brand_id = $this->input->get('brand_id') ? $this->input->get('brand_id') : 1;
 
-		$data['meta_keywords']		= '';
+        $layout_id = $this->input->get('layout_id') ? $this->input->get('layout_id') : 2;
 
-		$data['meta_description']	= '';
 
-		
+        $data['sort_menu'] = get_sort_menu();
 
-		$data['page_title']		= 'Catalog';
+        $data['sort_id'] = $order . '.' . $sort;
 
-		$data['page_header']	= 'Catalog';
-
-
-
-        $params 	= array();
-
-        $order 		= $this->input->get('order') ? $this->input->get('order') : '';
-
-        $sort 		= $this->input->get('sort') ? $this->input->get('sort') : 'asc';
-
-        $code 		= $this->input->get('code') ? $this->input->get('code') : '';
-
-        $page 		= $this->input->get('page') ? $this->input->get('page') : 0;
-
-        $rows 		= $this->input->get('rows') ? $this->input->get('rows') : '12';
-
-        $per_page 	= $this->input->get('per_page') ? $this->input->get('per_page') : 0;
-
-
-
-        $brand_id 	= $this->input->get('brand_id') ? $this->input->get('brand_id') : 1;
-
-        $layout_id 		= $this->input->get('layout_id') ? $this->input->get('layout_id') : 2;
-
-
-
-		$data['sort_menu'] = get_sort_menu();
-
-		$data['sort_id'] = $order .'.'. $sort;
-
-		
 
         $result = new stdClass();
 
 
-
-
-
-        $data['max_price'] = $this->User_catalog_model->get_product_max_price(array('brand_id' =>  $brand_id));
+        $data['max_price'] = $this->User_catalog_model->get_product_max_price(array('brand_id' => $brand_id));
 
         $data['min_price'] = $this->User_catalog_model->get_product_min_price(array('brand_id' => $brand_id));
 
 
+        $this->current_active_nav = 'brand-' . $brand_id;
 
-        $this->current_active_nav 	= 'brand-'. $brand_id;
+        $data['layout_id'] = $layout_id;
 
-        $data['layout_id']			= $layout_id;
-
-        $data['brand_id']			= $brand_id;
+        $data['brand_id'] = $brand_id;
 
         //$data['filter_categories'] 	= $this->get_category_filters($brand_id);
 
 
+        $result->brand = $this->User_catalog_model->get_brand($brand_id);
 
-        $result->brand 			    = $this->User_catalog_model->get_brand($brand_id);
+        $result->brands = array();
 
-        $result->brands 			= array();
+        $result->categories = array();
 
-        $result->categories 		= array();
+        $result->brand_menu = $this->User_catalog_model->get_brand_menu();
 
-        $result->brand_menu 		= $this->User_catalog_model->get_brand_menu();
-
-        $result->filters 			= $this->get_brand_filters($brand_id);
-
-
-
+        $result->filters = $this->get_brand_filters($brand_id);
 
 
         // SEO TAGS
 
-        $data['meta_title']			= $result->brand->meta_title;
+        $data['meta_title'] = $result->brand->meta_title;
 
-        $data['meta_keywords']		= $result->brand->meta_keywords;
+        $data['meta_keywords'] = $result->brand->meta_keywords;
 
-        $data['meta_description']	= $result->brand->meta_description;
-
-
+        $data['meta_description'] = $result->brand->meta_description;
 
 
+        $data['page_title'] = $result->brand->name;
 
-        $data['page_title']		= $result->brand->name;
-
-        $data['page_header']	= $result->brand->name;
-
+        $data['page_header'] = $result->brand->name;
 
 
+        $this->breadcrumbs[] = array(
 
+            'title' => 'Brands list',
 
-            $this->breadcrumbs[] = array(
+            'href' => site_url('brands.html')
 
-                'title' => 'Brands list',
-
-                'href' => site_url('brands.html')
-
-            );
-
+        );
 
 
         $this->breadcrumbs[] = array(
@@ -1947,53 +1383,39 @@ if(isset($_GET['brand_id']))
         );
 
 
+        $term = false;
 
-        $term				= false;
+        $data['code'] = $code;
 
-        $data['code']		= $code;
-
-        $post				= $this->input->post(null, false);
-
+        $post = $this->input->post(null, false);
 
 
-        if($post)
+        if ($post) {
 
-        {
+            $term = json_encode($post);
 
-            $term			= json_encode($post);
+            $code = $this->Search_model->record_term($term);
 
-            $code			= $this->Search_model->record_term($term);
-
-            $data['code']	= $code;
+            $data['code'] = $code;
 
 
+            redirect(site_url($this->user_url . '/' . 'catalog.html?layout_id=2&brand_id=' . $brand_id . '&code=' . $code));
 
-            redirect(site_url($this->user_url .'/'. 'catalog.html?layout_id=2&brand_id='.$brand_id.'&code='.$code));
+        } elseif ($code) {
 
-        }
-
-        elseif ($code)
-
-        {
-
-            $term			= $this->Search_model->get_term($code);
+            $term = $this->Search_model->get_term($code);
 
         }
-
-
-
 
 
         //$data['term']		= $term;
 
-        $data['order_by']	= $order;
+        $data['order_by'] = $order;
 
-        $data['sort_by']	= $sort;
-
+        $data['sort_by'] = $sort;
 
 
         $this->set_search_args();
-
 
 
         $term = $this->user_session->userdata('search_items');
@@ -2001,25 +1423,20 @@ if(isset($_GET['brand_id']))
         $facet = $this->user_session->userdata('search_facet_items');
 
 
-
         $fq = array();
 
-        if(is_array($facet)):
+        if (is_array($facet)):
 
-            foreach($facet as $key=>$val)
+            foreach ($facet as $key => $val) {
 
-            {
-
-                $fq[] = 'facet[]='.$val;
+                $fq[] = 'facet[]=' . $val;
 
             }
 
         endif;
 
 
-
-        $sorting = array('sort'=>$sort, 'order'=>$order);
-
+        $sorting = array('sort' => $sort, 'order' => $order);
 
 
         //var_dump($facet);
@@ -2029,592 +1446,461 @@ if(isset($_GET['brand_id']))
         //echo '<br>';
 
 
+        $search_url = site_url('catalog.html?layout_id=' . $layout_id . '&brand_id=' . $brand_id . '&' . http_build_query($term));
 
-        $search_url = site_url('catalog.html?layout_id='.$layout_id.'&brand_id='.$brand_id.'&'.http_build_query($term));
-
-        $base_url = site_url($this->user_url .'/'. 'catalog.html?layout_id='.$layout_id.'&brand_id='.$brand_id.'&'.http_build_query($term).'&'.http_build_query($sorting)).'&'.implode('&', $fq);
-
-		
-
-		$no_sort_url = site_url($this->user_url .'/'. 'catalog.html?layout_id='.$layout_id.'&brand_id='.$brand_id.'&'.http_build_query($term)).'&'.implode('&', $fq);
-
-		
-
-		if($this->config->item('rewrite_brand_route'))
-
-		{
-
-			$search_url = href_brand($result->brand).'?'.http_build_query($term);
-
-			$base_url = href_brand($result->brand).'?'.http_build_query($term).'&'.http_build_query($sorting).'&'.implode('&', $fq);
-
-			$no_sort_url = href_brand($result->brand).'?'.http_build_query($term).'&'.implode('&', $fq);
-
-		}
+        $base_url = site_url($this->user_url . '/' . 'catalog.html?layout_id=' . $layout_id . '&brand_id=' . $brand_id . '&' . http_build_query($term) . '&' . http_build_query($sorting)) . '&' . implode('&', $fq);
 
 
+        $no_sort_url = site_url($this->user_url . '/' . 'catalog.html?layout_id=' . $layout_id . '&brand_id=' . $brand_id . '&' . http_build_query($term)) . '&' . implode('&', $fq);
 
 
+        if ($this->config->item('rewrite_brand_route')) {
 
-        $data['term'] 		= $term;
+            $search_url = href_brand($result->brand) . '?' . http_build_query($term);
 
-        $data['facet'] 		= $facet;
+            $base_url = href_brand($result->brand) . '?' . http_build_query($term) . '&' . http_build_query($sorting) . '&' . implode('&', $fq);
+
+            $no_sort_url = href_brand($result->brand) . '?' . http_build_query($term) . '&' . implode('&', $fq);
+
+        }
+
+
+        $data['term'] = $term;
+
+        $data['facet'] = $facet;
 
         $data['search_url'] = $search_url;
 
-		$data['no_sort_url']= $no_sort_url;
-
-		
+        $data['no_sort_url'] = $no_sort_url;
 
 
-
-        $param = array('brand_id'=>$brand_id, 'term'=>$term, 'facet'=>$facet, 'code'=>$code, 'order'=>$order, 'sort'=>$sort,'price'=>$this->input->get('price'), 'rows'=>$rows, 'per_page'=>$per_page, );
-
+        $param = array('brand_id' => $brand_id, 'term' => $term, 'facet' => $facet, 'code' => $code, 'order' => $order, 'sort' => $sort, 'price' => $this->input->get('price'), 'rows' => $rows, 'per_page' => $per_page,);
 
 
         $res = $this->search_results_solr($param);
-		var_dump($res);
-		die('1801');
+        var_dump($res);
+        die('1801');
 
         $total = $this->search_results_solr($param, true);
 
         //	$facet_total_found 	= $this->search_results_solr($param, true, false); 
 
 
+        $result->products = $res['docs'];
+
+        $result->facets = $res['facets'];
+
+        $result->total_found = $res['total_found'];
+
+        $data['result'] = $result;
+
+        $data['total'] = $total;
 
 
-
-        $result->products 		= $res['docs'];
-
-        $result->facets 		= $res['facets'];
-
-        $result->total_found 	= $res['total_found'];
-
-        $data['result'] 		= $result;
-
-        $data['total'] 			= $total;
+        $config['base_url'] = $base_url;
 
 
+        $config['total_rows'] = $total;
 
-        $config['base_url']		= $base_url;
+        $config['per_page'] = $rows;
 
+        $config['offset'] = $per_page;
 
+        $config['uri_segment'] = $this->uri->total_segments();
 
+        $config['use_page_numbers'] = TRUE;
 
+        $config['page_query_string'] = TRUE;
 
-        $config['total_rows']			= $total;
-
-        $config['per_page']				= $rows;
-
-        $config['offset']				= $per_page;
-
-        $config['uri_segment']			= $this->uri->total_segments();
-
-        $config['use_page_numbers'] 	= TRUE;
-
-        $config['page_query_string'] 	= TRUE;
-
-        $config['reuse_query_string'] 	= TRUE;
-
+        $config['reuse_query_string'] = TRUE;
 
 
         $this->load->library('pagination');
 
 
-
         $this->pagination->initialize($config);
 
-		
 
-		$data['brand_info']			 = $this->User_brand_model->get_by_id($brand_id);
-
+        $data['brand_info'] = $this->User_brand_model->get_by_id($brand_id);
 
 
+        if (isset($facet[0]) && !empty($facet[0]))
 
-
-        if(isset($facet[0]) && !empty($facet[0]))
-
-            $data['bestseller_products'] = $this->User_brand_model->get_bestseller_products($brand_id, 5 , $facet[0]);
+            $data['bestseller_products'] = $this->User_brand_model->get_bestseller_products($brand_id, 5, $facet[0]);
 
         else
 
             $data['bestseller_products'] = $this->User_brand_model->get_bestseller_products($brand_id, 5, '');
 
 
-
-
-
-		$this->view($this->user_view . '/' . $this->view_dir . '/catalog_by_brand_list', $data);
+        $this->view($this->user_view . '/' . $this->view_dir . '/catalog_by_brand_list', $data);
 
     }
 
-	
 
-	private function by_search()
+    private function by_search()
 
-	{
+    {
 
-		$data['meta_title']			= '';
+        $data['meta_title'] = '';
 
-		$data['meta_keywords']		= '';
+        $data['meta_keywords'] = '';
 
-		$data['meta_description']	= '';
-
-		
-
-		$data['page_title']		= 'Catalog';
-
-		$data['page_header']	= 'Catalog';
+        $data['meta_description'] = '';
 
 
+        $data['page_title'] = 'Catalog';
 
-		$params 	= array();
-
-		$order 		= $this->input->get('order') ? $this->input->get('order') : '';
-
-		$sort 		= $this->input->get('sort') ? $this->input->get('sort') : 'asc';
-
-		$code 		= $this->input->get('code') ? $this->input->get('code') : '';
-
-		$page 		= $this->input->get('page') ? $this->input->get('page') : 0;
-
-		$rows 		= $this->input->get('rows') ? $this->input->get('rows') : '12';
-
-		$per_page 	= $this->input->get('per_page') ? $this->input->get('per_page') : 0;
-
-		$q 			= $this->input->get('q') ? $this->input->get('q') : '';
-
-		
-
-		$category_id 	= $this->input->get('category_id') ? $this->input->get('category_id') : 0;
-
-		$brand_id 		= $this->input->get('brand_id') ? $this->input->get('brand_id') : 0;
-
-		$layout_id 		= $this->input->get('layout_id') ? $this->input->get('layout_id') : 0;
-
-		
-
-		
-
-		
-
-		$data['q'] = $q;
-
-		
-
-		$data['max_price'] = $this->User_catalog_model->get_product_max_price(array('category_id' =>  $category_id));
-
-		$data['min_price'] = $this->User_catalog_model->get_product_min_price(array('category_id' => $category_id));
+        $data['page_header'] = 'Catalog';
 
 
+        $params = array();
+
+        $order = $this->input->get('order') ? $this->input->get('order') : '';
+
+        $sort = $this->input->get('sort') ? $this->input->get('sort') : 'asc';
+
+        $code = $this->input->get('code') ? $this->input->get('code') : '';
+
+        $page = $this->input->get('page') ? $this->input->get('page') : 0;
+
+        $rows = $this->input->get('rows') ? $this->input->get('rows') : '12';
+
+        $per_page = $this->input->get('per_page') ? $this->input->get('per_page') : 0;
+
+        $q = $this->input->get('q') ? $this->input->get('q') : '';
 
 
+        $category_id = $this->input->get('category_id') ? $this->input->get('category_id') : 0;
 
-		$result = new stdClass();
+        $brand_id = $this->input->get('brand_id') ? $this->input->get('brand_id') : 0;
+
+        $layout_id = $this->input->get('layout_id') ? $this->input->get('layout_id') : 0;
 
 
+        $data['q'] = $q;
 
-		$this->current_active_nav 	= 'category-'. $category_id;
 
-		$data['layout_id']			= $layout_id;
+        $data['max_price'] = $this->User_catalog_model->get_product_max_price(array('category_id' => $category_id));
 
-		$data['category_id']		= $category_id;
+        $data['min_price'] = $this->User_catalog_model->get_product_min_price(array('category_id' => $category_id));
 
-		
 
-		$result->category 			= $this->User_catalog_model->get_category($category_id);
+        $result = new stdClass();
 
-		$result->brand 				= $this->User_catalog_model->get_brand($brand_id);
 
-		$result->brands 			= array();
+        $this->current_active_nav = 'category-' . $category_id;
 
-		$result->categories 		= array();
+        $data['layout_id'] = $layout_id;
 
-		$result->category_menu 		= $this->User_catalog_model->get_category_menu(0);
+        $data['category_id'] = $category_id;
 
-		//$result->filters 			= $this->get_category_filters($category_id);
 
+        $result->category = $this->User_catalog_model->get_category($category_id);
+
+        $result->brand = $this->User_catalog_model->get_brand($brand_id);
+
+        $result->brands = array();
+
+        $result->categories = array();
+
+        $result->category_menu = $this->User_catalog_model->get_category_menu(0);
+
+        //$result->filters 			= $this->get_category_filters($category_id);
 
 
         // SEO TAGS
 
-        $data['meta_title']			= 'search for '.$q;
+        $data['meta_title'] = 'search for ' . $q;
 
-        $data['meta_keywords']		= 'search for '.$q;
+        $data['meta_keywords'] = 'search for ' . $q;
 
-        $data['meta_description']	= 'search for '.$q;
+        $data['meta_description'] = 'search for ' . $q;
 
 
+        $data['page_title'] = 'search for ' . $q;
 
-        $data['page_title']		= 'search for '.$q;
+        $data['page_header'] = 'search for ' . $q;
 
-        $data['page_header']	= 'search for '.$q;
 
+        //var_dump($data);die;
 
+        $term = false;
 
+        $data['code'] = $code;
 
+        $post = $this->input->post(null, false);
 
 
+        if ($post) {
 
-		
+            $q = !empty($post['q']) ? $post['q'] : '';
 
-		
+            $term = json_encode($post);
 
-		//var_dump($data);die;
+            $code = $this->Search_model->record_term($term);
 
-		$term				= false;
+            $data['code'] = $code;
 
-		$data['code']		= $code;
 
-		$post				= $this->input->post(null, false);
+            redirect(site_url($this->user_url . '/' . 'catalog.html?q=' . $q . '&code=' . $code));
 
-		
+        } elseif ($code) {
 
-		if($post)
+            $term = $this->Search_model->get_term($code);
 
-		{
+        }
 
-			$q 				= !empty($post['q']) ? $post['q'] : '';
 
-			$term			= json_encode($post);
+        //$data['term']		= $term;
 
-			$code			= $this->Search_model->record_term($term);
+        $data['order_by'] = $order;
 
-			$data['code']	= $code;
+        $data['sort_by'] = $sort;
 
-			
 
-			redirect(site_url($this->user_url .'/'. 'catalog.html?q='.$q.'&code='.$code));
+        $this->set_search_args();
 
-		}
 
-		elseif ($code)
+        $term = $this->user_session->userdata('search_items');
 
-		{
+        $facet = $this->user_session->userdata('search_facet_items');
 
-			$term			= $this->Search_model->get_term($code);
 
-		}
+        $fq = array();
 
+        if (is_array($facet)):
 
+            foreach ($facet as $key => $val) {
 
+                $fq[] = 'facet[]=' . $val;
 
+            }
 
-		//$data['term']		= $term;
+        endif;
 
-		$data['order_by']	= $order;
 
-		$data['sort_by']	= $sort;
+        $sorting = array('sort' => $sort, 'order' => $order);
 
 
+        //var_dump($facet);
 
-		$this->set_search_args();
+        //var_dump($term, $facet, $fq, $sorting);
 
-		
+        //echo '<br>';
 
-		$term = $this->user_session->userdata('search_items');
 
-		$facet = $this->user_session->userdata('search_facet_items');
+        $search_url = site_url('catalog.html?' . http_build_query($term));
 
-		
+        $base_url = site_url($this->user_url . '/' . 'catalog.html?' . http_build_query($term) . '&' . http_build_query($sorting)) . '&' . implode('&', $fq);
 
-		
 
+        $data['term'] = $term;
 
+        $data['facet'] = $facet;
 
-		
+        $data['search_url'] = $search_url;
 
-		$fq = array();
 
-		if(is_array($facet)):
+        $param = array('term' => $term, 'facet' => $facet, 'code' => $code, 'order' => $order, 'price' => $this->input->get('price'), 'sort' => $sort, 'rows' => $rows, 'per_page' => $per_page,);
 
-		foreach($facet as $key=>$val)
 
-		{
+        $result->filters = $this->get_filters_by_search($param);
 
-			$fq[] = 'facet[]='.$val;
 
-		}
+        $res = $this->search_results_solr($param);
+        var_dump($res);
+        die('2107');
 
-		endif;
+        $total = $this->search_results_solr($param, true);
 
-		
 
-		$sorting = array('sort'=>$sort, 'order'=>$order);
+        // $facet_total_found 	= $this->search_results_solr($param, true, false);
 
-		
 
-		//var_dump($facet);
+        $result->products = $res['docs'];
 
-		//var_dump($term, $facet, $fq, $sorting);
+        $result->facets = $res['facets'];
 
-		//echo '<br>';
+        $result->total_found = $res['total_found'];
 
-		
+        $data['result'] = $result;
 
-		$search_url = site_url('catalog.html?'.http_build_query($term));
+        $data['total'] = $total;
 
-		$base_url = site_url($this->user_url .'/'. 'catalog.html?'.http_build_query($term).'&'.http_build_query($sorting)).'&'.implode('&', $fq);
 
-		
+        $config['base_url'] = $base_url;
 
-		
 
-		$data['term'] 		= $term;
+        $config['total_rows'] = $total;
 
-		$data['facet'] 		= $facet;
+        $config['per_page'] = $rows;
 
-		$data['search_url'] = $search_url;
+        $config['offset'] = $per_page;
 
-		
+        $config['uri_segment'] = $this->uri->total_segments();
 
-		
+        $config['use_page_numbers'] = TRUE;
 
-		$param = array('term'=>$term, 'facet'=>$facet, 'code'=>$code, 'order'=>$order,'price'=>$this->input->get('price'), 'sort'=>$sort, 'rows'=>$rows, 'per_page'=>$per_page, );
+        $config['page_query_string'] = TRUE;
 
-		
+        $config['reuse_query_string'] = TRUE;
 
-		$result->filters 		= $this->get_filters_by_search($param);
 
-		
+        $this->load->library('pagination');
 
-		$res = $this->search_results_solr($param);
-		var_dump($res);
-		die('2107');
 
-		$total = $this->search_results_solr($param, true);
+        $this->pagination->initialize($config);
 
-		
 
-		
+        $this->view($this->user_view . '/' . $this->view_dir . '/catalog_by_search', $data);
 
-		// $facet_total_found 	= $this->search_results_solr($param, true, false);
+    }
 
-		
 
-		
+    private function get_filters_by_search($param)
 
-		
+    {
 
-		
+        $param['group_by'] = TRUE;
 
-		$result->products 		= $res['docs'];
+        //var_dump($param);die;
 
-		$result->facets 		= $res['facets'];
+        $data = $this->search_results_solr($param);
 
-		$result->total_found 	= $res['total_found'];
+        //var_dump($data['facets']);die;
 
-		$data['result'] 		= $result;
 
-		$data['total'] 			= $total;
+        $result = array('brand' => array(), 'category' => array(), 'distributor' => array(),);
 
-		
+        if (!empty($data['facets'])) {
 
-		$config['base_url']		= $base_url;
+            foreach ($data['facets'] as $key => $val) {
 
-		
+                $val = (array)$val;
 
-		
+                $val = array_map('intval', $val);
 
-		$config['total_rows']			= $total;
+                $val = array_keys($val);
 
-		$config['per_page']				= $rows;
+                //var_dump($val);die;
 
-		$config['offset']				= $per_page;
+                $val = array_unique($val);
 
-		$config['uri_segment']			= $this->uri->total_segments();
+                $result[str_replace('_id', '', $key)] = $val;
 
-		$config['use_page_numbers'] 	= TRUE;
+            }
 
-		$config['page_query_string'] 	= TRUE;
+        }
 
-		$config['reuse_query_string'] 	= TRUE;
 
-		
+        $result['brand'] = array_unique($result['brand']);
 
-		$this->load->library('pagination');
+        $result['category'] = array_unique($result['category']);
 
-		
+        $result['distributor'] = array_unique($result['distributor']);
 
-		$this->pagination->initialize($config);
 
-		
+        //var_dump($result);die;
 
-		$this->view($this->user_view . '/' . $this->view_dir . '/catalog_by_search', $data);
+        //var_dump($result['category']);
 
-	}
+        //var_dump($result['brand']);
 
-	
 
-	private function get_filters_by_search($param)
+        $filter1 = $this->get_category_filters($result['category']);
 
-	{
+        return $filter1;
 
-		$param['group_by'] = TRUE;
+        $filter2 = $this->get_brand_filters($result['brand']);
 
-		//var_dump($param);die;
 
-		$data = $this->search_results_solr($param);
+        $filters = array_merge((array)$filter1, (array)$filter2);
 
-		//var_dump($data['facets']);die;
+        die;
 
-		
+        //var_dump($filters);die;
 
-		
+        return $filters;
 
-		$result = array('brand'=>array(), 'category'=>array(), 'distributor'=>array(), );
+    }
 
-		if(!empty($data['facets']))
 
-		{
+    function open_lightbox_ajax()
 
-			foreach($data['facets'] as $key=>$val)
+    {
 
-			{
+        is_ajax();
 
-				$val = (array)$val;
 
-				$val = array_map('intval', $val);
+        $product_id = $this->input->get('product_id');
 
-				$val = array_keys($val);
 
-				//var_dump($val);die;
+        $product = $this->User_catalog_model->get_product_images($product_id);
 
-				$val = array_unique($val);
+        if (!$product) {
 
-				$result[str_replace('_id', '', $key)] = $val;
+            ajax_response(array('message' => 'product not found'));
 
-			}
+        }
 
-		}
 
-		
+        $data['result'] = $product;
 
-		$result['brand'] = array_unique($result['brand']);
 
-		$result['category'] = array_unique($result['category']);
+        $html = $this->view($this->user_view . '/' . $this->view_dir . '/open_lightbox_ajax', $data, true);
 
-		$result['distributor'] = array_unique($result['distributor']);
 
-		
+        ajax_response(array('error' => false, 'html' => $html));
 
-		//var_dump($result);die;
+    }
 
-		//var_dump($result['category']);
 
-		//var_dump($result['brand']);
+    public function get_brand()
 
-		
+    {
 
-		$filter1 = $this->get_category_filters($result['category']);
+        $brand_url = urldecode($this->input->get('n'));
 
-		return $filter1;
+        $temp = explode('-', $brand_url);
 
-		$filter2 = $this->get_brand_filters($result['brand']);
+        $brand_id = end($temp);
 
-		
+        $brand = $this->User_brand_model->get_brand_by_id($brand_id);
 
-		$filters = array_merge((array)$filter1, (array)$filter2);
+        $brand->images = json_decode($brand->images);
 
-		die;
 
-		//var_dump($filters);die;
+        $data['meta_title'] = $brand->name;
 
-		return $filters;
+        $data['meta_keywords'] = $brand->name;
 
-	}
+        $data['meta_description'] = $brand->name;
 
-	
 
-	function open_lightbox_ajax()
+        $data['page_title'] = $brand->name;
 
-	{
-
-		is_ajax();
-
-		
-
-		$product_id = $this->input->get('product_id');
-
-		
-
-		$product = $this->User_catalog_model->get_product_images($product_id);
-
-		if(!$product)
-
-		{
-
-			ajax_response(array('message'=>'product not found'));
-
-		}
-
-		
-
-		$data['result']	= $product;
-
-		
-
-		$html = $this->view($this->user_view .'/'. $this->view_dir .'/open_lightbox_ajax', $data, true);
-
-		
-
-		ajax_response(array('error'=>false, 'html'=>$html));
-
-	}
-
-
-
-	public function get_brand()
-
-	{
-
-		$brand_url = urldecode($this->input->get('n'));
-
-		$temp = explode('-', $brand_url);
-
-		$brand_id = end($temp);
-
-		$brand = $this->User_brand_model->get_brand_by_id($brand_id);
-
-		$brand->images = json_decode($brand->images);
-
-
-
-		$data['meta_title']			= $brand->name;
-
-		$data['meta_keywords']		= $brand->name;
-
-		$data['meta_description']	= $brand->name;
-
-
-
-		$data['page_title']			= $brand->name;
-
-		$data['page_header']		= $brand->name;
-
+        $data['page_header'] = $brand->name;
 
 
         $previous_url = array();
 
-        if(isset($_SERVER['HTTP_REFERER'])) {
+        if (isset($_SERVER['HTTP_REFERER'])) {
 
-        $previous_url = parse_url($_SERVER['HTTP_REFERER']);
+            $previous_url = parse_url($_SERVER['HTTP_REFERER']);
 
         }
 
         $query_parameters = array();
 
-        if(isset($previous_url['query'])){
+        if (isset($previous_url['query'])) {
 
-            parse_str($previous_url['query'],$query_parameters);
+            parse_str($previous_url['query'], $query_parameters);
 
         }
 
 
-
-
-
-        if(isset($previous_url['path']) && strpos($previous_url['path'],'brands.html')){
+        if (isset($previous_url['path']) && strpos($previous_url['path'], 'brands.html')) {
 
             $this->breadcrumbs[] = array(
 
@@ -2627,47 +1913,40 @@ if(isset($_GET['brand_id']))
         }
 
 
+        $result = (object)array(
 
-		$result = (object)array(
+            'brand' => $brand,
 
-			'brand'		=> $brand,
+            'products' => $this->User_catalog_model->get_products_by_brand($brand_id)
 
-			'products'	=> $this->User_catalog_model->get_products_by_brand($brand_id)
-
-		);
-
+        );
 
 
-		$data['result'] = $result;
+        $data['result'] = $result;
 
 
+        $this->view($this->user_view . '/' . $this->view_dir . '/catalog_by_brand', $data);
 
-		$this->view($this->user_view .'/'. $this->view_dir .'/catalog_by_brand', $data);
-
-	}
-
+    }
 
 
-	public function get_special_products()
+    public function get_special_products()
 
-	{
+    {
 
-		$this->current_active_nav = 'special';
-
-
-
-		$data['meta_title']			= 'Deals';
-
-		$data['meta_keywords']		= 'Deals';
-
-		$data['meta_description']	= 'Deals';
+        $this->current_active_nav = 'special';
 
 
+        $data['meta_title'] = 'Deals';
 
-		$data['page_title']			= 'Deals';
+        $data['meta_keywords'] = 'Deals';
 
-		$data['page_header']		= 'Deals';
+        $data['meta_description'] = 'Deals';
 
+
+        $data['page_title'] = 'Deals';
+
+        $data['page_header'] = 'Deals';
 
 
         $this->breadcrumbs[] = array(
@@ -2679,305 +1958,266 @@ if(isset($_GET['brand_id']))
         );
 
 
+        $order = $this->input->get('order') ? $this->input->get('order') : '';
 
-		$order 		= $this->input->get('order') ? $this->input->get('order') : '';
+        $sort = $this->input->get('sort') ? $this->input->get('sort') : 'asc';
 
-		$sort 		= $this->input->get('sort') ? $this->input->get('sort') : 'asc';
+        $code = $this->input->get('code') ? $this->input->get('code') : '';
 
-		$code 		= $this->input->get('code') ? $this->input->get('code') : '';
+        $page = $this->input->get('page') ? $this->input->get('page') : 0;
 
-		$page 		= $this->input->get('page') ? $this->input->get('page') : 0;
+        $rows = $this->input->get('rows') ? $this->input->get('rows') : '12';
 
-		$rows 		= $this->input->get('rows') ? $this->input->get('rows') : '12';
+        $per_page = $this->input->get('per_page') ? $this->input->get('per_page') : '';
 
-		$per_page 	= $this->input->get('per_page') ? $this->input->get('per_page') : '';
+        $term = false;
 
-		$term		= false;
+        $params = array();
 
-		$params		= array();
 
+        //$this->load->model('user/module/User_featured_module_model');
 
+        $result = $this->User_catalog_model->get_special_products(array('special_product' => '1', 'params' => $params, 'term' => $term, 'order' => $order, 'sort' => $sort, 'rows' => $rows, 'per_page' => $per_page));
 
-		//$this->load->model('user/module/User_featured_module_model');
+        $total = $this->User_catalog_model->get_special_products(array('special_product' => '1', 'params' => $params, 'term' => $term, 'order' => $order, 'sort' => $sort), true);
 
-		$result = $this->User_catalog_model->get_special_products(array('special_product'=>'1', 	'params' => $params, 'term' => $term, 'order' => $order, 'sort' => $sort, 'rows' => $rows, 'per_page' => $per_page));
 
-		$total = $this->User_catalog_model->get_special_products(array('special_product'=>'1', 	'params' => $params, 'term' => $term, 'order' => $order, 'sort' => $sort), true);
+        /*echo "<pre>";
 
-		
+        print_r($result);
 
-		/*echo "<pre>";
+        echo "</pre>";
 
-		print_r($result);
+        exit();*/
 
-		echo "</pre>";
+        $data['result'] = $result;
 
-		exit();*/
+        $data['total'] = $total;
 
-		$data['result']	= $result;
+        $data['products'] = $result;
 
-		$data['total']	= $total;
 
-		$data['products'] = $result;
+        $config['base_url'] = site_url($this->user_url . '/' . 'catalog/special.html?order=' . $order . '&sort=' . $sort . '&code=' . $code);
 
 
+        $config['total_rows'] = $total;
 
-		$config['base_url']	= site_url($this->user_url .'/'. 'catalog/special.html?order='.$order.'&sort='.$sort.'&code='.$code);
+        $config['per_page'] = $rows;
 
+        $config['offset'] = $per_page;
 
+        $config['uri_segment'] = $this->uri->total_segments();
 
-		$config['total_rows']			= $total;
+        $config['use_page_numbers'] = TRUE;
 
-		$config['per_page']				= $rows;
+        $config['page_query_string'] = TRUE;
 
-		$config['offset']				= $per_page;
+        $config['reuse_query_string'] = TRUE;
 
-		$config['uri_segment']			= $this->uri->total_segments();
 
-		$config['use_page_numbers'] 	= TRUE;
+        $this->load->library('pagination');
 
-		$config['page_query_string'] 	= TRUE;
 
-		$config['reuse_query_string'] 	= TRUE;
+        $this->pagination->initialize($config);
 
+        //$products = $this->User_catalog_model->get_special_products(16);
 
 
-		$this->load->library('pagination');
+        $this->view($this->user_view . '/' . $this->view_dir . '/special-products', $data);
 
+    }
 
 
-		$this->pagination->initialize($config);
+    private function get_category_filters($category_id)
 
-		//$products = $this->User_catalog_model->get_special_products(16);
+    {
 
+        $this->load->model('user/catalog/User_filter_model');
 
+        $results = $this->User_filter_model->get_filter_categories(array('order' => 'sort_order', 'sort' => 'ASC', 'category_id' => $category_id));
 
-		$this->view($this->user_view .'/'. $this->view_dir .'/special-products', $data);
 
-	}
+        $filter_categories = array();
 
+        if (!empty($results)) {
 
+            foreach ($results as $key => $result) {
 
-	private function get_category_filters($category_id)
+                $filter_items = $this->User_filter_model->get_filter_category_items($result->filter_category_id, array('category_id' => $category_id));
 
-	{
+                //$filter_items_count = $this->User_filter_model->get_filter_category_items_count($result->filter_category_id, $category_id);
 
-		$this->load->model('user/catalog/User_filter_model');
+                /*
 
-		$results = $this->User_filter_model->get_filter_categories(array('order'=>'sort_order', 'sort'=>'ASC', 'category_id'=>$category_id));
+                foreach ($filter_items as $item){
 
+                    $item->count = $this->User_filter_model->get_filter_category_item_count($item->filter_category_item_id, $category_id);
 
+                }
 
-		$filter_categories = array();
+                */
 
-		if(!empty($results))
 
-		{
+                $filter_categories[] = (object)array(
 
-			foreach ($results as $key => $result)
+                    'filter_category_name' => $result->name,
 
-			{
+                    'column_scope' => $result->column_scope,
 
-				$filter_items = $this->User_filter_model->get_filter_category_items($result->filter_category_id, array('category_id'=>$category_id));
+                    'column_id' => $result->column_id,
 
-				//$filter_items_count = $this->User_filter_model->get_filter_category_items_count($result->filter_category_id, $category_id);
+                    'filter_items' => $filter_items
 
-				/*
+                );
 
-				foreach ($filter_items as $item){
+            }
 
-					$item->count = $this->User_filter_model->get_filter_category_item_count($item->filter_category_item_id, $category_id);
+        }
 
-				}
 
-				*/
+        return $filter_categories;
 
+    }
 
 
-				$filter_categories[] = (object)array(
+    private function get_brand_filters($brand_id)
 
-					'filter_category_name' => $result->name,
+    {
 
-					'column_scope' => $result->column_scope,
+        $this->load->model('user/catalog/User_filter_model');
 
-					'column_id' => $result->column_id,
+        //$results = $this->User_filter_model->get_filter_brands(array('order'=>'sort_order', 'sort'=>'ASC', 'brand_id'=>$brand_id));
 
-					'filter_items' => $filter_items
+        $results = $this->User_filter_model->get_filter_categories(array('order' => 'sort_order', 'sort' => 'ASC', 'brand_id' => $brand_id));
 
-				);
 
-			}
+        $filter_categories = array();
 
-		}
+        if (!empty($results)) {
 
-		
+            foreach ($results as $key => $result) {
 
-		return $filter_categories;
+                $filter_items = $this->User_filter_model->get_filter_category_items($result->filter_category_id, array('brand_id' => $brand_id));
 
-	}
 
+                /*$items = new stdClass();
 
 
-	private function get_brand_filters($brand_id)
 
-	{
+                foreach ($filter_items as $key => $item){
 
-		$this->load->model('user/catalog/User_filter_model');
+                    $count = $this->User_filter_model->get_filter_category_item_count($item->filter_category_item_id, array('brand_id' => $brand_id));
 
-		//$results = $this->User_filter_model->get_filter_brands(array('order'=>'sort_order', 'sort'=>'ASC', 'brand_id'=>$brand_id));
+                    if($count) {
 
-		$results = $this->User_filter_model->get_filter_categories(array('order'=>'sort_order', 'sort'=>'ASC', 'brand_id'=>$brand_id));
+                        $item->count = $count;
 
-		
+                        $items->{$key} = $item;
 
-		$filter_categories = array();
+                    }
 
-		if(!empty($results))
+                }*/
 
-		{
 
-			foreach ($results as $key => $result)
+                $filter_categories[] = (object)array(
 
-			{
+                    'filter_category_name' => $result->name,
 
-				$filter_items = $this->User_filter_model->get_filter_category_items($result->filter_category_id, array('brand_id'=>$brand_id));
+                    'column_scope' => $result->column_scope,
 
+                    'column_id' => $result->column_id,
 
+                    'filter_items' => $filter_items
 
-				/*$items = new stdClass();
+                );
 
+            }
 
+        }
 
-				foreach ($filter_items as $key => $item){
 
-					$count = $this->User_filter_model->get_filter_category_item_count($item->filter_category_item_id, array('brand_id' => $brand_id));
+        return $filter_categories;
 
-					if($count) {
+    }
 
-						$item->count = $count;
 
-						$items->{$key} = $item;
+    private function get_filter_products($filter_ids, $per_page, $rows)
+    {
 
-					}
 
-				}*/
+        $this->load->model('user/catalog/User_filter_model');
 
-				
 
+        $filter_data = array(
 
+            'filter_ids' => $filter_ids,
 
-				$filter_categories[] = (object)array(
+            'offset' => $per_page,
 
-					'filter_category_name' => $result->name,
+            'limit' => $rows
 
-					'column_scope' => $result->column_scope,
+        );
 
-					'column_id' => $result->column_id,
 
-					'filter_items' => $filter_items
+        $product_ids = $this->User_filter_model->get_filter_products($filter_data);
 
-				);
+        $return_data = array();
 
-			}
+        foreach ($product_ids as $id) {
 
-		}
+            $return_data[] = $id->product_id;
 
-		
+        }
 
-		return $filter_categories;
 
-	}
+        /*echo "<pre>";
 
+        print_r($this->db->last_query());
 
+        echo "</pre>";
 
-	private function get_filter_products($filter_ids, $per_page, $rows)
-	{
-		 
+        exit();*/
 
-		$this->load->model('user/catalog/User_filter_model');
 
+        return $return_data;
 
+    }
 
 
+    private function get_total_filter_products($filter_ids)
 
-		$filter_data = array(
+    {
 
-			'filter_ids'	=> $filter_ids,
+        $filter_data = array(
 
-			'offset'		=> $per_page,
+            'filter_ids' => $filter_ids
 
-			'limit'			=> $rows
+        );
 
-		);
+        $this->load->model('user/catalog/User_filter_model');
 
+        return $this->User_filter_model->get_filter_products($filter_data, true);
 
+    }
 
-		$product_ids = $this->User_filter_model->get_filter_products($filter_data);
 
-		$return_data = array();
+    public function brands_list()
 
-		foreach ($product_ids as $id){
+    {
 
-			$return_data[] = $id->product_id;
+        $data['meta_title'] = 'Brands List';
 
-		}
+        $data['meta_keywords'] = 'Brands List';
 
+        $data['meta_description'] = 'Brands List';
 
 
-		/*echo "<pre>";
+        $this->current_active_nav = 'brand';
 
-		print_r($this->db->last_query());
 
-		echo "</pre>";
+        $data['page_title'] = 'Brands List';
 
-		exit();*/
-
-		
-
-		return $return_data;
-
-	}
-
-
-
-	private function get_total_filter_products($filter_ids)
-
-	{
-
-		$filter_data = array(
-
-			'filter_ids'	=> $filter_ids
-
-		);
-
-		$this->load->model('user/catalog/User_filter_model');
-
-		return $this->User_filter_model->get_filter_products($filter_data, true);
-
-	}
-
-
-
-	public function brands_list()
-
-	{
-
-		$data['meta_title']			= 'Brands List';
-
-		$data['meta_keywords']		= 'Brands List';
-
-		$data['meta_description']	= 'Brands List';
-
-
-
-		$this->current_active_nav = 'brand';
-
-
-
-		$data['page_title']		= 'Brands List';
-
-		$data['page_header']	= 'Brands List';
-
+        $data['page_header'] = 'Brands List';
 
 
         $this->breadcrumbs[] = array(
@@ -2987,7 +2227,6 @@ if(isset($_GET['brand_id']))
             'href' => 'javascript:void(0);'
 
         );
-
 
 
         //$data['brands'] = $this->User_brand_model->get_brands(array('is_enabled' => 1));
@@ -2995,11 +2234,9 @@ if(isset($_GET['brand_id']))
         $data['categories'] = $this->User_brand_model->get_brand_for_menu(array('is_enabled' => 1));
 
 
+        $this->view($this->user_view . '/' . $this->view_dir . '/brands_list_by_category', $data);
 
-		$this->view($this->user_view .'/'. $this->view_dir .'/brands_list_by_category', $data);
-
-	}
-
+    }
 
 
 }

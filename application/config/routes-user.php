@@ -122,7 +122,6 @@ $user_dir_prefix = 'user/';
 
 
 $route[$user_url_prefix. 'brands.html']					    = $user_dir_prefix.'User_brand/get_brand';
-
 $route[$user_url_prefix. 'catalog.html']					= $user_dir_prefix.'User_catalog/index';
 
 $route[$user_url_prefix. 'catalog/brand/(:any).html']		= $user_dir_prefix.'User_catalog/brands/$1';
